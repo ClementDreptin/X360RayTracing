@@ -1,0 +1,15 @@
+# Output binaries
+build/
+
+# Visual Studio files
+.vs/
+.vscode/
+*.user
+
+# Xenia
+tools/xenia/*
+*xenia.log
+
+# AtgFramework source code
+deps/AtgFramework/*
+!deps/AtgFramework/*.vcxproj*
