@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\App.h" />
     <ClInclude Include="src\Core\Log.h" />
+    <ClInclude Include="src\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\UI\Console.h" />
     <ClInclude Include="src\UI\Font.h" />
     <ClInclude Include="src\UI\Text.h" />
@@ -92,6 +93,7 @@
   <ItemGroup>
     <ClCompile Include="src\Core\App.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
+    <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\UI\Console.cpp" />
     <ClCompile Include="src\UI\Font.cpp" />
     <ClCompile Include="src\UI\Text.cpp" />

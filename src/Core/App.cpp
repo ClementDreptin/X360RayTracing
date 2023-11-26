@@ -15,18 +15,6 @@ float g_DisplayHeight = 720.0f;
 
 bool g_ShowControlsTexts = true;
 
-struct Vertex
-{
-    Vertex() {}
-
-    Vertex(float x, float y, float z, D3DCOLOR color, float u, float v)
-        : Pos(x, y, z), Color(color), TexCoord(u, v) {}
-
-    XMFLOAT3 Pos;
-    D3DCOLOR Color;
-    XMFLOAT2 TexCoord;
-};
-
 App::App()
 {
 }
@@ -100,37 +88,9 @@ HRESULT App::InitBackground()
         Vertex(1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0.0f),   // Top Right
         Vertex(1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 1.0f)   // Bottom Right
     };
-    hr = m_pd3dDevice->CreateVertexBuffer(sizeof(vertices), D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pBackgroundVertexBuffer, nullptr);
+    hr = m_VertexBuffer.Init(vertices, ARRAYSIZE(vertices));
     if (FAILED(hr))
-    {
-        Log::Error("Couldn't create the background vertex buffer");
         return hr;
-    }
-
-    // Copy the vertices into the vertex buffer
-    void *pVertices = nullptr;
-    hr = m_pBackgroundVertexBuffer->Lock(0, sizeof(vertices), static_cast<void **>(&pVertices), 0);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't lock the background vertex buffer");
-        return hr;
-    }
-    memcpy(pVertices, vertices, sizeof(vertices));
-    m_pBackgroundVertexBuffer->Unlock();
-
-    // Create a vertex declaration from the element descriptions
-    D3DVERTEXELEMENT9 vertexElements[] = {
-        { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-        { 0, sizeof(XMFLOAT3), D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
-        { 0, sizeof(XMFLOAT3) + sizeof(D3DCOLOR), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-        D3DDECL_END()
-    };
-    hr = m_pd3dDevice->CreateVertexDeclaration(vertexElements, &m_pBackgroundVertexDeclaration);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't create the background vertex declaration");
-        return hr;
-    }
 
     // Create the indices and the index buffer
     uint32_t indices[] = {
@@ -189,8 +149,8 @@ HRESULT App::RenderBackground()
 
     // Render the background
     m_pd3dDevice->SetTexture(0, m_pBackgroundTexture);
-    m_pd3dDevice->SetVertexDeclaration(m_pBackgroundVertexDeclaration);
-    m_pd3dDevice->SetStreamSource(0, m_pBackgroundVertexBuffer, 0, sizeof(Vertex));
+    m_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
+    m_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
     m_pd3dDevice->SetVertexShader(m_pBackgroundVertexShader);
     m_pd3dDevice->SetPixelShader(m_pBackgroundPixelShader);
     m_pd3dDevice->SetIndices(m_pBackgroundIndexBuffer);
