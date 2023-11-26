@@ -6,6 +6,7 @@
 
 #include "Renderer/IndexBuffer.h"
 #include "Renderer/VertexBuffer.h"
+#include "Renderer/VertexShader.h"
 #include "UI/Text.h"
 
 class App : public ATG::Application
@@ -28,7 +29,7 @@ private:
     D3DTexture *m_pBackgroundTexture;
     VertexBuffer m_BackgroundVertexBuffer;
     IndexBuffer m_BackgroundIndexBuffer;
-    D3DVertexShader *m_pBackgroundVertexShader;
+    VertexShader m_BackgroundVertexShader;
     D3DPixelShader *m_pBackgroundPixelShader;
 
     HRESULT InitBackground();
