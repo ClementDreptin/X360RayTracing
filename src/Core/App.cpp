@@ -66,7 +66,7 @@ HRESULT App::Render()
 
 HRESULT App::InitBackground()
 {
-    HRESULT hr;
+    HRESULT hr = S_OK;
 
     // Get the texture from the bundled resources
     m_pBackgroundTexture = m_Textures.GetTexture("BackgroundTexture");
@@ -101,7 +101,7 @@ HRESULT App::InitBackground()
     if (FAILED(hr))
         return hr;
 
-    return S_OK;
+    return hr;
 }
 
 void App::RenderBackground()
