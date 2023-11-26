@@ -13,10 +13,7 @@ HRESULT PixelShader::Init(const std::string &filePath)
     HRESULT hr = ATG::LoadPixelShader(filePath.c_str(), &m_pShader);
     if (FAILED(hr))
     {
-        std::string message("Couldn't load the pixel shader at ");
-        message += filePath;
-        Log::Error(message);
-
+        Log::Error("Couldn't load the pixel shader at %s", filePath.c_str());
         return hr;
     }
 

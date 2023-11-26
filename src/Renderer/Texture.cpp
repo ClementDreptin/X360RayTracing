@@ -25,10 +25,7 @@ HRESULT Texture::Init(const std::string &name)
     m_pTexture = s_Textures.GetTexture(name.c_str());
     if (m_pTexture == nullptr)
     {
-        std::string message("Couldn't get the texture named ");
-        message += name;
-        Log::Error(message);
-
+        Log::Error("Couldn't get the texture named %s", name.c_str());
         return E_FAIL;
     }
 

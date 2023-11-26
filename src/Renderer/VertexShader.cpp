@@ -13,10 +13,7 @@ HRESULT VertexShader::Init(const std::string &filePath)
     HRESULT hr = ATG::LoadVertexShader(filePath.c_str(), &m_pShader);
     if (FAILED(hr))
     {
-        std::string message("Couldn't load the vertex shader at ");
-        message += filePath;
-        Log::Error(message);
-
+        Log::Error("Couldn't load the vertex shader at %s", filePath.c_str());
         return hr;
     }
 
