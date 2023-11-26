@@ -108,4 +108,23 @@
       <Outputs>$(OutDir)Media\Fonts\%(Filename).xpr</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\Resources\Textures\Textures.rdf">
+      <FileType>Document</FileType>
+      <Command>bundler "%(Fullpath)" -o "$(OutDir)Media\Textures\%(Filename).xpr"</Command>
+      <Message>Create a bundled resource file from %(Fullpath)</Message>
+      <Outputs>$(OutDir)Media\Textures\%(Filename).xpr</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\Resources\Shaders\Background.hlsl">
+      <FileType>Document</FileType>
+      <Command>
+        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EBackgroundVertex /Fo"$(OutDir)Media\Shaders\Background.xvu"
+        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EBackgroundPixel /Fo"$(OutDir)Media\Shaders\Background.xpu"
+      </Command>
+      <Message>Compile shaders in %(FullPath)</Message>
+      <Outputs>$(OutDir)Media\Shaders\Background.xvu;$(OutDir)Media\Shaders\Background.xpu</Outputs>
+    </CustomBuild>
+  </ItemGroup>
 </Project>

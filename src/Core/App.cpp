@@ -15,6 +15,18 @@ float g_DisplayHeight = 720.0f;
 
 bool g_ShowControlsTexts = true;
 
+struct Vertex
+{
+    Vertex() {}
+
+    Vertex(float x, float y, float z, D3DCOLOR color, float u, float v)
+        : Pos(x, y, z), Color(color), TexCoord(u, v) {}
+
+    XMFLOAT3 Pos;
+    D3DCOLOR Color;
+    XMFLOAT2 TexCoord;
+};
+
 App::App()
 {
 }
@@ -30,6 +42,19 @@ HRESULT App::Initialize()
         Log::Error("Couldn't create the font");
         return hr;
     }
+
+    // Create the textures resource
+    hr = m_Textures.Create("game:\\Media\\Textures\\Textures.xpr");
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't create textures");
+        return hr;
+    }
+
+    // Initialize the background
+    hr = InitBackground();
+    if (FAILED(hr))
+        return hr;
 
     Log::Info("Hello World!");
 
@@ -48,6 +73,11 @@ HRESULT App::Render()
     // Clear the viewport
     m_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
+    // Render the background
+    hr = RenderBackground();
+    if (FAILED(hr))
+        return hr;
+
     // Render the frame rate text
     hr = RenderFrameRateText();
     if (FAILED(hr))
@@ -62,6 +92,129 @@ HRESULT App::Render()
     m_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
 
     return hr;
+}
+
+HRESULT App::InitBackground()
+{
+    HRESULT hr;
+
+    // Get the texture from the bundled resources
+    m_pBackgroundTexture = m_Textures.GetTexture("BackgroundTexture");
+
+    // Create the vertices
+    Vertex vertices[] = {
+        Vertex(-1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 1.0f), // Bottom Left
+        Vertex(-1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 0.0f),  // Top Left
+        Vertex(1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0.0f),   // Top Right
+        Vertex(1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 1.0f)   // Bottom Right
+    };
+
+    // Create the vertex buffer
+    hr = m_pd3dDevice->CreateVertexBuffer(sizeof(vertices), D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pBackgroundVertexBuffer, nullptr);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't create the background vertex buffer");
+        return hr;
+    }
+
+    // Copy the vertices into the vertex buffer
+    void *pVertices = nullptr;
+
+    hr = m_pBackgroundVertexBuffer->Lock(0, sizeof(vertices), static_cast<void **>(&pVertices), 0);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't lock the background vertex buffer");
+        return hr;
+    }
+
+    memcpy(pVertices, vertices, sizeof(vertices));
+    m_pBackgroundVertexBuffer->Unlock();
+
+    // Define the vertex elements
+    D3DVERTEXELEMENT9 vertexElements[] = {
+        { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+        { 0, sizeof(XMFLOAT3), D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
+        { 0, sizeof(XMFLOAT3) + sizeof(D3DCOLOR), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
+        D3DDECL_END()
+    };
+
+    // Create a vertex declaration from the element descriptions
+    hr = m_pd3dDevice->CreateVertexDeclaration(vertexElements, &m_pBackgroundVertexDeclaration);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't create the background vertex declaration");
+        return hr;
+    }
+
+    // Create the indices
+    uint32_t indices[] = {
+        0, 1, 2,
+        0, 2, 3
+    };
+
+    // Create an index buffer
+    hr = m_pd3dDevice->CreateIndexBuffer(sizeof(indices), D3DUSAGE_WRITEONLY, D3DFMT_INDEX32, D3DPOOL_DEFAULT, &m_pBackgroundIndexBuffer, nullptr);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't create the background index buffer");
+        return hr;
+    }
+
+    // Copy the vertices into the vertex buffer
+    void *pIndices = nullptr;
+
+    hr = m_pBackgroundIndexBuffer->Lock(0, sizeof(indices), static_cast<void **>(&pIndices), 0);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't lock the background index buffer");
+        return hr;
+    }
+
+    memcpy(pIndices, indices, sizeof(indices));
+    m_pBackgroundIndexBuffer->Unlock();
+
+    // Create the vertex shader
+    hr = ATG::LoadVertexShader("game:\\Media\\Shaders\\Background.xvu", &m_pBackgroundVertexShader);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't create the background vertex shader");
+        return hr;
+    }
+
+    // Create the pixel shader
+    hr = ATG::LoadPixelShader("game:\\Media\\Shaders\\Background.xpu", &m_pBackgroundPixelShader);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't create the background pixel shader");
+        return hr;
+    }
+
+    return S_OK;
+}
+
+HRESULT App::RenderBackground()
+{
+    // Initialize default device states at the start of the frame
+    m_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+    m_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    m_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+    m_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    m_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+    m_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+    m_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+    m_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+    m_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
+
+    // Render the background
+    m_pd3dDevice->SetTexture(0, m_pBackgroundTexture);
+    m_pd3dDevice->SetVertexDeclaration(m_pBackgroundVertexDeclaration);
+    m_pd3dDevice->SetStreamSource(0, m_pBackgroundVertexBuffer, 0, sizeof(Vertex));
+    m_pd3dDevice->SetVertexShader(m_pBackgroundVertexShader);
+    m_pd3dDevice->SetPixelShader(m_pBackgroundPixelShader);
+    m_pd3dDevice->SetIndices(m_pBackgroundIndexBuffer);
+    m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_pBackgroundIndexBuffer->Size / sizeof(DWORD), 0, 2);
+
+    return S_OK;
 }
 
 HRESULT App::RenderFrameRateText()
