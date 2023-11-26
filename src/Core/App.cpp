@@ -107,12 +107,9 @@ HRESULT App::InitBackground()
         return hr;
 
     // Create the pixel shader
-    hr = ATG::LoadPixelShader("game:\\Media\\Shaders\\Background.xpu", &m_pBackgroundPixelShader);
+    hr = m_BackgroundPixelShader.Init("game:\\Media\\Shaders\\Background.xpu");
     if (FAILED(hr))
-    {
-        Log::Error("Couldn't create the background pixel shader");
         return hr;
-    }
 
     return S_OK;
 }
@@ -135,7 +132,7 @@ HRESULT App::RenderBackground()
     m_pd3dDevice->SetVertexDeclaration(m_BackgroundVertexBuffer.GetVertexDeclaration());
     m_pd3dDevice->SetStreamSource(0, &m_BackgroundVertexBuffer, 0, sizeof(Vertex));
     m_pd3dDevice->SetVertexShader(&m_BackgroundVertexShader);
-    m_pd3dDevice->SetPixelShader(m_pBackgroundPixelShader);
+    m_pd3dDevice->SetPixelShader(&m_BackgroundPixelShader);
     m_pd3dDevice->SetIndices(&m_BackgroundIndexBuffer);
     m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 0, 0, 2);
 

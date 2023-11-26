@@ -5,6 +5,7 @@
 #include <AtgUtil.h>
 
 #include "Renderer/IndexBuffer.h"
+#include "Renderer/PixelShader.h"
 #include "Renderer/VertexBuffer.h"
 #include "Renderer/VertexShader.h"
 #include "UI/Text.h"
@@ -30,7 +31,7 @@ private:
     VertexBuffer m_BackgroundVertexBuffer;
     IndexBuffer m_BackgroundIndexBuffer;
     VertexShader m_BackgroundVertexShader;
-    D3DPixelShader *m_pBackgroundPixelShader;
+    PixelShader m_BackgroundPixelShader;
 
     HRESULT InitBackground();
 
