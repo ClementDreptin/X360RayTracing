@@ -7,16 +7,16 @@ struct VS_INPUT
     float2 InTexCoord : TEXCOORD;
 };
 
-struct VS_OUPUT
+struct VS_OUTPUT
 {
     float4 OutPosition : POSITION;
     float4 OutColor    : COLOR;
     float2 OutTexCoord : TEXCOORD;
 };
 
-VS_OUPUT ImageVertex(VS_INPUT input)
+VS_OUTPUT ImageVertex(VS_INPUT input)
 {
-    VS_OUPUT output;
+    VS_OUTPUT output;
     output.OutPosition = mul(c_matWP, input.InPosition);
     output.OutColor    = input.InColor;
     output.OutTexCoord = input.InTexCoord;

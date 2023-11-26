@@ -73,7 +73,11 @@ HRESULT Image::Init()
     CalculateWorldViewProjectionMatrix();
 
     if (!s_ShadersInitialized)
-        InitShaders();
+    {
+        hr = InitShaders();
+        if (FAILED(hr))
+            return hr;
+    }
 
     // Get the texture from the bundled resources
     hr = m_Texture.Init(m_Props.TextureName.c_str());
