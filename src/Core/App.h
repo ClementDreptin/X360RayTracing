@@ -4,6 +4,7 @@
 #include <AtgResource.h>
 #include <AtgUtil.h>
 
+#include "Renderer/IndexBuffer.h"
 #include "Renderer/VertexBuffer.h"
 #include "UI/Text.h"
 
@@ -25,8 +26,8 @@ private:
     ATG::PackedResource m_Textures;
 
     D3DTexture *m_pBackgroundTexture;
-    VertexBuffer m_VertexBuffer;
-    D3DIndexBuffer *m_pBackgroundIndexBuffer;
+    VertexBuffer m_BackgroundVertexBuffer;
+    IndexBuffer m_BackgroundIndexBuffer;
     D3DVertexShader *m_pBackgroundVertexShader;
     D3DPixelShader *m_pBackgroundPixelShader;
 

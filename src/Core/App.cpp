@@ -88,32 +88,18 @@ HRESULT App::InitBackground()
         Vertex(1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0.0f),   // Top Right
         Vertex(1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 1.0f)   // Bottom Right
     };
-    hr = m_VertexBuffer.Init(vertices, ARRAYSIZE(vertices));
+    hr = m_BackgroundVertexBuffer.Init(vertices, ARRAYSIZE(vertices));
     if (FAILED(hr))
         return hr;
 
     // Create the indices and the index buffer
-    uint32_t indices[] = {
+    uint16_t indices[] = {
         0, 1, 2,
         0, 2, 3
     };
-    hr = m_pd3dDevice->CreateIndexBuffer(sizeof(indices), D3DUSAGE_WRITEONLY, D3DFMT_INDEX32, D3DPOOL_DEFAULT, &m_pBackgroundIndexBuffer, nullptr);
+    hr = m_BackgroundIndexBuffer.Init(indices, ARRAYSIZE(indices));
     if (FAILED(hr))
-    {
-        Log::Error("Couldn't create the background index buffer");
         return hr;
-    }
-
-    // Copy the indices into the index buffer
-    void *pIndices = nullptr;
-    hr = m_pBackgroundIndexBuffer->Lock(0, sizeof(indices), static_cast<void **>(&pIndices), 0);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't lock the background index buffer");
-        return hr;
-    }
-    memcpy(pIndices, indices, sizeof(indices));
-    m_pBackgroundIndexBuffer->Unlock();
 
     // Create the vertex shader
     hr = ATG::LoadVertexShader("game:\\Media\\Shaders\\Background.xvu", &m_pBackgroundVertexShader);
@@ -149,12 +135,12 @@ HRESULT App::RenderBackground()
 
     // Render the background
     m_pd3dDevice->SetTexture(0, m_pBackgroundTexture);
-    m_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
-    m_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
+    m_pd3dDevice->SetVertexDeclaration(m_BackgroundVertexBuffer.GetVertexDeclaration());
+    m_pd3dDevice->SetStreamSource(0, &m_BackgroundVertexBuffer, 0, sizeof(Vertex));
     m_pd3dDevice->SetVertexShader(m_pBackgroundVertexShader);
     m_pd3dDevice->SetPixelShader(m_pBackgroundPixelShader);
-    m_pd3dDevice->SetIndices(m_pBackgroundIndexBuffer);
-    m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, m_pBackgroundIndexBuffer->Size / sizeof(DWORD), 0, 2);
+    m_pd3dDevice->SetIndices(&m_BackgroundIndexBuffer);
+    m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 0, 0, 2);
 
     return S_OK;
 }
