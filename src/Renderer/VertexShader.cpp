@@ -13,7 +13,10 @@ HRESULT VertexShader::Init(const std::string &filePath)
     HRESULT hr = ATG::LoadVertexShader(filePath.c_str(), &m_pShader);
     if (FAILED(hr))
     {
-        Log::Error("Couldn't create the background vertex shader");
+        std::string message("Couldn't load the vertex shader at ");
+        message += filePath;
+        Log::Error(message);
+
         return hr;
     }
 
