@@ -28,13 +28,6 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    hr = m_Textures.Create("game:\\Media\\Textures\\Textures.xpr");
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't create textures");
-        return hr;
-    }
-
     hr = InitBackground();
     if (FAILED(hr))
         return hr;
@@ -69,7 +62,9 @@ HRESULT App::InitBackground()
     HRESULT hr = S_OK;
 
     // Get the texture from the bundled resources
-    m_pBackgroundTexture = m_Textures.GetTexture("BackgroundTexture");
+    hr = m_BackgroundTexture.Init("BackgroundTexture");
+    if (FAILED(hr))
+        return hr;
 
     // Create the vertices and the vertex buffer
     Vertex vertices[] = {
@@ -118,7 +113,7 @@ void App::RenderBackground()
     m_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
 
     // Render the background
-    m_pd3dDevice->SetTexture(0, m_pBackgroundTexture);
+    m_pd3dDevice->SetTexture(0, &m_BackgroundTexture);
     m_pd3dDevice->SetVertexDeclaration(m_BackgroundVertexBuffer.GetVertexDeclaration());
     m_pd3dDevice->SetStreamSource(0, &m_BackgroundVertexBuffer, 0, sizeof(Vertex));
     m_pd3dDevice->SetVertexShader(&m_BackgroundVertexShader);

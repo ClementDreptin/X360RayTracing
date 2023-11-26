@@ -1,11 +1,11 @@
 #pragma once
 
 #include <AtgApp.h>
-#include <AtgResource.h>
 #include <AtgUtil.h>
 
 #include "Renderer/IndexBuffer.h"
 #include "Renderer/PixelShader.h"
+#include "Renderer/Texture.h"
 #include "Renderer/VertexBuffer.h"
 #include "Renderer/VertexShader.h"
 #include "UI/Text.h"
@@ -27,7 +27,7 @@ private:
 
     ATG::PackedResource m_Textures;
 
-    D3DTexture *m_pBackgroundTexture;
+    Texture m_BackgroundTexture;
     VertexBuffer m_BackgroundVertexBuffer;
     IndexBuffer m_BackgroundIndexBuffer;
     VertexShader m_BackgroundVertexShader;
