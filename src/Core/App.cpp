@@ -13,8 +13,6 @@ Font g_Font;
 float g_DisplayWidth = 1280.0f;
 float g_DisplayHeight = 720.0f;
 
-bool g_ShowControlsTexts = true;
-
 App::App()
 {
 }
