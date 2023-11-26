@@ -127,14 +127,14 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\Resources\Shaders\Background.hlsl">
+    <CustomBuild Include="src\Resources\Shaders\Texture.hlsl">
       <FileType>Document</FileType>
       <Command>
-        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EBackgroundVertex /Fo"$(OutDir)Media\Shaders\Background.xvu"
-        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EBackgroundPixel /Fo"$(OutDir)Media\Shaders\Background.xpu"
+        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /ETextureVertex /Fo"$(OutDir)Media\Shaders\Texture.xvu"
+        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /ETexturePixel /Fo"$(OutDir)Media\Shaders\Texture.xpu"
       </Command>
       <Message>Compile shaders in %(FullPath)</Message>
-      <Outputs>$(OutDir)Media\Shaders\Background.xvu;$(OutDir)Media\Shaders\Background.xpu</Outputs>
+      <Outputs>$(OutDir)Media\Shaders\Texture.xvu;$(OutDir)Media\Shaders\Texture.xpu</Outputs>
     </CustomBuild>
   </ItemGroup>
 </Project>
