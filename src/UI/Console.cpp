@@ -22,7 +22,7 @@ void Console::Log(const std::wstring &message)
         m_Messages.pop_front();
 }
 
-HRESULT Console::Render(float x, float y)
+void Console::Render(float x, float y)
 {
     Text::Props props = { 0 };
     props.X = x;
@@ -41,5 +41,5 @@ HRESULT Console::Render(float x, float y)
             props.Text += L'\n';
     }
 
-    return m_TextBox.Render(props);
+    m_TextBox.Render(props);
 }

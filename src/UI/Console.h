@@ -11,7 +11,7 @@ public:
 
     void Log(const std::wstring &message);
 
-    HRESULT Render(float x, float y);
+    void Render(float x, float y);
 
 private:
     size_t m_NumberOfMessages;

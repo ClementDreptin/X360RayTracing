@@ -53,25 +53,17 @@ HRESULT App::Update()
 
 HRESULT App::Render()
 {
-    HRESULT hr = S_OK;
-
     m_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
-    hr = RenderBackground();
-    if (FAILED(hr))
-        return hr;
+    RenderBackground();
 
-    hr = RenderFrameRateText();
-    if (FAILED(hr))
-        return hr;
+    RenderFrameRateText();
 
-    hr = g_Console.Render(10.0f, 300.0f);
-    if (FAILED(hr))
-        return hr;
+    g_Console.Render(10.0f, 300.0f);
 
     m_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
 
-    return hr;
+    return S_OK;
 }
 
 HRESULT App::InitBackground()
@@ -114,7 +106,7 @@ HRESULT App::InitBackground()
     return S_OK;
 }
 
-HRESULT App::RenderBackground()
+void App::RenderBackground()
 {
     // Initialize default device states at the start of the frame
     m_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
@@ -135,11 +127,9 @@ HRESULT App::RenderBackground()
     m_pd3dDevice->SetPixelShader(&m_BackgroundPixelShader);
     m_pd3dDevice->SetIndices(&m_BackgroundIndexBuffer);
     m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 0, 0, 2);
-
-    return S_OK;
 }
 
-HRESULT App::RenderFrameRateText()
+void App::RenderFrameRateText()
 {
     m_Timer.MarkFrame();
 
@@ -151,5 +141,5 @@ HRESULT App::RenderFrameRateText()
     props.Text = text;
     props.Color = D3DCOLOR_XRGB(255, 255, 255);
 
-    return m_FrameRateText.Render(props);
+    m_FrameRateText.Render(props);
 }

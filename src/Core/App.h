@@ -35,7 +35,7 @@ private:
 
     HRESULT InitBackground();
 
-    HRESULT RenderBackground();
+    void RenderBackground();
 
-    HRESULT RenderFrameRateText();
+    void RenderFrameRateText();
 };
