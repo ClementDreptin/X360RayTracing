@@ -3,11 +3,7 @@
 #include <AtgApp.h>
 #include <AtgUtil.h>
 
-#include "Renderer/IndexBuffer.h"
-#include "Renderer/PixelShader.h"
-#include "Renderer/Texture.h"
-#include "Renderer/VertexBuffer.h"
-#include "Renderer/VertexShader.h"
+#include "Renderer/Image.h"
 #include "UI/Text.h"
 
 class App : public ATG::Application
@@ -24,16 +20,7 @@ public:
 private:
     ATG::Timer m_Timer;
     Text m_FrameRateText;
-
-    ATG::PackedResource m_Textures;
-
-    Texture m_BackgroundTexture;
-    VertexBuffer m_BackgroundVertexBuffer;
-    IndexBuffer m_BackgroundIndexBuffer;
-    VertexShader m_BackgroundVertexShader;
-    PixelShader m_BackgroundPixelShader;
-
-    HRESULT InitBackground();
+    Image m_Background;
 
     void RenderBackground();
 

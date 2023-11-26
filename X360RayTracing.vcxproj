@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\App.h" />
     <ClInclude Include="src\Core\Log.h" />
+    <ClInclude Include="src\Renderer\Image.h" />
     <ClInclude Include="src\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Renderer\PixelShader.h" />
     <ClInclude Include="src\Renderer\Texture.h" />
@@ -97,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="src\Core\App.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
+    <ClCompile Include="src\Renderer\Image.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\PixelShader.cpp" />
     <ClCompile Include="src\Renderer\Texture.cpp" />
@@ -127,14 +129,14 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\Resources\Shaders\Texture.hlsl">
+    <CustomBuild Include="src\Resources\Shaders\Image.hlsl">
       <FileType>Document</FileType>
       <Command>
-        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /ETextureVertex /Fo"$(OutDir)Media\Shaders\Texture.xvu"
-        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /ETexturePixel /Fo"$(OutDir)Media\Shaders\Texture.xpu"
+        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu"
+        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EImagePixel /Fo"$(OutDir)Media\Shaders\Image.xpu"
       </Command>
       <Message>Compile shaders in %(FullPath)</Message>
-      <Outputs>$(OutDir)Media\Shaders\Texture.xvu;$(OutDir)Media\Shaders\Texture.xpu</Outputs>
+      <Outputs>$(OutDir)Media\Shaders\Image.xvu;$(OutDir)Media\Shaders\Image.xpu</Outputs>
     </CustomBuild>
   </ItemGroup>
 </Project>

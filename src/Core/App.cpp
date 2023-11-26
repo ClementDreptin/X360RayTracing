@@ -28,10 +28,6 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    hr = InitBackground();
-    if (FAILED(hr))
-        return hr;
-
     Log::Info("Hello World!");
 
     return hr;
@@ -57,69 +53,14 @@ HRESULT App::Render()
     return S_OK;
 }
 
-HRESULT App::InitBackground()
-{
-    HRESULT hr = S_OK;
-
-    // Get the texture from the bundled resources
-    hr = m_BackgroundTexture.Init("BackgroundTexture");
-    if (FAILED(hr))
-        return hr;
-
-    // Create the vertices and the vertex buffer
-    Vertex vertices[] = {
-        Vertex(-1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 1.0f), // Bottom Left
-        Vertex(-1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 0.0f),  // Top Left
-        Vertex(1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0.0f),   // Top Right
-        Vertex(1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 1.0f)   // Bottom Right
-    };
-    hr = m_BackgroundVertexBuffer.Init(vertices, ARRAYSIZE(vertices));
-    if (FAILED(hr))
-        return hr;
-
-    // Create the indices and the index buffer
-    uint16_t indices[] = {
-        0, 1, 2,
-        0, 2, 3
-    };
-    hr = m_BackgroundIndexBuffer.Init(indices, ARRAYSIZE(indices));
-    if (FAILED(hr))
-        return hr;
-
-    // Create the vertex shader
-    hr = m_BackgroundVertexShader.Init("game:\\Media\\Shaders\\Background.xvu");
-    if (FAILED(hr))
-        return hr;
-
-    // Create the pixel shader
-    hr = m_BackgroundPixelShader.Init("game:\\Media\\Shaders\\Background.xpu");
-    if (FAILED(hr))
-        return hr;
-
-    return hr;
-}
-
 void App::RenderBackground()
 {
-    // Initialize default device states at the start of the frame
-    m_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-    m_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    m_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-    m_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-    m_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-    m_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-    m_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-    m_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
-    m_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
+    Image::Props props = {};
+    props.Width = g_DisplayWidth;
+    props.Height = g_DisplayHeight;
+    props.TextureName = "Background";
 
-    // Render the background
-    m_pd3dDevice->SetTexture(0, &m_BackgroundTexture);
-    m_pd3dDevice->SetVertexDeclaration(m_BackgroundVertexBuffer.GetVertexDeclaration());
-    m_pd3dDevice->SetStreamSource(0, &m_BackgroundVertexBuffer, 0, sizeof(Vertex));
-    m_pd3dDevice->SetVertexShader(&m_BackgroundVertexShader);
-    m_pd3dDevice->SetPixelShader(&m_BackgroundPixelShader);
-    m_pd3dDevice->SetIndices(&m_BackgroundIndexBuffer);
-    m_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 0, 0, 2);
+    m_Background.Render(props);
 }
 
 void App::RenderFrameRateText()

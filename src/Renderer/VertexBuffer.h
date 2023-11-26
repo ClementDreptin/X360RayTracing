@@ -1,17 +1,6 @@
 #pragma once
 
-struct Vertex
-{
-    Vertex() {}
-
-    Vertex(float x, float y, float z, D3DCOLOR color, float u, float v)
-        : Pos(x, y, z), Color(color), TexCoord(u, v) {}
-
-    XMFLOAT3 Pos;
-    D3DCOLOR Color;
-    XMFLOAT2 TexCoord;
-};
-
+template<typename T>
 class VertexBuffer
 {
 public:
@@ -21,9 +10,9 @@ public:
 
     inline D3DVertexDeclaration *GetVertexDeclaration() const { return m_pVertexDeclaration; }
 
-    HRESULT Init(Vertex *pData, size_t numVertices);
+    HRESULT Init(T *pData, size_t numVertices, D3DVERTEXELEMENT9 *pVertexElements);
 
-    void UpdateBuffer(Vertex *pData, size_t numVertices);
+    void UpdateBuffer(T *pData, size_t numVertices);
 
 private:
     D3DVertexBuffer *m_pBuffer;

@@ -2,17 +2,20 @@
 #include "Renderer/VertexBuffer.h"
 
 #include "Renderer/D3DDevice.h"
+#include "Renderer/Image.h"
 
-VertexBuffer::VertexBuffer()
+template<typename T>
+VertexBuffer<T>::VertexBuffer()
     : m_pBuffer(nullptr), m_pVertexDeclaration(nullptr)
 {
 }
 
-HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
+template<typename T>
+HRESULT VertexBuffer<T>::Init(T *pData, size_t numVertices, D3DVERTEXELEMENT9 *pVertexElements)
 {
     HRESULT hr = S_OK;
 
-    size_t dataSize = sizeof(Vertex) * numVertices;
+    size_t dataSize = sizeof(T) * numVertices;
 
     // Create the vertex buffer
     hr = g_pd3dDevice->CreateVertexBuffer(dataSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pBuffer, nullptr);
@@ -23,13 +26,7 @@ HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
     }
 
     // Create a vertex declaration from the element descriptions
-    D3DVERTEXELEMENT9 vertexElements[] = {
-        { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-        { 0, sizeof(XMFLOAT3), D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
-        { 0, sizeof(XMFLOAT3) + sizeof(D3DCOLOR), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-        D3DDECL_END()
-    };
-    g_pd3dDevice->CreateVertexDeclaration(vertexElements, &m_pVertexDeclaration);
+    g_pd3dDevice->CreateVertexDeclaration(pVertexElements, &m_pVertexDeclaration);
 
     // Copy the data into the vertex buffer
     UpdateBuffer(pData, numVertices);
@@ -37,11 +34,12 @@ HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
     return hr;
 }
 
-void VertexBuffer::UpdateBuffer(Vertex *pData, size_t numVertices)
+template<typename T>
+void VertexBuffer<T>::UpdateBuffer(T *pData, size_t numVertices)
 {
     assert(m_pBuffer != nullptr);
 
-    size_t dataSize = sizeof(Vertex) * numVertices;
+    size_t dataSize = sizeof(T) * numVertices;
     void *pVertices = nullptr;
 
     // Copy the vertices into the vertex buffer
@@ -49,3 +47,5 @@ void VertexBuffer::UpdateBuffer(Vertex *pData, size_t numVertices)
     memcpy(pVertices, pData, dataSize);
     m_pBuffer->Unlock();
 }
+
+template class VertexBuffer<ImageVertex>;

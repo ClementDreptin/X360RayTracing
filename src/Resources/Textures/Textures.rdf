@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RDF Version="XPR2">
     <Texture
-        Name="BackgroundTexture"
+        Name="Background"
         Source="Background.bmp"
         Format="D3DFMT_DXT1"
         Levels="0"
