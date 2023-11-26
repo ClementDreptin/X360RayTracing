@@ -35,7 +35,6 @@ HRESULT App::Initialize()
 {
     HRESULT hr = S_OK;
 
-    // Create the font
     hr = g_Font.Create("game:\\Media\\Fonts\\Arial_16.xpr");
     if (FAILED(hr))
     {
@@ -43,7 +42,6 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    // Create the textures resource
     hr = m_Textures.Create("game:\\Media\\Textures\\Textures.xpr");
     if (FAILED(hr))
     {
@@ -51,7 +49,6 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    // Initialize the background
     hr = InitBackground();
     if (FAILED(hr))
         return hr;
@@ -70,25 +67,20 @@ HRESULT App::Render()
 {
     HRESULT hr = S_OK;
 
-    // Clear the viewport
     m_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
-    // Render the background
     hr = RenderBackground();
     if (FAILED(hr))
         return hr;
 
-    // Render the frame rate text
     hr = RenderFrameRateText();
     if (FAILED(hr))
         return hr;
 
-    // Render the console
     hr = g_Console.Render(10.0f, 300.0f);
     if (FAILED(hr))
         return hr;
 
-    // Present the scene
     m_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
 
     return hr;
@@ -101,15 +93,13 @@ HRESULT App::InitBackground()
     // Get the texture from the bundled resources
     m_pBackgroundTexture = m_Textures.GetTexture("BackgroundTexture");
 
-    // Create the vertices
+    // Create the vertices and the vertex buffer
     Vertex vertices[] = {
         Vertex(-1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 1.0f), // Bottom Left
         Vertex(-1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 0.0f, 0.0f),  // Top Left
         Vertex(1.0f, 1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 0.0f),   // Top Right
         Vertex(1.0f, -1.0f, 0.0f, D3DCOLOR_XRGB(255, 255, 255), 1.0f, 1.0f)   // Bottom Right
     };
-
-    // Create the vertex buffer
     hr = m_pd3dDevice->CreateVertexBuffer(sizeof(vertices), D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pBackgroundVertexBuffer, nullptr);
     if (FAILED(hr))
     {
@@ -119,26 +109,22 @@ HRESULT App::InitBackground()
 
     // Copy the vertices into the vertex buffer
     void *pVertices = nullptr;
-
     hr = m_pBackgroundVertexBuffer->Lock(0, sizeof(vertices), static_cast<void **>(&pVertices), 0);
     if (FAILED(hr))
     {
         Log::Error("Couldn't lock the background vertex buffer");
         return hr;
     }
-
     memcpy(pVertices, vertices, sizeof(vertices));
     m_pBackgroundVertexBuffer->Unlock();
 
-    // Define the vertex elements
+    // Create a vertex declaration from the element descriptions
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
         { 0, sizeof(XMFLOAT3), D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
         { 0, sizeof(XMFLOAT3) + sizeof(D3DCOLOR), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
         D3DDECL_END()
     };
-
-    // Create a vertex declaration from the element descriptions
     hr = m_pd3dDevice->CreateVertexDeclaration(vertexElements, &m_pBackgroundVertexDeclaration);
     if (FAILED(hr))
     {
@@ -146,13 +132,11 @@ HRESULT App::InitBackground()
         return hr;
     }
 
-    // Create the indices
+    // Create the indices and the index buffer
     uint32_t indices[] = {
         0, 1, 2,
         0, 2, 3
     };
-
-    // Create an index buffer
     hr = m_pd3dDevice->CreateIndexBuffer(sizeof(indices), D3DUSAGE_WRITEONLY, D3DFMT_INDEX32, D3DPOOL_DEFAULT, &m_pBackgroundIndexBuffer, nullptr);
     if (FAILED(hr))
     {
@@ -160,16 +144,14 @@ HRESULT App::InitBackground()
         return hr;
     }
 
-    // Copy the vertices into the vertex buffer
+    // Copy the indices into the index buffer
     void *pIndices = nullptr;
-
     hr = m_pBackgroundIndexBuffer->Lock(0, sizeof(indices), static_cast<void **>(&pIndices), 0);
     if (FAILED(hr))
     {
         Log::Error("Couldn't lock the background index buffer");
         return hr;
     }
-
     memcpy(pIndices, indices, sizeof(indices));
     m_pBackgroundIndexBuffer->Unlock();
 
