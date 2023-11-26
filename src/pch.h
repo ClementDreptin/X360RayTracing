@@ -3,6 +3,7 @@
 // Xbox headers
 #include <xtl.h>
 #include <xboxmath.h>
+#include <d3dx9tex.h>
 
 // C++ standard library
 #include <cassert>

@@ -58,7 +58,7 @@ void App::RenderBackground()
     Image::Props props = {};
     props.Width = g_DisplayWidth;
     props.Height = g_DisplayHeight;
-    props.TextureName = "Background";
+    props.TextureFilePath = "game:\\Media\\Textures\\Background.bmp";
 
     m_Background.Render(props);
 }

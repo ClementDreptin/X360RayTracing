@@ -27,7 +27,7 @@ public:
         float Y;
         float Width;
         float Height;
-        std::string TextureName;
+        std::string TextureFilePath;
         D3DCOLOR TintColor;
     };
 

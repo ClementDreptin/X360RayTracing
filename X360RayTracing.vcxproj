@@ -29,9 +29,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
-      Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
-      Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup>
     <OutDir>$(SolutionDir)build\$(Configuration)\bin\</OutDir>
@@ -114,23 +112,20 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Resources\Fonts\Arial_16.rdf">
-      <FileType>Document</FileType>
       <Command>bundler "%(FullPath)" -o "$(OutDir)Media\Fonts\%(Filename).xpr"</Command>
       <Message>Create a bundled resource file from %(FullPath)</Message>
       <Outputs>$(OutDir)Media\Fonts\%(Filename).xpr</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\Resources\Textures\Textures.rdf">
-      <FileType>Document</FileType>
-      <Command>bundler "%(Fullpath)" -o "$(OutDir)Media\Textures\%(Filename).xpr"</Command>
-      <Message>Create a bundled resource file from %(Fullpath)</Message>
-      <Outputs>$(OutDir)Media\Textures\%(Filename).xpr</Outputs>
+    <CustomBuild Include="src\Resources\Textures\Background.bmp">
+      <Command>copy "%(Fullpath)" "$(OutDir)Media\Textures\%(Filename)%(Extension)"</Command>
+      <Message>Copy the background texture</Message>
+      <Outputs>$(OutDir)Media\Textures\%(Filename)%(Extension)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Resources\Shaders\Image.hlsl">
-      <FileType>Document</FileType>
       <Command>
         fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu"
         fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EImagePixel /Fo"$(OutDir)Media\Shaders\Image.xpu"

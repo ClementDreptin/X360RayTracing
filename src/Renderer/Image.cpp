@@ -79,8 +79,8 @@ HRESULT Image::Init()
             return hr;
     }
 
-    // Get the texture from the bundled resources
-    hr = m_Texture.Init(m_Props.TextureName.c_str());
+    // Create the texture from the file
+    hr = m_Texture.Init(m_Props.TextureFilePath.c_str());
     if (FAILED(hr))
         return hr;
 
