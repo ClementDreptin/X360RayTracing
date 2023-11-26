@@ -35,6 +35,5 @@ SamplerState objSamplerState : register(s0);
 
 float4 ImagePixel(PS_INPUT input) : SV_TARGET
 {
-    float4 pixelColor = objTexture.Sample(objSamplerState, input.InTexCoord) * input.InColor;
-	return pixelColor;
+    return objTexture.Sample(objSamplerState, input.InTexCoord) * input.InColor;
 }
