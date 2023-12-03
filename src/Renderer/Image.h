@@ -7,8 +7,6 @@
 
 struct ImageVertex
 {
-    ImageVertex() {}
-
     ImageVertex(float x, float y, float z, D3DCOLOR color, float u, float v)
         : Pos(x, y, z), Color(color), TexCoord(u, v) {}
 
