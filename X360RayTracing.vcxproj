@@ -83,7 +83,6 @@
     <ClInclude Include="src\Core\App.h" />
     <ClInclude Include="src\Core\Log.h" />
     <ClInclude Include="src\Renderer\Image.h" />
-    <ClInclude Include="src\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Renderer\PixelShader.h" />
     <ClInclude Include="src\Renderer\Texture.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
@@ -97,7 +96,6 @@
     <ClCompile Include="src\Core\App.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\Renderer\Image.cpp" />
-    <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\PixelShader.cpp" />
     <ClCompile Include="src\Renderer\Texture.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />

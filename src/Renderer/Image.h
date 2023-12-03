@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Renderer/IndexBuffer.h"
 #include "Renderer/PixelShader.h"
 #include "Renderer/Texture.h"
 #include "Renderer/VertexBuffer.h"
@@ -41,7 +40,6 @@ private:
 
     Texture m_Texture;
     VertexBuffer<ImageVertex> m_VertexBuffer;
-    IndexBuffer m_IndexBuffer;
 
     static bool s_ShadersInitialized;
     static VertexShader s_VertexShader;

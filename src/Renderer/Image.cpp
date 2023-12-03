@@ -59,8 +59,7 @@ void Image::Render(const Props &props)
     g_pd3dDevice->SetVertexShader(&s_VertexShader);
     g_pd3dDevice->SetVertexShaderConstantF(0, reinterpret_cast<float *>(&m_WVPMatrix), 4);
     g_pd3dDevice->SetPixelShader(&s_PixelShader);
-    g_pd3dDevice->SetIndices(&m_IndexBuffer);
-    g_pd3dDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 0, 0, 2);
+    g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
 
 HRESULT Image::Init()
@@ -101,15 +100,6 @@ HRESULT Image::Init()
         D3DDECL_END()
     };
     hr = m_VertexBuffer.Init(vertices, ARRAYSIZE(vertices), vertexElements);
-    if (FAILED(hr))
-        return hr;
-
-    // Create the indices and the index buffer
-    uint16_t indices[] = {
-        0, 1, 2,
-        0, 2, 3
-    };
-    hr = m_IndexBuffer.Init(indices, ARRAYSIZE(indices));
     if (FAILED(hr))
         return hr;
 
