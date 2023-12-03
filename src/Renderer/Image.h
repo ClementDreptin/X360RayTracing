@@ -4,11 +4,10 @@
 
 struct ImageVertex
 {
-    ImageVertex(float x, float y, float z, D3DCOLOR color, float u, float v)
-        : Pos(x, y, z), Color(color), TexCoord(u, v) {}
+    ImageVertex(float x, float y, float z, float u, float v)
+        : Pos(x, y, z), TexCoord(u, v) {}
 
     XMFLOAT3 Pos;
-    D3DCOLOR Color;
     XMFLOAT2 TexCoord;
 };
 
@@ -22,7 +21,6 @@ public:
         float Width;
         float Height;
         std::string TextureFilePath;
-        D3DCOLOR TintColor;
     };
 
     Image();

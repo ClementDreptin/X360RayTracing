@@ -25,10 +25,6 @@ void Image::Render(const Props &props)
 
     m_Props = props;
 
-    // If the tint color was not set, set it to white
-    if (m_Props.TintColor == 0)
-        m_Props.TintColor = D3DCOLOR_XRGB(255, 255, 255);
-
     // If this is the first time Render is called, just initialize the image and return
     if (!m_Initialized)
     {
@@ -92,15 +88,14 @@ HRESULT Image::Init()
     // rectangle grow downwards along the Y axis, we need to substract its height
     // to the Y coordinate of each vertex.
     ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, m_Props.TintColor, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, m_Props.TintColor, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, m_Props.TintColor, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, m_Props.TintColor, 1.0f, 1.0f)            // Bottom Right
+        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, 0.0f, 1.0f),                    // Bottom Left
+        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
+        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
+        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, 1.0f, 1.0f)            // Bottom Right
     };
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-        { 0, sizeof(XMFLOAT3), D3DDECLTYPE_D3DCOLOR, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
-        { 0, sizeof(XMFLOAT3) + sizeof(D3DCOLOR), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
+        { 0, sizeof(XMFLOAT3), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
         D3DDECL_END()
     };
     hr = m_VertexBuffer.Init(vertices, ARRAYSIZE(vertices), vertexElements);
@@ -150,10 +145,10 @@ void Image::UpdateVertexBuffer()
     // rectangle grow downwards along the Y axis, we need to substract its height
     // to the Y coordinate of each vertex.
     ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, m_Props.TintColor, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, m_Props.TintColor, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, m_Props.TintColor, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, m_Props.TintColor, 1.0f, 1.0f)            // Bottom Right
+        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, 0.0f, 1.0f),                    // Bottom Left
+        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
+        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
+        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, 1.0f, 1.0f)            // Bottom Right
     };
 
     // Send the new vertices to the vertex buffer
