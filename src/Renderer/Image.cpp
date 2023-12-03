@@ -1,17 +1,19 @@
 #include "pch.h"
 #include "Renderer/Image.h"
 
+#include <AtgUtil.h>
+
 #include "Renderer/D3DDevice.h"
 
 extern float g_DisplayWidth;
 extern float g_DisplayHeight;
 
 bool Image::s_ShadersInitialized = false;
-VertexShader Image::s_VertexShader;
-PixelShader Image::s_PixelShader;
+D3DVertexShader *Image::s_pVertexShader = nullptr;
+D3DPixelShader *Image::s_pPixelShader = nullptr;
 
 Image::Image()
-    : m_Initialized(false)
+    : m_Initialized(false), m_pTexture(nullptr)
 {
 }
 
@@ -52,12 +54,12 @@ void Image::Render(const Props &props)
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
     // Render the image
-    g_pd3dDevice->SetTexture(0, &m_Texture);
+    g_pd3dDevice->SetTexture(0, m_pTexture);
     g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
     g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(ImageVertex));
-    g_pd3dDevice->SetVertexShader(&s_VertexShader);
+    g_pd3dDevice->SetVertexShader(s_pVertexShader);
     g_pd3dDevice->SetVertexShaderConstantF(0, reinterpret_cast<float *>(&m_WVPMatrix), 4);
-    g_pd3dDevice->SetPixelShader(&s_PixelShader);
+    g_pd3dDevice->SetPixelShader(s_pPixelShader);
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
 
@@ -78,9 +80,12 @@ HRESULT Image::Init()
     }
 
     // Create the texture from the file
-    hr = m_Texture.Init(m_Props.TextureFilePath.c_str());
+    hr = D3DXCreateTextureFromFile(g_pd3dDevice, m_Props.TextureFilePath.c_str(), &m_pTexture);
     if (FAILED(hr))
+    {
+        Log::Error("Couldn't create texture");
         return hr;
+    }
 
     // Create the vertices and the vertex buffer
     // Since the Y axis goes upwards, if we want a height increase to make our
@@ -111,13 +116,19 @@ HRESULT Image::InitShaders()
 {
     HRESULT hr = S_OK;
 
-    hr = s_VertexShader.Init("game:\\Media\\Shaders\\Image.xvu");
+    hr = ATG::LoadVertexShader("game:\\Media\\Shaders\\Image.xvu", &s_pVertexShader);
     if (FAILED(hr))
+    {
+        Log::Error("Couldn't load vertex shader");
         return hr;
+    }
 
-    hr = s_PixelShader.Init("game:\\Media\\Shaders\\Image.xpu");
+    hr = ATG::LoadPixelShader("game:\\Media\\Shaders\\Image.xpu", &s_pPixelShader);
     if (FAILED(hr))
+    {
+        Log::Error("Couldn't load pixel shader");
         return hr;
+    }
 
     s_ShadersInitialized = true;
 

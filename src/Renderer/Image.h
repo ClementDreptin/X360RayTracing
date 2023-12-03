@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Renderer/PixelShader.h"
-#include "Renderer/Texture.h"
 #include "Renderer/VertexBuffer.h"
-#include "Renderer/VertexShader.h"
 
 struct ImageVertex
 {
@@ -36,12 +33,12 @@ private:
     Props m_Props;
     bool m_Initialized;
 
-    Texture m_Texture;
+    D3DTexture *m_pTexture;
     VertexBuffer<ImageVertex> m_VertexBuffer;
 
     static bool s_ShadersInitialized;
-    static VertexShader s_VertexShader;
-    static PixelShader s_PixelShader;
+    static D3DVertexShader *s_pVertexShader;
+    static D3DPixelShader *s_pPixelShader;
 
     XMMATRIX m_WorldMatrix;
     XMMATRIX m_ViewMatrix;
