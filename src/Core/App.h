@@ -20,7 +20,11 @@ public:
 private:
     ATG::Timer m_Timer;
     Text m_FrameRateText;
+
     Image m_Background;
+    uint32_t m_BackgroundWidth;
+    uint32_t m_BackgroundHeight;
+    D3DCOLOR *m_BackgroundData;
 
     void RenderBackground();
 

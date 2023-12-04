@@ -19,6 +19,7 @@ float g_DisplayWidth = 1280.0f;
 float g_DisplayHeight = 720.0f;
 
 App::App()
+    : m_BackgroundWidth(0), m_BackgroundHeight(0), m_BackgroundData(nullptr)
 {
 }
 
@@ -32,6 +33,10 @@ HRESULT App::Initialize()
         Log::Error("Couldn't create the font");
         return hr;
     }
+
+    m_BackgroundWidth = ROUND(g_DisplayWidth);
+    m_BackgroundHeight = ROUND(g_DisplayHeight);
+    m_BackgroundData = new D3DCOLOR[m_BackgroundWidth * m_BackgroundHeight];
 
     return hr;
 }
@@ -58,19 +63,17 @@ HRESULT App::Render()
 
 void App::RenderBackground()
 {
-    uint32_t width = ROUND(g_DisplayWidth);
-    uint32_t height = ROUND(g_DisplayHeight);
+    assert(m_BackgroundData != nullptr);
+    assert(m_BackgroundWidth > 0 && m_BackgroundHeight > 0);
+
+    for (uint32_t y = 0; y < m_BackgroundHeight; y++)
+        for (uint32_t x = 0; x < m_BackgroundWidth; x++)
+            m_BackgroundData[x + y * m_BackgroundWidth] = D3DCOLOR_XRGB(255, 0, 0);
 
     Image::Props props = {};
-    props.Width = static_cast<float>(width);
-    props.Height = static_cast<float>(height);
-
-    props.pData = new D3DCOLOR[width * height];
-    for (uint32_t y = 0; y < height; y++)
-        for (uint32_t x = 0; x < width; x++)
-            props.pData[x + y * width] = D3DCOLOR_XRGB(255, 0, 0);
-
-    delete[] props.pData;
+    props.Width = static_cast<float>(m_BackgroundWidth);
+    props.Height = static_cast<float>(m_BackgroundHeight);
+    props.pData = m_BackgroundData;
 
     m_Background.Render(props);
 }

@@ -181,8 +181,8 @@ void Image::PopulateTexture()
     for (uint32_t y = 0; y < height; y++)
     {
         D3DCOLOR *pixels = (D3DCOLOR *)((uint8_t *)rect.pBits + y * rect.Pitch);
-        for (uint32_t x = 0; x < width; x++)
-            *(pixels++) = m_Props.pData[x + y * width];
+        memcpy(pixels, &m_Props.pData[y * width], width * sizeof(D3DCOLOR));
+        pixels++;
     }
 
     m_pTexture->UnlockRect(0);
