@@ -20,7 +20,7 @@ public:
         float Y;
         float Width;
         float Height;
-        std::string TextureFilePath;
+        D3DCOLOR *pData;
     };
 
     Image();
@@ -50,4 +50,6 @@ private:
     void CalculateWorldViewProjectionMatrix();
 
     void UpdateVertexBuffer();
+
+    void PopulateTexture();
 };

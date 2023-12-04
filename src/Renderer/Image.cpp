@@ -39,6 +39,8 @@ void Image::Render(const Props &props)
     if (needToUpdateVertexBuffer)
         UpdateVertexBuffer();
 
+    PopulateTexture();
+
     // Initialize default device states
     g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
     g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
@@ -75,8 +77,17 @@ HRESULT Image::Init()
             return hr;
     }
 
-    // Create the texture from the file
-    hr = D3DXCreateTextureFromFile(g_pd3dDevice, m_Props.TextureFilePath.c_str(), &m_pTexture);
+    // Create the texture
+    hr = g_pd3dDevice->CreateTexture(
+        static_cast<uint32_t>(m_Props.Width),
+        static_cast<uint32_t>(m_Props.Height),
+        1,
+        0,
+        D3DFMT_A8R8G8B8,
+        D3DPOOL_DEFAULT,
+        &m_pTexture,
+        nullptr
+    );
     if (FAILED(hr))
     {
         Log::Error("Couldn't create texture");
@@ -153,4 +164,26 @@ void Image::UpdateVertexBuffer()
 
     // Send the new vertices to the vertex buffer
     m_VertexBuffer.UpdateBuffer(vertices, ARRAYSIZE(vertices));
+}
+
+void Image::PopulateTexture()
+{
+    assert(m_pTexture != nullptr);
+    assert(m_Props.pData != nullptr);
+    assert(m_Props.Width > 0.0f && m_Props.Height > 0.0f);
+
+    uint32_t width = static_cast<uint32_t>(m_Props.Width);
+    uint32_t height = static_cast<uint32_t>(m_Props.Height);
+
+    D3DLOCKED_RECT rect = {};
+    m_pTexture->LockRect(0, &rect, nullptr, 0);
+
+    for (uint32_t y = 0; y < height; y++)
+    {
+        D3DCOLOR *pixels = (D3DCOLOR *)((uint8_t *)rect.pBits + y * rect.Pitch);
+        for (uint32_t x = 0; x < width; x++)
+            *(pixels++) = m_Props.pData[x + y * width];
+    }
+
+    m_pTexture->UnlockRect(0);
 }

@@ -6,6 +6,11 @@
 #include "UI/Console.h"
 #include "UI/Font.h"
 
+// The Xbox 360 stores textures in 32x32 tiles in GPU memory so texture
+// widths and heights need to be multiples of 32
+#define TILE_SIZE 32
+#define ROUND(size) ((uint32_t)(size) + TILE_SIZE - 1) & ~(TILE_SIZE - 1)
+
 Console g_Console;
 Font g_Font;
 
@@ -27,8 +32,6 @@ HRESULT App::Initialize()
         Log::Error("Couldn't create the font");
         return hr;
     }
-
-    Log::Info("Hello World!");
 
     return hr;
 }
@@ -55,10 +58,19 @@ HRESULT App::Render()
 
 void App::RenderBackground()
 {
+    uint32_t width = ROUND(g_DisplayWidth);
+    uint32_t height = ROUND(g_DisplayHeight);
+
     Image::Props props = {};
-    props.Width = g_DisplayWidth;
-    props.Height = g_DisplayHeight;
-    props.TextureFilePath = "game:\\Media\\Textures\\Background.bmp";
+    props.Width = static_cast<float>(width);
+    props.Height = static_cast<float>(height);
+
+    props.pData = new D3DCOLOR[width * height];
+    for (uint32_t y = 0; y < height; y++)
+        for (uint32_t x = 0; x < width; x++)
+            props.pData[x + y * width] = D3DCOLOR_XRGB(255, 0, 0);
+
+    delete[] props.pData;
 
     m_Background.Render(props);
 }
