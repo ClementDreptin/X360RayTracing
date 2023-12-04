@@ -22,9 +22,7 @@ private:
     Text m_FrameRateText;
 
     Image m_Background;
-    uint32_t m_BackgroundWidth;
-    uint32_t m_BackgroundHeight;
-    D3DCOLOR *m_BackgroundData;
+    Image::Props m_BackgroundProps;
 
     void RenderBackground();
 

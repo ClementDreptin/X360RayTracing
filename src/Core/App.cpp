@@ -19,7 +19,6 @@ float g_DisplayWidth = 1280.0f;
 float g_DisplayHeight = 720.0f;
 
 App::App()
-    : m_BackgroundWidth(0), m_BackgroundHeight(0), m_BackgroundData(nullptr)
 {
 }
 
@@ -34,9 +33,9 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    m_BackgroundWidth = ROUND(g_DisplayWidth);
-    m_BackgroundHeight = ROUND(g_DisplayHeight);
-    m_BackgroundData = new D3DCOLOR[m_BackgroundWidth * m_BackgroundHeight];
+    m_BackgroundProps.Width = ROUND(g_DisplayWidth);
+    m_BackgroundProps.Height = ROUND(g_DisplayHeight);
+    m_BackgroundProps.pData = new D3DCOLOR[m_BackgroundProps.Width * m_BackgroundProps.Height];
 
     return hr;
 }
@@ -54,7 +53,7 @@ HRESULT App::Render()
 
     RenderFrameRateText();
 
-    g_Console.Render(10.0f, 300.0f);
+    g_Console.Render(10, 300);
 
     m_pd3dDevice->Present(nullptr, nullptr, nullptr, nullptr);
 
@@ -63,19 +62,14 @@ HRESULT App::Render()
 
 void App::RenderBackground()
 {
-    assert(m_BackgroundData != nullptr);
-    assert(m_BackgroundWidth > 0 && m_BackgroundHeight > 0);
+    assert(m_BackgroundProps.pData != nullptr);
+    assert(m_BackgroundProps.Width > 0 && m_BackgroundProps.Height > 0);
 
-    for (uint32_t y = 0; y < m_BackgroundHeight; y++)
-        for (uint32_t x = 0; x < m_BackgroundWidth; x++)
-            m_BackgroundData[x + y * m_BackgroundWidth] = D3DCOLOR_XRGB(255, 0, 0);
+    for (uint32_t y = 0; y < m_BackgroundProps.Height; y++)
+        for (uint32_t x = 0; x < m_BackgroundProps.Width; x++)
+            m_BackgroundProps.pData[x + y * m_BackgroundProps.Width] = D3DCOLOR_XRGB(255, 0, 0);
 
-    Image::Props props = {};
-    props.Width = static_cast<float>(m_BackgroundWidth);
-    props.Height = static_cast<float>(m_BackgroundHeight);
-    props.pData = m_BackgroundData;
-
-    m_Background.Render(props);
+    m_Background.Render(m_BackgroundProps);
 }
 
 void App::RenderFrameRateText()
@@ -84,9 +78,9 @@ void App::RenderFrameRateText()
 
     const wchar_t *text = m_Timer.GetFrameRate();
 
-    Text::Props props = { 0 };
-    props.X = 10.0f;
-    props.Y = g_DisplayHeight - g_Font.GetTextHeight(text) - 10.0f;
+    Text::Props props;
+    props.X = 10;
+    props.Y = static_cast<uint32_t>(g_DisplayHeight - g_Font.GetTextHeight(text) - 10);
     props.Text = text;
     props.Color = D3DCOLOR_XRGB(255, 255, 255);
 

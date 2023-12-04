@@ -16,10 +16,13 @@ class Image
 public:
     struct Props
     {
-        float X;
-        float Y;
-        float Width;
-        float Height;
+        Props()
+            : X(0), Y(0), Width(0), Height(0), pData(nullptr) {}
+
+        uint32_t X;
+        uint32_t Y;
+        uint32_t Width;
+        uint32_t Height;
         D3DCOLOR *pData;
     };
 

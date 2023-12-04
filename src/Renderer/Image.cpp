@@ -79,8 +79,8 @@ HRESULT Image::Init()
 
     // Create the texture
     hr = g_pd3dDevice->CreateTexture(
-        static_cast<uint32_t>(m_Props.Width),
-        static_cast<uint32_t>(m_Props.Height),
+        m_Props.Width,
+        m_Props.Height,
         1,
         0,
         D3DFMT_A8R8G8B8,
@@ -98,11 +98,13 @@ HRESULT Image::Init()
     // Since the Y axis goes upwards, if we want a height increase to make our
     // rectangle grow downwards along the Y axis, we need to substract its height
     // to the Y coordinate of each vertex.
+    float width = static_cast<float>(m_Props.Width);
+    float height = static_cast<float>(m_Props.Height);
     ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, 1.0f, 1.0f)            // Bottom Right
+        ImageVertex(0.0f, 0.0f - height, 0.0f, 0.0f, 1.0f),    // Bottom Left
+        ImageVertex(0.0f, height - height, 0.0f, 0.0f, 0.0f),  // Top Left
+        ImageVertex(width, height - height, 0.0f, 1.0f, 0.0f), // Top Right
+        ImageVertex(width, 0.0f - height, 0.0f, 1.0f, 1.0f)    // Bottom Right
     };
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
@@ -145,7 +147,9 @@ void Image::CalculateWorldViewProjectionMatrix()
 {
     // Direct3D uses an upwards Y axis system which is a bit unintuitive when dealing
     // with 2D rendering, so we flip the Y axis
-    m_WorldMatrix = XMMatrixTranslation(m_Props.X, g_DisplayHeight - m_Props.Y, 0.0f);
+    float x = static_cast<float>(m_Props.X);
+    float y = static_cast<float>(m_Props.Y);
+    m_WorldMatrix = XMMatrixTranslation(x, g_DisplayHeight - y, 0.0f);
     m_WVPMatrix = m_WorldMatrix * m_ViewMatrix * m_ProjectionMatrix;
 }
 
@@ -155,11 +159,13 @@ void Image::UpdateVertexBuffer()
     // Since the Y axis goes upwards, if we want a height increase to make our
     // rectangle grow downwards along the Y axis, we need to substract its height
     // to the Y coordinate of each vertex.
+    float width = static_cast<float>(m_Props.Width);
+    float height = static_cast<float>(m_Props.Height);
     ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, 1.0f, 1.0f)            // Bottom Right
+        ImageVertex(0.0f, 0.0f - height, 0.0f, 0.0f, 1.0f),    // Bottom Left
+        ImageVertex(0.0f, height - height, 0.0f, 0.0f, 0.0f),  // Top Left
+        ImageVertex(width, height - height, 0.0f, 1.0f, 0.0f), // Top Right
+        ImageVertex(width, 0.0f - height, 0.0f, 1.0f, 1.0f)    // Bottom Right
     };
 
     // Send the new vertices to the vertex buffer
@@ -172,16 +178,13 @@ void Image::PopulateTexture()
     assert(m_Props.pData != nullptr);
     assert(m_Props.Width > 0.0f && m_Props.Height > 0.0f);
 
-    uint32_t width = static_cast<uint32_t>(m_Props.Width);
-    uint32_t height = static_cast<uint32_t>(m_Props.Height);
-
     D3DLOCKED_RECT rect = {};
     m_pTexture->LockRect(0, &rect, nullptr, 0);
 
-    for (uint32_t y = 0; y < height; y++)
+    for (uint32_t y = 0; y < m_Props.Height; y++)
     {
         D3DCOLOR *pixels = (D3DCOLOR *)((uint8_t *)rect.pBits + y * rect.Pitch);
-        memcpy(pixels, &m_Props.pData[y * width], width * sizeof(D3DCOLOR));
+        memcpy(pixels, &m_Props.pData[y * m_Props.Width], m_Props.Width * sizeof(D3DCOLOR));
         pixels++;
     }
 
