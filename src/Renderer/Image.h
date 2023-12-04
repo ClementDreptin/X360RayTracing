@@ -28,6 +28,8 @@ public:
 
     Image();
 
+    ~Image();
+
     void Render(const Props &props);
 
 private:

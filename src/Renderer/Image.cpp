@@ -17,6 +17,12 @@ Image::Image()
 {
 }
 
+Image::~Image()
+{
+    if (m_pTexture != nullptr)
+        m_pTexture->Release();
+}
+
 void Image::Render(const Props &props)
 {
     // Check if the world view projection matrix and/or the vertex buffer need to be updated

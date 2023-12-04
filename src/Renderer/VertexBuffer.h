@@ -6,6 +6,8 @@ class VertexBuffer
 public:
     VertexBuffer();
 
+    ~VertexBuffer();
+
     inline D3DVertexBuffer *operator&() const { return m_pBuffer; }
 
     inline D3DVertexDeclaration *GetVertexDeclaration() const { return m_pVertexDeclaration; }

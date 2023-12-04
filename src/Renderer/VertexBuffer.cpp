@@ -11,6 +11,16 @@ VertexBuffer<T>::VertexBuffer()
 }
 
 template<typename T>
+VertexBuffer<T>::~VertexBuffer()
+{
+    if (m_pBuffer != nullptr)
+        m_pBuffer->Release();
+
+    if (m_pVertexDeclaration != nullptr)
+        m_pVertexDeclaration->Release();
+}
+
+template<typename T>
 HRESULT VertexBuffer<T>::Init(T *pData, size_t numVertices, D3DVERTEXELEMENT9 *pVertexElements)
 {
     HRESULT hr = S_OK;
