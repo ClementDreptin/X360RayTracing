@@ -182,7 +182,7 @@ void Image::PopulateTexture()
 {
     assert(m_pTexture != nullptr);
     assert(m_Props.pData != nullptr);
-    assert(m_Props.Width > 0.0f && m_Props.Height > 0.0f);
+    assert(m_Props.Width > 0 && m_Props.Height > 0);
 
     D3DLOCKED_RECT rect = {};
     m_pTexture->LockRect(0, &rect, nullptr, 0);
