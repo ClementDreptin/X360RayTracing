@@ -180,17 +180,10 @@ void Image::PopulateTexture()
 
     D3DLOCKED_RECT rect = {};
     m_pTexture->LockRect(0, &rect, nullptr, 0);
-
-    for (uint32_t y = 0; y < m_Props.Height; y++)
-    {
-        D3DCOLOR *pixels = (D3DCOLOR *)((uint8_t *)rect.pBits + y * rect.Pitch);
-        memcpy(
-            pixels,
-            &m_Props.pData[static_cast<uint32_t>(y * m_Props.Width)],
-            static_cast<size_t>(m_Props.Width * sizeof(D3DCOLOR))
-        );
-        pixels++;
-    }
-
+    memcpy(
+        rect.pBits,
+        m_Props.pData,
+        static_cast<size_t>(m_Props.Width * m_Props.Height * sizeof(D3DCOLOR))
+    );
     m_pTexture->UnlockRect(0);
 }
