@@ -21,10 +21,10 @@ private:
     ATG::Timer m_Timer;
     Text m_FrameRateText;
 
-    Image m_Background;
-    Image::Props m_BackgroundProps;
+    Image m_Image;
+    Image::Props m_ImageProps;
 
-    void RenderBackground();
+    void RenderImage();
 
     void RenderFrameRateText();
 };

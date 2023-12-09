@@ -28,9 +28,9 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    m_BackgroundProps.Width = ROUND(g_DisplayWidth);
-    m_BackgroundProps.Height = ROUND(g_DisplayHeight);
-    m_BackgroundProps.pData = new D3DCOLOR[m_BackgroundProps.Width * m_BackgroundProps.Height];
+    m_ImageProps.Width = ROUND(g_DisplayWidth);
+    m_ImageProps.Height = ROUND(g_DisplayHeight);
+    m_ImageProps.pData = new D3DCOLOR[m_ImageProps.Width * m_ImageProps.Height];
 
     return hr;
 }
@@ -44,7 +44,7 @@ HRESULT App::Render()
 {
     m_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
-    RenderBackground();
+    RenderImage();
 
     RenderFrameRateText();
 
@@ -55,16 +55,16 @@ HRESULT App::Render()
     return S_OK;
 }
 
-void App::RenderBackground()
+void App::RenderImage()
 {
-    assert(m_BackgroundProps.pData != nullptr);
-    assert(m_BackgroundProps.Width > 0 && m_BackgroundProps.Height > 0);
+    assert(m_ImageProps.pData != nullptr);
+    assert(m_ImageProps.Width > 0 && m_ImageProps.Height > 0);
 
-    for (uint32_t y = 0; y < m_BackgroundProps.Height; y++)
-        for (uint32_t x = 0; x < m_BackgroundProps.Width; x++)
-            m_BackgroundProps.pData[x + y * m_BackgroundProps.Width] = D3DCOLOR_XRGB(255, 0, 0);
+    for (uint32_t y = 0; y < m_ImageProps.Height; y++)
+        for (uint32_t x = 0; x < m_ImageProps.Width; x++)
+            m_ImageProps.pData[x + y * m_ImageProps.Width] = D3DCOLOR_XRGB(255, 0, 0);
 
-    m_Background.Render(m_BackgroundProps);
+    m_Image.Render(m_ImageProps);
 }
 
 void App::RenderFrameRateText()
