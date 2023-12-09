@@ -24,7 +24,7 @@ private:
     Image m_Image;
     Image::Props m_ImageProps;
 
-    D3DCOLOR PerPixel(float x, float y);
+    D3DCOLOR PerPixel(const XMVECTOR &coord);
 
     void RenderImage();
 

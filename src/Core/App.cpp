@@ -56,10 +56,10 @@ HRESULT App::Render()
     return S_OK;
 }
 
-D3DCOLOR App::PerPixel(float x, float y)
+D3DCOLOR App::PerPixel(const XMVECTOR &coord)
 {
-    uint8_t r = static_cast<uint8_t>(x * 255.0f);
-    uint8_t g = static_cast<uint8_t>(y * 255.0f);
+    uint8_t r = static_cast<uint8_t>(XMVectorGetX(coord) * 255.0f);
+    uint8_t g = static_cast<uint8_t>(XMVectorGetY(coord) * 255.0f);
 
     return D3DCOLOR_XRGB(r, g, 0);
 }
@@ -73,8 +73,9 @@ void App::RenderImage()
     {
         for (uint32_t x = 0; x < m_ImageProps.Width; x++)
         {
+            XMVECTOR coord = XMVectorSet(x / m_ImageProps.Width, y / m_ImageProps.Height, 0.0f, 0.0f);
             uint32_t index = static_cast<uint32_t>(x + y * m_ImageProps.Width);
-            m_ImageProps.pData[index] = PerPixel(x / m_ImageProps.Width, y / m_ImageProps.Height);
+            m_ImageProps.pData[index] = PerPixel(coord);
         }
     }
 
