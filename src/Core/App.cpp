@@ -30,7 +30,8 @@ HRESULT App::Initialize()
 
     m_ImageProps.Width = ROUND(g_DisplayWidth);
     m_ImageProps.Height = ROUND(g_DisplayHeight);
-    m_ImageProps.pData = new D3DCOLOR[m_ImageProps.Width * m_ImageProps.Height];
+    size_t size = static_cast<uint32_t>(m_ImageProps.Width * m_ImageProps.Height);
+    m_ImageProps.pData = new D3DCOLOR[size];
 
     return hr;
 }
@@ -66,14 +67,16 @@ D3DCOLOR App::PerPixel(float x, float y)
 void App::RenderImage()
 {
     assert(m_ImageProps.pData != nullptr);
-    assert(m_ImageProps.Width > 0 && m_ImageProps.Height > 0);
+    assert(m_ImageProps.Width > 0.0f && m_ImageProps.Height > 0.0f);
 
     for (uint32_t y = 0; y < m_ImageProps.Height; y++)
+    {
         for (uint32_t x = 0; x < m_ImageProps.Width; x++)
-            m_ImageProps.pData[x + y * m_ImageProps.Width] = PerPixel(
-                static_cast<float>(x) / static_cast<float>(m_ImageProps.Width),
-                static_cast<float>(y) / static_cast<float>(m_ImageProps.Height)
-            );
+        {
+            uint32_t index = static_cast<uint32_t>(x + y * m_ImageProps.Width);
+            m_ImageProps.pData[index] = PerPixel(x / m_ImageProps.Width, y / m_ImageProps.Height);
+        }
+    }
 
     m_Image.Render(m_ImageProps);
 }
@@ -86,7 +89,7 @@ void App::RenderFrameRateText()
 
     Text::Props props;
     props.X = 10;
-    props.Y = static_cast<uint32_t>(g_DisplayHeight - g_Font.GetTextHeight(text) - 10);
+    props.Y = g_DisplayHeight - g_Font.GetTextHeight(text) - 10;
     props.Text = text;
     props.Color = D3DCOLOR_XRGB(255, 255, 255);
 

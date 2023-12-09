@@ -8,8 +8,8 @@ public:
         Props()
             : X(0), Y(0), FontScale(0.0f), Color(0) {}
 
-        uint32_t X;
-        uint32_t Y;
+        float X;
+        float Y;
         std::wstring Text;
         float FontScale;
         D3DCOLOR Color;

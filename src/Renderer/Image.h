@@ -5,7 +5,7 @@
 // The Xbox 360 stores textures in 32x32 tiles in GPU memory so texture
 // widths and heights need to be multiples of 32
 #define TILE_SIZE 32
-#define ROUND(size) ((uint32_t)(size) + TILE_SIZE - 1) & ~(TILE_SIZE - 1)
+#define ROUND(size) (float)(((uint32_t)(size) + TILE_SIZE - 1) & ~(TILE_SIZE - 1))
 
 struct ImageVertex
 {
@@ -24,10 +24,10 @@ public:
         Props()
             : X(0), Y(0), Width(0), Height(0), pData(nullptr) {}
 
-        uint32_t X;
-        uint32_t Y;
-        uint32_t Width;
-        uint32_t Height;
+        float X;
+        float Y;
+        float Width;
+        float Height;
         D3DCOLOR *pData;
     };
 

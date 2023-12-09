@@ -22,7 +22,7 @@ void Console::Log(const std::wstring &message)
         m_Messages.pop_front();
 }
 
-void Console::Render(uint32_t x, uint32_t y)
+void Console::Render(float x, float y)
 {
     Text::Props props;
     props.X = x;
