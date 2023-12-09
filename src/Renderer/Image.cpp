@@ -89,7 +89,7 @@ HRESULT Image::Init()
         static_cast<uint32_t>(m_Props.Height),
         1,
         0,
-        D3DFMT_A8R8G8B8,
+        D3DFMT_LIN_A8R8G8B8,
         D3DPOOL_DEFAULT,
         &m_pTexture,
         nullptr
