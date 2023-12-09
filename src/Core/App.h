@@ -24,6 +24,8 @@ private:
     Image m_Image;
     Image::Props m_ImageProps;
 
+    D3DCOLOR PerPixel(float x, float y);
+
     void RenderImage();
 
     void RenderFrameRateText();

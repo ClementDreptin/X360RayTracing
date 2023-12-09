@@ -55,6 +55,14 @@ HRESULT App::Render()
     return S_OK;
 }
 
+D3DCOLOR App::PerPixel(float x, float y)
+{
+    uint8_t r = static_cast<uint8_t>(x * 255.0f);
+    uint8_t g = static_cast<uint8_t>(y * 255.0f);
+
+    return D3DCOLOR_XRGB(r, g, 0);
+}
+
 void App::RenderImage()
 {
     assert(m_ImageProps.pData != nullptr);
@@ -62,7 +70,10 @@ void App::RenderImage()
 
     for (uint32_t y = 0; y < m_ImageProps.Height; y++)
         for (uint32_t x = 0; x < m_ImageProps.Width; x++)
-            m_ImageProps.pData[x + y * m_ImageProps.Width] = D3DCOLOR_XRGB(255, 0, 0);
+            m_ImageProps.pData[x + y * m_ImageProps.Width] = PerPixel(
+                static_cast<float>(x) / static_cast<float>(m_ImageProps.Width),
+                static_cast<float>(y) / static_cast<float>(m_ImageProps.Height)
+            );
 
     m_Image.Render(m_ImageProps);
 }
