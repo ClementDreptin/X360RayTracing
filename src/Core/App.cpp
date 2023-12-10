@@ -56,10 +56,29 @@ HRESULT App::Render()
 
 D3DCOLOR App::PerPixel(const XMVECTOR &coord)
 {
-    uint8_t r = static_cast<uint8_t>(XMVectorGetX(coord) * 255.0f);
-    uint8_t g = static_cast<uint8_t>(XMVectorGetY(coord) * 255.0f);
+    XMVECTOR rayOrigin = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
+    XMVECTOR rayDirection = XMVectorSet(coord.x, coord.y, -1.0f, 0.0f);
+    float radius = 0.5f;
 
-    return D3DCOLOR_XRGB(r, g, 0);
+    // (bx^2 + by^2)t^2 + (2(axbx + ayby))t + (ax^2 + ay^2 - r^2) = 0
+    // where
+    // a = ray origin
+    // b = ray direction
+    // r = radius
+    // t = hit distance
+
+    float a = XMVectorGetX(XMVector4Dot(rayDirection, rayDirection));
+    float b = 2.0f * XMVectorGetX(XMVector4Dot(rayOrigin, rayDirection));
+    float c = XMVectorGetX(XMVector4Dot(rayOrigin, rayOrigin)) - radius * radius;
+
+    // Quadratic forumula discriminant:
+    // b^2 - 4ac
+
+    float discriminant = b * b - 4.0f * a * c;
+    if (discriminant >= 0.0f)
+        return D3DCOLOR_XRGB(255, 0, 255);
+
+    return D3DCOLOR_XRGB(0, 0, 0);
 }
 
 void App::RenderImage()
@@ -72,6 +91,8 @@ void App::RenderImage()
         for (uint32_t x = 0; x < m_ImageProps.Width; x++)
         {
             XMVECTOR coord = XMVectorSet(x / m_ImageProps.Width, y / m_ImageProps.Height, 0.0f, 0.0f);
+            coord = XMVectorMultiply(coord, XMVectorSet(2.0f, 2.0f, 2.0f, 2.0f));
+            coord = XMVectorSubtract(coord, XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
             uint32_t index = static_cast<uint32_t>(x + y * m_ImageProps.Width);
             m_ImageProps.pData[index] = PerPixel(coord);
         }
