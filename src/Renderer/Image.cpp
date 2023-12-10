@@ -23,20 +23,17 @@ Image::~Image()
 
 void Image::Render(const Props &props)
 {
-    // Check if the world view projection matrix and/or the vertex buffer need to be updated
     bool needToUpdateWorldViewProjectionMatrix = m_Props.X != props.X || m_Props.Y != props.Y;
     bool needToUpdateVertexBuffer = m_Props.Width != props.Width || m_Props.Height != props.Height;
 
     m_Props = props;
 
-    // If this is the first time Render is called, just initialize the image and return
     if (!m_Initialized)
     {
         Init();
         return;
     }
 
-    // Perform the updates if needed
     if (needToUpdateWorldViewProjectionMatrix)
         CalculateWorldViewProjectionMatrix();
 
@@ -45,7 +42,6 @@ void Image::Render(const Props &props)
 
     PopulateTexture();
 
-    // Initialize default device states
     g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
     g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
@@ -55,7 +51,6 @@ void Image::Render(const Props &props)
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
-    // Render the image
     g_pd3dDevice->SetTexture(0, m_pTexture);
     g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
     g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(ImageVertex));
@@ -70,14 +65,13 @@ void Image::Render(const Props &props)
         ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 1.0f),                        /* Bottom Left */ \
             ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 0.0f),          /* Top Left */ \
             ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 0.0f), /* Top Right */ \
-            ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f)            /* Bottom Right */ \
+            ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f),           /* Bottom Right */ \
     }
 
 HRESULT Image::Init()
 {
     HRESULT hr = S_OK;
 
-    // Set up the matrices for orthographic projection
     m_ViewMatrix = XMMatrixIdentity();
     m_ProjectionMatrix = XMMatrixOrthographicOffCenterLH(0.0f, g_DisplayWidth, 0.0f, g_DisplayHeight, -1.0f, 1.0f);
     CalculateWorldViewProjectionMatrix();
@@ -89,7 +83,6 @@ HRESULT Image::Init()
             return hr;
     }
 
-    // Create the texture
     hr = g_pd3dDevice->CreateTexture(
         static_cast<uint32_t>(m_Props.Width),
         static_cast<uint32_t>(m_Props.Height),
@@ -106,7 +99,6 @@ HRESULT Image::Init()
         return hr;
     }
 
-    // Create the vertices and the vertex buffer
     ImageVertex vertices[] = VERTICES;
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
@@ -153,7 +145,6 @@ void Image::CalculateWorldViewProjectionMatrix()
 
 void Image::UpdateVertexBuffer()
 {
-    // Send the new vertices to the vertex buffer
     ImageVertex vertices[] = VERTICES;
     m_VertexBuffer.UpdateBuffer(vertices, ARRAYSIZE(vertices));
 }
