@@ -5,6 +5,7 @@
 // The resolution is always 720p, 1080p is created by the hardware scaler
 #define DISPLAY_WIDTH 1280
 #define DISPLAY_HEIGHT 720
+#define ASPECT_RATIO ((float)DISPLAY_WIDTH / (float)DISPLAY_HEIGHT)
 
 namespace ATG
 {
