@@ -80,6 +80,8 @@ void App::RenderImage()
 {
     assert(m_pImageData != nullptr);
 
+    D3DCOLOR *pData = m_pImageData;
+
     for (uint32_t y = 0; y < DISPLAY_HEIGHT; y++)
     {
         for (uint32_t x = 0; x < DISPLAY_WIDTH; x++)
@@ -90,7 +92,7 @@ void App::RenderImage()
             coord = coord * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
             coord = XMVectorSetX(coord, XMVectorGetX(coord) * ASPECT_RATIO);
 
-            m_pImageData[x + y * DISPLAY_WIDTH] = PerPixel(coord);
+            *(pData++) = PerPixel(coord);
         }
     }
 
