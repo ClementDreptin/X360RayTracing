@@ -62,10 +62,10 @@ void Image::Render(const Props &props)
 
 #define VERTICES \
     { \
-        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 1.0f),                        /* Bottom Left */ \
-            ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 0.0f),          /* Top Left */ \
-            ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 0.0f), /* Top Right */ \
-            ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f),           /* Bottom Right */ \
+        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 0.0f),                        /* Bottom Left */ \
+            ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 1.0f),          /* Top Left */ \
+            ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 1.0f), /* Top Right */ \
+            ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 0.0f),           /* Bottom Right */ \
     }
 
 HRESULT Image::Init()
