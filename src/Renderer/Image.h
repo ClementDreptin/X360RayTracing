@@ -14,26 +14,13 @@ struct ImageVertex
 class Image
 {
 public:
-    struct Props
-    {
-        Props()
-            : X(0), Y(0), Width(0), Height(0), pData(nullptr) {}
-
-        float X;
-        float Y;
-        float Width;
-        float Height;
-        D3DCOLOR *pData;
-    };
-
     Image();
 
     ~Image();
 
-    void Render(const Props &props);
+    void Render(const D3DCOLOR *pData);
 
 private:
-    Props m_Props;
     bool m_Initialized;
 
     D3DTexture *m_pTexture;
@@ -51,10 +38,4 @@ private:
     HRESULT Init();
 
     static HRESULT InitShaders();
-
-    void CalculateWorldViewProjectionMatrix();
-
-    void UpdateVertexBuffer();
-
-    void PopulateTexture();
 };

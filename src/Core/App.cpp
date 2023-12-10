@@ -12,6 +12,7 @@ float g_DisplayWidth = 1280.0f;
 float g_DisplayHeight = 720.0f;
 
 App::App()
+    : m_pImageData(nullptr)
 {
 }
 
@@ -26,10 +27,8 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    m_ImageProps.Width = g_DisplayWidth;
-    m_ImageProps.Height = g_DisplayHeight;
-    size_t size = static_cast<uint32_t>(m_ImageProps.Width * m_ImageProps.Height);
-    m_ImageProps.pData = new D3DCOLOR[size];
+    size_t size = static_cast<uint32_t>(g_DisplayWidth * g_DisplayHeight);
+    m_pImageData = new D3DCOLOR[size];
 
     return hr;
 }
@@ -83,26 +82,25 @@ D3DCOLOR App::PerPixel(const XMVECTOR &coord)
 
 void App::RenderImage()
 {
-    assert(m_ImageProps.pData != nullptr);
-    assert(m_ImageProps.Width > 0.0f && m_ImageProps.Height > 0.0f);
+    assert(m_pImageData != nullptr);
 
-    float aspectRatio = m_ImageProps.Width / m_ImageProps.Height;
+    float aspectRatio = g_DisplayWidth / g_DisplayHeight;
 
-    for (uint32_t y = 0; y < m_ImageProps.Height; y++)
+    for (uint32_t y = 0; y < g_DisplayHeight; y++)
     {
-        for (uint32_t x = 0; x < m_ImageProps.Width; x++)
+        for (uint32_t x = 0; x < g_DisplayWidth; x++)
         {
-            XMVECTOR coord = XMVectorSet(x / m_ImageProps.Width, y / m_ImageProps.Height, 0.0f, 0.0f);
+            XMVECTOR coord = XMVectorSet(x / g_DisplayWidth, y / g_DisplayHeight, 0.0f, 0.0f);
             coord = XMVectorMultiply(coord, XMVectorSet(2.0f, 2.0f, 2.0f, 2.0f));
             coord = XMVectorSubtract(coord, XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
             coord = XMVectorSetX(coord, XMVectorGetX(coord) * aspectRatio);
 
-            uint32_t index = static_cast<uint32_t>(x + y * m_ImageProps.Width);
-            m_ImageProps.pData[index] = PerPixel(coord);
+            uint32_t index = static_cast<uint32_t>(x + y * g_DisplayWidth);
+            m_pImageData[index] = PerPixel(coord);
         }
     }
 
-    m_Image.Render(m_ImageProps);
+    m_Image.Render(m_pImageData);
 }
 
 void App::RenderFrameRateText()

@@ -21,26 +21,22 @@ Image::~Image()
         m_pTexture->Release();
 }
 
-void Image::Render(const Props &props)
+void Image::Render(const D3DCOLOR *pData)
 {
-    bool needToUpdateWorldViewProjectionMatrix = m_Props.X != props.X || m_Props.Y != props.Y;
-    bool needToUpdateVertexBuffer = m_Props.Width != props.Width || m_Props.Height != props.Height;
-
-    m_Props = props;
-
     if (!m_Initialized)
     {
         Init();
         return;
     }
 
-    if (needToUpdateWorldViewProjectionMatrix)
-        CalculateWorldViewProjectionMatrix();
-
-    if (needToUpdateVertexBuffer)
-        UpdateVertexBuffer();
-
-    PopulateTexture();
+    D3DLOCKED_RECT rect = {};
+    m_pTexture->LockRect(0, &rect, nullptr, 0);
+    memcpy(
+        rect.pBits,
+        pData,
+        static_cast<size_t>(g_DisplayWidth * g_DisplayHeight * sizeof(D3DCOLOR))
+    );
+    m_pTexture->UnlockRect(0);
 
     g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
     g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
@@ -60,21 +56,14 @@ void Image::Render(const Props &props)
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
 
-#define VERTICES \
-    { \
-        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 0.0f),                        /* Bottom Left */ \
-            ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 1.0f),          /* Top Left */ \
-            ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 1.0f), /* Top Right */ \
-            ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 0.0f),           /* Bottom Right */ \
-    }
-
 HRESULT Image::Init()
 {
     HRESULT hr = S_OK;
 
     m_ViewMatrix = XMMatrixIdentity();
     m_ProjectionMatrix = XMMatrixOrthographicOffCenterLH(0.0f, g_DisplayWidth, 0.0f, g_DisplayHeight, -1.0f, 1.0f);
-    CalculateWorldViewProjectionMatrix();
+    m_WorldMatrix = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+    m_WVPMatrix = m_WorldMatrix * m_ViewMatrix * m_ProjectionMatrix;
 
     if (!s_ShadersInitialized)
     {
@@ -84,8 +73,8 @@ HRESULT Image::Init()
     }
 
     hr = g_pd3dDevice->CreateTexture(
-        static_cast<uint32_t>(m_Props.Width),
-        static_cast<uint32_t>(m_Props.Height),
+        static_cast<uint32_t>(g_DisplayWidth),
+        static_cast<uint32_t>(g_DisplayHeight),
         1,
         0,
         D3DFMT_LIN_A8R8G8B8,
@@ -99,7 +88,12 @@ HRESULT Image::Init()
         return hr;
     }
 
-    ImageVertex vertices[] = VERTICES;
+    ImageVertex vertices[] = {
+        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 0.0f),                      // Bottom Left
+        ImageVertex(0.0f, g_DisplayHeight, 0.0f, 0.0f, 1.0f),           // Top Left
+        ImageVertex(g_DisplayWidth, g_DisplayHeight, 0.0f, 1.0f, 1.0f), // Top Right
+        ImageVertex(g_DisplayWidth, 0.0f, 0.0f, 1.0f, 0.0f),            // Bottom Right
+    };
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
         { 0, sizeof(XMFLOAT3), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
@@ -135,32 +129,4 @@ HRESULT Image::InitShaders()
     s_ShadersInitialized = true;
 
     return hr;
-}
-
-void Image::CalculateWorldViewProjectionMatrix()
-{
-    m_WorldMatrix = XMMatrixTranslation(m_Props.X, m_Props.Y, 0.0f);
-    m_WVPMatrix = m_WorldMatrix * m_ViewMatrix * m_ProjectionMatrix;
-}
-
-void Image::UpdateVertexBuffer()
-{
-    ImageVertex vertices[] = VERTICES;
-    m_VertexBuffer.UpdateBuffer(vertices, ARRAYSIZE(vertices));
-}
-
-void Image::PopulateTexture()
-{
-    assert(m_pTexture != nullptr);
-    assert(m_Props.pData != nullptr);
-    assert(m_Props.Width > 0.0f && m_Props.Height > 0.0f);
-
-    D3DLOCKED_RECT rect = {};
-    m_pTexture->LockRect(0, &rect, nullptr, 0);
-    memcpy(
-        rect.pBits,
-        m_Props.pData,
-        static_cast<size_t>(m_Props.Width * m_Props.Height * sizeof(D3DCOLOR))
-    );
-    m_pTexture->UnlockRect(0);
 }
