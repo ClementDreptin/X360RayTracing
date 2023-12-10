@@ -65,6 +65,14 @@ void Image::Render(const Props &props)
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
 
+#define VERTICES \
+    { \
+        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 1.0f),                        /* Bottom Left */ \
+            ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 0.0f),          /* Top Left */ \
+            ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 0.0f), /* Top Right */ \
+            ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f)            /* Bottom Right */ \
+    }
+
 HRESULT Image::Init()
 {
     HRESULT hr = S_OK;
@@ -99,12 +107,7 @@ HRESULT Image::Init()
     }
 
     // Create the vertices and the vertex buffer
-    ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f)            // Bottom Right
-    };
+    ImageVertex vertices[] = VERTICES;
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
         { 0, sizeof(XMFLOAT3), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
@@ -150,14 +153,8 @@ void Image::CalculateWorldViewProjectionMatrix()
 
 void Image::UpdateVertexBuffer()
 {
-    ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f)            // Bottom Right
-    };
-
     // Send the new vertices to the vertex buffer
+    ImageVertex vertices[] = VERTICES;
     m_VertexBuffer.UpdateBuffer(vertices, ARRAYSIZE(vertices));
 }
 
