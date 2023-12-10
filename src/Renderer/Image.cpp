@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "Renderer/Image.h"
 
-#include <AtgUtil.h>
-
 #include "Renderer/D3DDevice.h"
 
 extern float g_DisplayWidth;

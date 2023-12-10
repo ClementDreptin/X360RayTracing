@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "Core/App.h"
 
-#include <AtgUtil.h>
-
 #include "UI/Console.h"
 #include "UI/Font.h"
 

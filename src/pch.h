@@ -10,5 +10,11 @@
 #include <cstdint>
 #include <deque>
 
+// AtgFramework
+#include <AtgApp.h>
+#include <AtgDevice.h>
+#include <AtgFont.h>
+#include <AtgUtil.h>
+
 // Rarely changed headers
 #include "Core/Log.h"
