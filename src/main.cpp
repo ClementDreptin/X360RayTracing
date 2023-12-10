@@ -1,15 +1,13 @@
 #include "pch.h"
 
 #include "Core/App.h"
-
-extern float g_DisplayWidth;
-extern float g_DisplayHeight;
+#include "Renderer/Globals.h"
 
 void __cdecl main()
 {
     App app;
-    app.m_d3dpp.BackBufferWidth = static_cast<uint32_t>(g_DisplayWidth);
-    app.m_d3dpp.BackBufferHeight = static_cast<uint32_t>(g_DisplayHeight);
+    app.m_d3dpp.BackBufferWidth = DISPLAY_WIDTH;
+    app.m_d3dpp.BackBufferHeight = DISPLAY_HEIGHT;
 
     // Make sure display gamma is correct
     app.m_d3dpp.BackBufferFormat = static_cast<D3DFORMAT>(MAKESRGBFMT(D3DFMT_A8R8G8B8));

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Renderer/VertexBuffer.h"
 
-#include "Renderer/D3DDevice.h"
+#include "Renderer/Globals.h"
 #include "Renderer/Image.h"
 
 template<typename T>

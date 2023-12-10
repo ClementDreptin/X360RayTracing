@@ -1,10 +1,7 @@
 #include "pch.h"
 #include "Renderer/Image.h"
 
-#include "Renderer/D3DDevice.h"
-
-extern float g_DisplayWidth;
-extern float g_DisplayHeight;
+#include "Renderer/Globals.h"
 
 bool Image::s_ShadersInitialized = false;
 D3DVertexShader *Image::s_pVertexShader = nullptr;
@@ -34,7 +31,7 @@ void Image::Render(const D3DCOLOR *pData)
     memcpy(
         rect.pBits,
         pData,
-        static_cast<size_t>(g_DisplayWidth * g_DisplayHeight * sizeof(D3DCOLOR))
+        DISPLAY_WIDTH * DISPLAY_HEIGHT * sizeof(D3DCOLOR)
     );
     m_pTexture->UnlockRect(0);
 
@@ -61,7 +58,7 @@ HRESULT Image::Init()
     HRESULT hr = S_OK;
 
     m_ViewMatrix = XMMatrixIdentity();
-    m_ProjectionMatrix = XMMatrixOrthographicOffCenterLH(0.0f, g_DisplayWidth, 0.0f, g_DisplayHeight, -1.0f, 1.0f);
+    m_ProjectionMatrix = XMMatrixOrthographicOffCenterLH(0.0f, DISPLAY_WIDTH, 0.0f, DISPLAY_HEIGHT, -1.0f, 1.0f);
     m_WorldMatrix = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
     m_WVPMatrix = m_WorldMatrix * m_ViewMatrix * m_ProjectionMatrix;
 
@@ -73,8 +70,8 @@ HRESULT Image::Init()
     }
 
     hr = g_pd3dDevice->CreateTexture(
-        static_cast<uint32_t>(g_DisplayWidth),
-        static_cast<uint32_t>(g_DisplayHeight),
+        DISPLAY_WIDTH,
+        DISPLAY_HEIGHT,
         1,
         0,
         D3DFMT_LIN_A8R8G8B8,
@@ -89,10 +86,10 @@ HRESULT Image::Init()
     }
 
     ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 0.0f),                      // Bottom Left
-        ImageVertex(0.0f, g_DisplayHeight, 0.0f, 0.0f, 1.0f),           // Top Left
-        ImageVertex(g_DisplayWidth, g_DisplayHeight, 0.0f, 1.0f, 1.0f), // Top Right
-        ImageVertex(g_DisplayWidth, 0.0f, 0.0f, 1.0f, 0.0f),            // Bottom Right
+        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 0.0f),                    // Bottom Left
+        ImageVertex(0.0f, DISPLAY_HEIGHT, 0.0f, 0.0f, 1.0f),          // Top Left
+        ImageVertex(DISPLAY_WIDTH, DISPLAY_HEIGHT, 0.0f, 1.0f, 1.0f), // Top Right
+        ImageVertex(DISPLAY_WIDTH, 0.0f, 0.0f, 1.0f, 0.0f),           // Bottom Right
     };
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
