@@ -101,14 +101,11 @@ HRESULT Image::Init()
     }
 
     // Create the vertices and the vertex buffer
-    // Since the Y axis goes upwards, if we want a height increase to make our
-    // rectangle grow downwards along the Y axis, we need to substract its height
-    // to the Y coordinate of each vertex.
     ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, 1.0f, 1.0f)            // Bottom Right
+        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 1.0f),                    // Bottom Left
+        ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
+        ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
+        ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f)            // Bottom Right
     };
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
@@ -149,23 +146,17 @@ HRESULT Image::InitShaders()
 
 void Image::CalculateWorldViewProjectionMatrix()
 {
-    // Direct3D uses an upwards Y axis system which is a bit unintuitive when dealing
-    // with 2D rendering, so we flip the Y axis
-    m_WorldMatrix = XMMatrixTranslation(m_Props.X, g_DisplayHeight - m_Props.Y, 0.0f);
+    m_WorldMatrix = XMMatrixTranslation(m_Props.X, m_Props.Y, 0.0f);
     m_WVPMatrix = m_WorldMatrix * m_ViewMatrix * m_ProjectionMatrix;
 }
 
 void Image::UpdateVertexBuffer()
 {
-    // Create the vertices
-    // Since the Y axis goes upwards, if we want a height increase to make our
-    // rectangle grow downwards along the Y axis, we need to substract its height
-    // to the Y coordinate of each vertex.
     ImageVertex vertices[] = {
-        ImageVertex(0.0f, 0.0f - m_Props.Height, 0.0f, 0.0f, 1.0f),                    // Bottom Left
-        ImageVertex(0.0f, m_Props.Height - m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
-        ImageVertex(m_Props.Width, m_Props.Height - m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
-        ImageVertex(m_Props.Width, 0.0f - m_Props.Height, 0.0f, 1.0f, 1.0f)            // Bottom Right
+        ImageVertex(0.0f, 0.0f, 0.0f, 0.0f, 1.0f),                    // Bottom Left
+        ImageVertex(0.0f, m_Props.Height, 0.0f, 0.0f, 0.0f),          // Top Left
+        ImageVertex(m_Props.Width, m_Props.Height, 0.0f, 1.0f, 0.0f), // Top Right
+        ImageVertex(m_Props.Width, 0.0f, 0.0f, 1.0f, 1.0f)            // Bottom Right
     };
 
     // Send the new vertices to the vertex buffer
