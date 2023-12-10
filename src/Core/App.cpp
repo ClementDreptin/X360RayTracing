@@ -86,6 +86,8 @@ void App::RenderImage()
     assert(m_ImageProps.pData != nullptr);
     assert(m_ImageProps.Width > 0.0f && m_ImageProps.Height > 0.0f);
 
+    float aspectRatio = m_ImageProps.Width / m_ImageProps.Height;
+
     for (uint32_t y = 0; y < m_ImageProps.Height; y++)
     {
         for (uint32_t x = 0; x < m_ImageProps.Width; x++)
@@ -93,6 +95,8 @@ void App::RenderImage()
             XMVECTOR coord = XMVectorSet(x / m_ImageProps.Width, y / m_ImageProps.Height, 0.0f, 0.0f);
             coord = XMVectorMultiply(coord, XMVectorSet(2.0f, 2.0f, 2.0f, 2.0f));
             coord = XMVectorSubtract(coord, XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
+            coord = XMVectorSetX(coord, XMVectorGetX(coord) * aspectRatio);
+
             uint32_t index = static_cast<uint32_t>(x + y * m_ImageProps.Width);
             m_ImageProps.pData[index] = PerPixel(coord);
         }
