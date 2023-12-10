@@ -12,7 +12,7 @@ Ray tracing experiment on the Xbox 360.
 
 ### Visual Studio 2019
 
-Open `XboxPlayground.sln` in Visual Studio and build it.
+Open `X360RayTracing.sln` in Visual Studio and build it.
 
 ### Visual Studio 2022
 
@@ -23,14 +23,14 @@ You can't build with the 64-bit version of MSBuild so you'll need to run the 32-
 Set-Alias msbuild <path_vs2022>\MSBuild\Current\Bin\MSBuild.exe
 ```
 
-To build XboxPlayground, deploy it to the console and launch it there, start a build with the `Release` configuration, either through the Visual Studio interface or with the following command:
+To build X360RayTracing, deploy it to the console and launch it there, start a build with the `Release` configuration, either through the Visual Studio interface or with the following command:
 
 ```PS1
 # Equivalent to msbuild /p:Configuration=Release
 msbuild
 ```
 
-To build XboxPlayground and run it in Xenia, start a build with the `Xenia` configuration, either through the Visual Studio interface or with the following command (Xenia will be downloaded automatically the first time you run the command):
+To build X360RayTracing and run it in Xenia, start a build with the `Xenia` configuration, either through the Visual Studio interface or with the following command (Xenia will be downloaded automatically the first time you run the command):
 
 ```PS1
 msbuild /p:Configuration=Xenia
