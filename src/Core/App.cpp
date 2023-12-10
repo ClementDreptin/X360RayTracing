@@ -28,8 +28,8 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    m_ImageProps.Width = ROUND(g_DisplayWidth);
-    m_ImageProps.Height = ROUND(g_DisplayHeight);
+    m_ImageProps.Width = g_DisplayWidth;
+    m_ImageProps.Height = g_DisplayHeight;
     size_t size = static_cast<uint32_t>(m_ImageProps.Width * m_ImageProps.Height);
     m_ImageProps.pData = new D3DCOLOR[size];
 

@@ -2,11 +2,6 @@
 
 #include "Renderer/VertexBuffer.h"
 
-// The Xbox 360 stores textures in 32x32 tiles in GPU memory so texture
-// widths and heights need to be multiples of 32
-#define TILE_SIZE 32
-#define ROUND(size) (float)(((uint32_t)(size) + TILE_SIZE - 1) & ~(TILE_SIZE - 1))
-
 struct ImageVertex
 {
     ImageVertex(float x, float y, float z, float u, float v)
