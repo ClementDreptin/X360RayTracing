@@ -87,8 +87,7 @@ void App::RenderImage()
             float normX = static_cast<float>(x) / static_cast<float>(DISPLAY_WIDTH);
             float normY = static_cast<float>(y) / static_cast<float>(DISPLAY_HEIGHT);
             XMVECTOR coord = XMVectorSet(normX, normY, 0.0f, 0.0f);
-            coord = XMVectorMultiply(coord, XMVectorSet(2.0f, 2.0f, 2.0f, 2.0f));
-            coord = XMVectorSubtract(coord, XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
+            coord = coord * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
             coord = XMVectorSetX(coord, XMVectorGetX(coord) * ASPECT_RATIO);
 
             m_pImageData[x + y * DISPLAY_WIDTH] = PerPixel(coord);
