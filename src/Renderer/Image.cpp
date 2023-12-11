@@ -18,41 +18,6 @@ Image::~Image()
         m_pTexture->Release();
 }
 
-void Image::Render(const D3DCOLOR *pData)
-{
-    if (!m_Initialized)
-    {
-        Init();
-        return;
-    }
-
-    D3DLOCKED_RECT rect = {};
-    m_pTexture->LockRect(0, &rect, nullptr, 0);
-    memcpy(
-        rect.pBits,
-        pData,
-        DISPLAY_WIDTH * DISPLAY_HEIGHT * sizeof(D3DCOLOR)
-    );
-    m_pTexture->UnlockRect(0);
-
-    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
-
-    g_pd3dDevice->SetTexture(0, m_pTexture);
-    g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
-    g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(ImageVertex));
-    g_pd3dDevice->SetVertexShader(s_pVertexShader);
-    g_pd3dDevice->SetVertexShaderConstantF(0, reinterpret_cast<float *>(&m_WVPMatrix), 4);
-    g_pd3dDevice->SetPixelShader(s_pPixelShader);
-    g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
-}
-
 HRESULT Image::Init()
 {
     HRESULT hr = S_OK;
@@ -103,6 +68,45 @@ HRESULT Image::Init()
     m_Initialized = true;
 
     return hr;
+}
+
+D3DCOLOR *Image::Lock()
+{
+    assert(m_pTexture != nullptr);
+    assert(m_Initialized == true);
+
+    D3DLOCKED_RECT rect = {};
+    m_pTexture->LockRect(0, &rect, nullptr, 0);
+
+    return static_cast<D3DCOLOR *>(rect.pBits);
+}
+
+void Image::Unlock()
+{
+    assert(m_pTexture != nullptr);
+    assert(m_Initialized == true);
+
+    m_pTexture->UnlockRect(0);
+}
+
+void Image::Render()
+{
+    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+
+    g_pd3dDevice->SetTexture(0, m_pTexture);
+    g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
+    g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(ImageVertex));
+    g_pd3dDevice->SetVertexShader(s_pVertexShader);
+    g_pd3dDevice->SetVertexShaderConstantF(0, reinterpret_cast<float *>(&m_WVPMatrix), 4);
+    g_pd3dDevice->SetPixelShader(s_pPixelShader);
+    g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
 
 HRESULT Image::InitShaders()

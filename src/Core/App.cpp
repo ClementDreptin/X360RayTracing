@@ -9,7 +9,6 @@ Console g_Console;
 Font g_Font;
 
 App::App()
-    : m_pImageData(nullptr)
 {
 }
 
@@ -24,7 +23,12 @@ HRESULT App::Initialize()
         return hr;
     }
 
-    m_pImageData = new D3DCOLOR[DISPLAY_WIDTH * DISPLAY_HEIGHT];
+    hr = m_Image.Init();
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't initialized the image");
+        return hr;
+    }
 
     return hr;
 }
@@ -78,10 +82,7 @@ D3DCOLOR App::PerPixel(const XMVECTOR &coord)
 
 void App::RenderImage()
 {
-    assert(m_pImageData != nullptr);
-
-    D3DCOLOR *pData = m_pImageData;
-
+    D3DCOLOR *pData = m_Image.Lock();
     for (uint32_t y = 0; y < DISPLAY_HEIGHT; y++)
     {
         for (uint32_t x = 0; x < DISPLAY_WIDTH; x++)
@@ -95,8 +96,9 @@ void App::RenderImage()
             *(pData++) = PerPixel(coord);
         }
     }
+    m_Image.Unlock();
 
-    m_Image.Render(m_pImageData);
+    m_Image.Render();
 }
 
 void App::RenderFrameRateText()

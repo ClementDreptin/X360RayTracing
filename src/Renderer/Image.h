@@ -18,7 +18,13 @@ public:
 
     ~Image();
 
-    void Render(const D3DCOLOR *pData);
+    HRESULT Init();
+
+    D3DCOLOR *Lock();
+
+    void Unlock();
+
+    void Render();
 
 private:
     bool m_Initialized;
@@ -34,8 +40,6 @@ private:
     XMMATRIX m_ViewMatrix;
     XMMATRIX m_ProjectionMatrix;
     XMMATRIX m_WVPMatrix;
-
-    HRESULT Init();
 
     static HRESULT InitShaders();
 };

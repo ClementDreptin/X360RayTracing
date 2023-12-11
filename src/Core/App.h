@@ -20,9 +20,7 @@ public:
 private:
     ATG::Timer m_Timer;
     Text m_FrameRateText;
-
     Image m_Image;
-    D3DCOLOR *m_pImageData;
 
     D3DCOLOR PerPixel(const XMVECTOR &coord);
 
