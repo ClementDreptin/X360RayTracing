@@ -56,7 +56,7 @@ HRESULT App::Render()
 D3DCOLOR App::PerPixel(const XMVECTOR &coord)
 {
     XMVECTOR rayOrigin = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
-    XMVECTOR rayDirection = XMVectorSet(coord.x, coord.y, -1.0f, 0.0f);
+    XMVECTOR rayDirection = XMVectorSet(XMVectorGetX(coord), XMVectorGetY(coord), -1.0f, 0.0f);
     float radius = 0.5f;
 
     // (bx^2 + by^2)t^2 + (2(axbx + ayby))t + (ax^2 + ay^2 - r^2) = 0
@@ -83,12 +83,12 @@ D3DCOLOR App::PerPixel(const XMVECTOR &coord)
 void App::RenderImage()
 {
     D3DCOLOR *pData = m_Image.Lock();
-    for (uint32_t y = 0; y < DISPLAY_HEIGHT; y++)
+    for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
     {
-        for (uint32_t x = 0; x < DISPLAY_WIDTH; x++)
+        for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
         {
-            float normX = static_cast<float>(x) / static_cast<float>(DISPLAY_WIDTH);
-            float normY = static_cast<float>(y) / static_cast<float>(DISPLAY_HEIGHT);
+            float normX = static_cast<float>(x) / static_cast<float>(IMAGE_WIDTH);
+            float normY = static_cast<float>(y) / static_cast<float>(IMAGE_HEIGHT);
             XMVECTOR coord = XMVectorSet(normX, normY, 0.0f, 0.0f);
             coord = coord * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
             coord = XMVectorSetX(coord, XMVectorGetX(coord) * ASPECT_RATIO);

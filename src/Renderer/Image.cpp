@@ -35,8 +35,8 @@ HRESULT Image::Init()
     }
 
     hr = g_pd3dDevice->CreateTexture(
-        DISPLAY_WIDTH,
-        DISPLAY_HEIGHT,
+        IMAGE_WIDTH,
+        IMAGE_HEIGHT,
         1,
         0,
         D3DFMT_LIN_A8R8G8B8,
