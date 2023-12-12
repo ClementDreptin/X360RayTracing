@@ -28,7 +28,7 @@ void Console::Render(float x, float y)
     props.X = x;
     props.Y = y;
     props.Text = L"";
-    props.Color = D3DCOLOR_XRGB(255, 255, 255);
+    props.Color = XMCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
     for (size_t i = 0; i < m_MessageCount; i++)
     {

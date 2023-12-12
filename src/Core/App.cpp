@@ -53,7 +53,7 @@ HRESULT App::Render()
     return S_OK;
 }
 
-D3DCOLOR App::PerPixel(const XMVECTOR &coord)
+XMCOLOR App::PerPixel(const XMVECTOR &coord)
 {
     XMVECTOR rayOrigin = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
     XMVECTOR rayDirection = XMVectorSet(XMVectorGetX(coord), XMVectorGetY(coord), -1.0f, 0.0f);
@@ -75,14 +75,14 @@ D3DCOLOR App::PerPixel(const XMVECTOR &coord)
 
     float discriminant = b * b - 4.0f * a * c;
     if (discriminant >= 0.0f)
-        return D3DCOLOR_XRGB(255, 0, 255);
+        return XMCOLOR(1.0f, 0.0f, 1.0f, 1.0f);
 
-    return D3DCOLOR_XRGB(0, 0, 0);
+    return XMCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void App::RenderImage()
 {
-    D3DCOLOR *pData = m_Image.Lock();
+    XMCOLOR *pData = m_Image.Lock();
     for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
     {
         for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
@@ -111,7 +111,7 @@ void App::RenderFrameRateText()
     props.X = 10;
     props.Y = DISPLAY_HEIGHT - g_Font.GetTextHeight(text) - 10;
     props.Text = text;
-    props.Color = D3DCOLOR_XRGB(255, 255, 255);
+    props.Color = XMCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
     m_FrameRateText.Render(props);
 }

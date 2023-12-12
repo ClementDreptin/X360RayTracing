@@ -20,7 +20,7 @@ public:
 
     HRESULT Init();
 
-    D3DCOLOR *Lock();
+    XMCOLOR *Lock();
 
     void Unlock();
 

@@ -22,7 +22,7 @@ private:
     Text m_FrameRateText;
     Image m_Image;
 
-    D3DCOLOR PerPixel(const XMVECTOR &coord);
+    XMCOLOR PerPixel(const XMVECTOR &coord);
 
     void RenderImage();
 

@@ -70,7 +70,7 @@ HRESULT Image::Init()
     return hr;
 }
 
-D3DCOLOR *Image::Lock()
+XMCOLOR *Image::Lock()
 {
     assert(m_pTexture != nullptr);
     assert(m_Initialized == true);
@@ -78,7 +78,7 @@ D3DCOLOR *Image::Lock()
     D3DLOCKED_RECT rect = {};
     m_pTexture->LockRect(0, &rect, nullptr, 0);
 
-    return static_cast<D3DCOLOR *>(rect.pBits);
+    return static_cast<XMCOLOR *>(rect.pBits);
 }
 
 void Image::Unlock()
