@@ -55,29 +55,51 @@ HRESULT App::Render()
 
 XMCOLOR App::PerPixel(const XMVECTOR &coord)
 {
-    XMVECTOR rayOrigin = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
-    XMVECTOR rayDirection = XMVectorSet(XMVectorGetX(coord), XMVectorGetY(coord), -1.0f, 0.0f);
-    float radius = 0.5f;
-
-    // (bx^2 + by^2)t^2 + (2(axbx + ayby))t + (ax^2 + ay^2 - r^2) = 0
+    // Math explaination:
+    // https://www.youtube.com/watch?v=4NshnkzOdI0
+    //
+    // Equation of a sphere:
+    // (bx^2 + by^2 + bz^2)t^2 + (2(axbx + ayby + azbz))t + (ax^2 + ay^2 + az^2 - r^2) = 0
     // where
     // a = ray origin
     // b = ray direction
     // r = radius
     // t = hit distance
 
-    float a = XMVectorGetX(XMVector4Dot(rayDirection, rayDirection));
-    float b = 2.0f * XMVectorGetX(XMVector4Dot(rayOrigin, rayDirection));
-    float c = XMVectorGetX(XMVector4Dot(rayOrigin, rayOrigin)) - radius * radius;
+    XMVECTOR rayOrigin = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+    XMVECTOR rayDirection = XMVectorSet(XMVectorGetX(coord), XMVectorGetY(coord), -1.0f, 0.0f);
+    float radius = 0.5f;
+
+    float a = XMVectorGetX(XMVector3Dot(rayDirection, rayDirection));
+    float b = 2.0f * XMVectorGetX(XMVector3Dot(rayOrigin, rayDirection));
+    float c = XMVectorGetX(XMVector3Dot(rayOrigin, rayOrigin)) - radius * radius;
 
     // Quadratic forumula discriminant:
     // b^2 - 4ac
-
     float discriminant = b * b - 4.0f * a * c;
-    if (discriminant >= 0.0f)
-        return XMCOLOR(1.0f, 0.0f, 1.0f, 1.0f);
+    if (discriminant < 0.0f)
+        return XMCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 
-    return XMCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+    // Quadratic formula solutions:
+    // (-b +- sqrt(discriminant)) / 2a
+    //
+    // The "-" solution is always smaller so it is always the closest hit
+    // distance, no need to calculate the "+" solution
+    float closestT = (-b - sqrtf(discriminant)) / (2.0f * a);
+    XMVECTOR hitPoint = rayOrigin + rayDirection * closestT;
+
+    // Light calculation
+    XMVECTOR normal = XMVector3NormalizeEst(hitPoint);
+    XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
+    float angle = std::max<float>(XMVectorGetX(XMVector3Dot(normal, lightDirection * -1.0f)), 0.0f);
+    XMVECTOR colorVec = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
+    colorVec = colorVec * angle;
+
+    // Convert colorVec to an XMCOLOR
+    XMCOLOR color;
+    XMStoreColor(&color, colorVec);
+
+    return color;
 }
 
 void App::RenderImage()
