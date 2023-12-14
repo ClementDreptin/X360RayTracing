@@ -84,6 +84,7 @@
     <ClInclude Include="src\Core\Log.h" />
     <ClInclude Include="src\Renderer\Globals.h" />
     <ClInclude Include="src\Renderer\Image.h" />
+    <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
     <ClInclude Include="src\UI\Console.h" />
     <ClInclude Include="src\UI\Font.h" />
@@ -94,6 +95,7 @@
     <ClCompile Include="src\Core\App.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\Renderer\Image.cpp" />
+    <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\UI\Console.cpp" />
     <ClCompile Include="src\UI\Font.cpp" />
