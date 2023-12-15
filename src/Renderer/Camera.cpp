@@ -9,7 +9,7 @@ Camera::Camera(float verticalFOV, float nearClip, float farClip)
     m_Position = XMVectorSet(0.0f, 0.0f, 3.0f, 0.0f);
     m_ForwardDirection = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
 
-    m_Projection = XMMatrixPerspectiveFovLH(XMConvertToRadians(verticalFOV), ASPECT_RATIO, nearClip, farClip);
+    m_Projection = XMMatrixPerspectiveFovRH(XMConvertToRadians(verticalFOV), ASPECT_RATIO, nearClip, farClip);
     m_InverseProjection = XMMatrixInverse(nullptr, m_Projection);
 
     RecalculateView();
@@ -23,7 +23,7 @@ void Camera::Update(float ts)
 
 void Camera::RecalculateView()
 {
-    m_View = XMMatrixLookAtLH(m_Position, m_Position + m_ForwardDirection, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+    m_View = XMMatrixLookAtRH(m_Position, m_Position + m_ForwardDirection, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
     m_InverseView = XMMatrixInverse(nullptr, m_View);
 }
 
@@ -42,7 +42,7 @@ void Camera::RecalculateRayDirections()
 
             XMVECTOR target = XMVector4Transform(XMVectorSet(coord.x, coord.y, 1.0f, 1.0f), m_InverseProjection);
             XMVECTOR norm = XMVector4NormalizeEst(target / XMVectorSet(target.w, target.w, target.w, target.w));
-            XMVECTOR rayDirection = XMVector3Transform(norm, m_InverseView);
+            XMVECTOR rayDirection = XMVector4Transform(norm, m_InverseView);
             m_RayDirections[x + y * IMAGE_WIDTH] = rayDirection;
         }
     }
