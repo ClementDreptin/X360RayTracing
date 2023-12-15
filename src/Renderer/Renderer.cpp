@@ -60,7 +60,7 @@ XMCOLOR Renderer::TraceRay(const Ray &ray)
     // b^2 - 4ac
     float discriminant = b * b - 4.0f * a * c;
     if (discriminant < 0.0f)
-        return XMCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+        return XMCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
 
     // Quadratic formula solutions:
     // (-b +- sqrt(discriminant)) / 2a
@@ -73,9 +73,9 @@ XMCOLOR Renderer::TraceRay(const Ray &ray)
     // Light calculation
     XMVECTOR normal = XMVector3NormalizeEst(hitPoint);
     XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
-    float angle = std::max<float>(XMVector3Dot(normal, lightDirection * -1.0f).x, 0.0f);
+    float lightIntensity = std::max<float>(XMVector3Dot(normal, lightDirection * -1.0f).x, 0.0f);
     XMVECTOR colorVec = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
-    colorVec = colorVec * angle;
+    colorVec = colorVec * lightIntensity;
 
     // Convert colorVec to an XMCOLOR
     XMCOLOR color;
