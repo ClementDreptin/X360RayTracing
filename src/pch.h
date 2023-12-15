@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cstdint>
 #include <deque>
+#include <vector>
 
 // AtgFramework
 #include <AtgApp.h>

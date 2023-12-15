@@ -3,6 +3,7 @@
 #include <AtgApp.h>
 #include <AtgUtil.h>
 
+#include "Renderer/Camera.h"
 #include "Renderer/Renderer.h"
 #include "UI/Text.h"
 
@@ -18,6 +19,7 @@ public:
     virtual HRESULT Render();
 
 private:
+    Camera m_Camera;
     Renderer m_Renderer;
     ATG::Timer m_Timer;
     Text m_FrameRateText;

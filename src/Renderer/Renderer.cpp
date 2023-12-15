@@ -2,6 +2,7 @@
 #include "Renderer/Renderer.h"
 
 #include "Renderer/Globals.h"
+#include "Renderer/Ray.h"
 
 Renderer::Renderer()
 {
@@ -18,20 +19,18 @@ HRESULT Renderer::Init()
     return hr;
 }
 
-void Renderer::Render()
+void Renderer::Render(const Camera &camera)
 {
+    Ray ray = {};
+    ray.Origin = camera.GetPosition();
+
     XMCOLOR *pData = m_Image.Lock();
     for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
     {
         for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
         {
-            float normX = static_cast<float>(x) / static_cast<float>(IMAGE_WIDTH);
-            float normY = static_cast<float>(y) / static_cast<float>(IMAGE_HEIGHT);
-            XMVECTOR coord = XMVectorSet(normX, normY, 0.0f, 0.0f);
-            coord = coord * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
-            coord = XMVectorSetX(coord, XMVectorGetX(coord) * ASPECT_RATIO);
-
-            *(pData++) = PerPixel(coord);
+            ray.Direction = camera.GetRayDirections()[x + y * IMAGE_WIDTH];
+            *(pData++) = TraceRay(ray);
         }
     }
     m_Image.Unlock();
@@ -39,7 +38,7 @@ void Renderer::Render()
     m_Image.Render();
 }
 
-XMCOLOR Renderer::PerPixel(const XMVECTOR &coord)
+XMCOLOR Renderer::TraceRay(const Ray &ray)
 {
     // Math explaination:
     // https://www.youtube.com/watch?v=4NshnkzOdI0
@@ -52,13 +51,10 @@ XMCOLOR Renderer::PerPixel(const XMVECTOR &coord)
     // r = radius
     // t = hit distance
 
-    XMVECTOR rayOrigin = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-    XMVECTOR rayDirection = XMVectorSet(XMVectorGetX(coord), XMVectorGetY(coord), -1.0f, 0.0f);
     float radius = 0.5f;
-
-    float a = XMVectorGetX(XMVector3Dot(rayDirection, rayDirection));
-    float b = 2.0f * XMVectorGetX(XMVector3Dot(rayOrigin, rayDirection));
-    float c = XMVectorGetX(XMVector3Dot(rayOrigin, rayOrigin)) - radius * radius;
+    float a = XMVectorGetX(XMVector3Dot(ray.Direction, ray.Direction));
+    float b = 2.0f * XMVectorGetX(XMVector3Dot(ray.Origin, ray.Direction));
+    float c = XMVectorGetX(XMVector3Dot(ray.Origin, ray.Origin)) - radius * radius;
 
     // Quadratic forumula discriminant:
     // b^2 - 4ac
@@ -72,7 +68,7 @@ XMCOLOR Renderer::PerPixel(const XMVECTOR &coord)
     // The "-" solution is always smaller so it is always the closest hit
     // distance, no need to calculate the "+" solution
     float closestT = (-b - sqrtf(discriminant)) / (2.0f * a);
-    XMVECTOR hitPoint = rayOrigin + rayDirection * closestT;
+    XMVECTOR hitPoint = ray.Origin + ray.Direction * closestT;
 
     // Light calculation
     XMVECTOR normal = XMVector3NormalizeEst(hitPoint);
