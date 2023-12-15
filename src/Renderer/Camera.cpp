@@ -6,8 +6,8 @@
 Camera::Camera(float verticalFOV, float nearClip, float farClip)
     : m_VerticalFOV(verticalFOV), m_NearClip(nearClip), m_FarClip(farClip)
 {
-    m_Position = XMVectorSet(0.0f, 0.0f, 3.0f, 0.0f);
-    m_ForwardDirection = XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+    m_Position = XMVectorSet(0.0f, 0.0f, 3.0f, 1.0f);
+    m_ForwardDirection = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
 
     m_Projection = XMMatrixPerspectiveFovRH(XMConvertToRadians(verticalFOV), ASPECT_RATIO, nearClip, farClip);
     m_InverseProjection = XMMatrixInverse(nullptr, m_Projection);
@@ -16,14 +16,85 @@ Camera::Camera(float verticalFOV, float nearClip, float farClip)
     RecalculateRayDirections();
 }
 
+static float ConvertThumbstickValue(int16_t thumbstickValue, int16_t deadZone)
+{
+    if (thumbstickValue > +deadZone)
+        return (thumbstickValue - deadZone) / (32767.0f - deadZone);
+    if (thumbstickValue < -deadZone)
+        return (thumbstickValue + deadZone + 1.0f) / (32767.0f - deadZone);
+    return 0.0f;
+}
+
 void Camera::Update(float ts)
 {
-    // TODO: make the camera move with the controller
+    bool moved = false;
+
+    float speed = 5.0f;
+    XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
+    XMVECTOR rightDirection = XMVector3Cross(m_ForwardDirection, upDirection);
+
+    XINPUT_STATE state = {};
+    XInputGetState(0, &state);
+
+    float leftX = ConvertThumbstickValue(state.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+    float leftY = ConvertThumbstickValue(state.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+    float rightX = ConvertThumbstickValue(state.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+    float rightY = ConvertThumbstickValue(state.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+
+    if (leftY > 0.0f) // Up
+    {
+        m_Position = m_Position + upDirection * speed * ts;
+        moved = true;
+    }
+    else if (leftY < 0.0f) // Down
+    {
+        m_Position = m_Position - upDirection * speed * ts;
+        moved = true;
+    }
+    else if (leftX < 0.0f) // Left
+    {
+        m_Position = m_Position - rightDirection * speed * ts;
+        moved = true;
+    }
+    else if (leftX > 0.0f) // Right
+    {
+        m_Position = m_Position + rightDirection * speed * ts;
+        moved = true;
+    }
+    else if (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) // Forward
+    {
+        m_Position = m_Position + m_ForwardDirection * speed * ts;
+        moved = true;
+    }
+    else if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) // Backwards
+    {
+        m_Position = m_Position - m_ForwardDirection * speed * ts;
+        moved = true;
+    }
+
+    // Rotation
+    if (rightX != 0.0f || rightY != 0.0f)
+    {
+        // TODO: fix the camera rotating with an offset instead of around the sphere
+
+        float pitch = rightY * GetRotationSpeed();
+        float yaw = rightX * GetRotationSpeed();
+        XMVECTOR rotation = XMQuaternionRotationRollPitchYaw(-pitch, -yaw, 0.0f);
+        m_ForwardDirection = XMVector3Rotate(m_ForwardDirection, rotation);
+
+        moved = true;
+    }
+
+    if (moved)
+    {
+        RecalculateView();
+        RecalculateRayDirections();
+    }
 }
 
 void Camera::RecalculateView()
 {
-    m_View = XMMatrixLookAtRH(m_Position, m_Position + m_ForwardDirection, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
+    m_View = XMMatrixLookAtRH(m_Position, m_Position + m_ForwardDirection, XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
     m_InverseView = XMMatrixInverse(nullptr, m_View);
 }
 
