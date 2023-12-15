@@ -52,9 +52,9 @@ XMCOLOR Renderer::TraceRay(const Ray &ray)
     // t = hit distance
 
     float radius = 0.5f;
-    float a = XMVectorGetX(XMVector3Dot(ray.Direction, ray.Direction));
-    float b = 2.0f * XMVectorGetX(XMVector3Dot(ray.Origin, ray.Direction));
-    float c = XMVectorGetX(XMVector3Dot(ray.Origin, ray.Origin)) - radius * radius;
+    float a = XMVector3Dot(ray.Direction, ray.Direction).x;
+    float b = 2.0f * XMVector3Dot(ray.Origin, ray.Direction).x;
+    float c = XMVector3Dot(ray.Origin, ray.Origin).x - radius * radius;
 
     // Quadratic forumula discriminant:
     // b^2 - 4ac
@@ -73,7 +73,7 @@ XMCOLOR Renderer::TraceRay(const Ray &ray)
     // Light calculation
     XMVECTOR normal = XMVector3NormalizeEst(hitPoint);
     XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
-    float angle = std::max<float>(XMVectorGetX(XMVector3Dot(normal, lightDirection * -1.0f)), 0.0f);
+    float angle = std::max<float>(XMVector3Dot(normal, lightDirection * -1.0f).x, 0.0f);
     XMVECTOR colorVec = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
     colorVec = colorVec * angle;
 
