@@ -1,6 +1,7 @@
 #pragma once
 
 // Xbox headers
+#define NOMINMAX
 #include <xtl.h>
 #include <xboxmath.h>
 

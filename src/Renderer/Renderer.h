@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Scene.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Image.h"
 #include "Renderer/Ray.h"
@@ -11,10 +12,10 @@ public:
 
     HRESULT Init();
 
-    void Render(const Camera &camera);
+    void Render(const Scene &scene, const Camera &camera);
 
 private:
     Image m_Image;
 
-    XMCOLOR TraceRay(const Ray &ray);
+    XMCOLOR TraceRay(const Scene &scene, const Ray &ray);
 };

@@ -11,6 +11,21 @@ Font g_Font;
 App::App()
     : m_Camera(45.0f, 0.1f, 100.0f)
 {
+    {
+        Sphere sphere;
+        sphere.Position = XMVectorZero();
+        sphere.Radius = 0.5f;
+        sphere.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
+        m_Scene.Spheres.push_back(sphere);
+    }
+
+    {
+        Sphere sphere;
+        sphere.Position = XMVectorSet(1.0f, 0.0f, -5.0f, 1.0f);
+        sphere.Radius = 1.5f;
+        sphere.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+        m_Scene.Spheres.push_back(sphere);
+    }
 }
 
 HRESULT App::Initialize()
@@ -44,7 +59,7 @@ HRESULT App::Render()
 {
     m_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
-    m_Renderer.Render(m_Camera);
+    m_Renderer.Render(m_Scene, m_Camera);
 
     RenderFrameRateText();
 

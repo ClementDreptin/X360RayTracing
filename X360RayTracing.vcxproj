@@ -82,6 +82,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\App.h" />
     <ClInclude Include="src\Core\Log.h" />
+    <ClInclude Include="src\Core\Scene.h" />
     <ClInclude Include="src\Renderer\Camera.h" />
     <ClInclude Include="src\Renderer\Globals.h" />
     <ClInclude Include="src\Renderer\Image.h" />
