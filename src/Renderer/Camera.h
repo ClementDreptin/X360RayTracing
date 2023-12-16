@@ -41,4 +41,6 @@ private:
     void RecalculateView();
 
     void RecalculateRayDirections();
+
+    static float ConvertThumbstickValue(int16_t thumbstickValue, int16_t deadZone);
 };

@@ -16,15 +16,6 @@ Camera::Camera(float verticalFOV, float nearClip, float farClip)
     RecalculateRayDirections();
 }
 
-static float ConvertThumbstickValue(int16_t thumbstickValue, int16_t deadZone)
-{
-    if (thumbstickValue > +deadZone)
-        return (thumbstickValue - deadZone) / (32767.0f - deadZone);
-    if (thumbstickValue < -deadZone)
-        return (thumbstickValue + deadZone + 1.0f) / (32767.0f - deadZone);
-    return 0.0f;
-}
-
 void Camera::Update(float ts)
 {
     bool moved = false;
@@ -117,4 +108,16 @@ void Camera::RecalculateRayDirections()
             m_RayDirections[x + y * IMAGE_WIDTH] = rayDirection;
         }
     }
+}
+
+float Camera::ConvertThumbstickValue(int16_t thumbstickValue, int16_t deadZone)
+{
+    // Convert thumbstick values coming from XINPUT to a [-1;+1] space
+
+    if (thumbstickValue > +deadZone)
+        return (thumbstickValue - deadZone) / (32767.0f - deadZone);
+    if (thumbstickValue < -deadZone)
+        return (thumbstickValue + deadZone + 1.0f) / (32767.0f - deadZone);
+
+    return 0.0f;
 }
