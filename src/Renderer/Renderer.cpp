@@ -40,7 +40,7 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
     assert(m_pActiveScene != nullptr);
     assert(m_pActiveCamera != nullptr);
 
-    Ray ray = {};
+    Ray ray;
     ray.Origin = m_pActiveCamera->GetPosition();
     ray.Direction = m_pActiveCamera->GetRayDirections()[x + y * IMAGE_WIDTH];
 
