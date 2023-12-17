@@ -132,14 +132,12 @@ Renderer::HitPayload Renderer::ClosestHit(const Ray &ray, float hitDistance, uin
     assert(m_pActiveScene != nullptr);
 
     const Sphere &closestSphere = m_pActiveScene->Spheres[objectIndex];
-    XMVECTOR origin = ray.Origin - closestSphere.Position;
 
     HitPayload payload;
     payload.HitDistance = hitDistance;
     payload.ObjectIndex = objectIndex;
-    payload.WorldPosition = origin + ray.Direction * hitDistance;
-    payload.WorldNormal = XMVector3NormalizeEst(payload.WorldPosition);
-    payload.WorldPosition = payload.WorldPosition + closestSphere.Position;
+    payload.WorldPosition = ray.Origin + ray.Direction * hitDistance;
+    payload.WorldNormal = XMVector3NormalizeEst(payload.WorldPosition - closestSphere.Position);
 
     return payload;
 }
