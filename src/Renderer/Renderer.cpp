@@ -10,8 +10,13 @@ std::default_random_engine Renderer::s_RandEngine;
 std::uniform_real_distribution<float> Renderer::s_Rand(-0.5f, 0.5f);
 
 Renderer::Renderer()
-    : m_pActiveScene(nullptr), m_pActiveCamera(nullptr)
+    : m_FrameIndex(1), m_pActiveScene(nullptr), m_pActiveCamera(nullptr)
 {
+}
+
+Renderer::~Renderer()
+{
+    delete[] m_pAccumulationData;
 }
 
 HRESULT Renderer::Init()
@@ -22,6 +27,8 @@ HRESULT Renderer::Init()
     if (FAILED(hr))
         Log::Error("Couldn't initialized the image");
 
+    m_pAccumulationData = new XMVECTOR[IMAGE_WIDTH * IMAGE_HEIGHT];
+
     return hr;
 }
 
@@ -30,16 +37,39 @@ void Renderer::Render(const Scene &scene, const Camera &camera)
     m_pActiveScene = &scene;
     m_pActiveCamera = &camera;
 
+    // Reset the accumulation data if it gets invalidated
+    if (m_FrameIndex == 1)
+        ZeroMemory(m_pAccumulationData, IMAGE_WIDTH * IMAGE_HEIGHT * sizeof(XMVECTOR));
+
     XMCOLOR *pData = m_Image.Lock();
     for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
+    {
         for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
-            *(pData++) = PerPixel(x, y);
+        {
+            // Get the current pixel color and add it to the color calculated
+            // for this pixel during the previous frame
+            XMVECTOR color = PerPixel(x, y);
+            uint32_t index = x + y * IMAGE_WIDTH;
+            m_pAccumulationData[index] = m_pAccumulationData[index] + color;
+
+            // Average the color to create a smooth image (and prevent it from becoming
+            // completely white)
+            XMVECTOR accumulatedColor = m_pAccumulationData[index];
+            accumulatedColor = accumulatedColor / static_cast<float>(m_FrameIndex);
+
+            // Convert the XMVECTOR color to a XMCOLOR color and store it in the texture
+            XMCOLOR _accumulatedColor;
+            XMStoreColor(&_accumulatedColor, accumulatedColor);
+            pData[index] = _accumulatedColor;
+        }
+    }
+    m_FrameIndex++;
     m_Image.Unlock();
 
     m_Image.Render();
 }
 
-XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
+XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y)
 {
     assert(m_pActiveScene != nullptr);
     assert(m_pActiveCamera != nullptr);
@@ -87,11 +117,7 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
         );
     }
 
-    // Convert the XMVECTOR color to a XMCOLOR color
-    XMCOLOR _color;
-    XMStoreColor(&_color, color);
-
-    return _color;
+    return color;
 }
 
 Renderer::HitPayload Renderer::TraceRay(const Ray &ray)

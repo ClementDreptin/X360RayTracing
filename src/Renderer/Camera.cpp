@@ -17,20 +17,17 @@ Camera::Camera(float verticalFOV, float nearClip, float farClip)
     RecalculateRayDirections();
 }
 
-void Camera::Update(float ts)
+bool Camera::Update(const XINPUT_GAMEPAD &gamepad, float ts)
 {
     bool moved = false;
 
     float speed = GetTranslationSpeed();
     XMVECTOR rightDirection = XMVector3Cross(m_ForwardDirection, m_UpDirection);
 
-    XINPUT_STATE state = {};
-    XInputGetState(0, &state);
-
-    float leftX = ConvertThumbstickValue(state.Gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-    float leftY = ConvertThumbstickValue(state.Gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
-    float rightX = ConvertThumbstickValue(state.Gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
-    float rightY = ConvertThumbstickValue(state.Gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+    float leftX = ConvertThumbstickValue(gamepad.sThumbLX, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+    float leftY = ConvertThumbstickValue(gamepad.sThumbLY, XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE);
+    float rightX = ConvertThumbstickValue(gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
+    float rightY = ConvertThumbstickValue(gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
 
     if (leftY > 0.0f) // Up
     {
@@ -52,12 +49,12 @@ void Camera::Update(float ts)
         m_Position = m_Position + rightDirection * speed * ts;
         moved = true;
     }
-    else if (state.Gamepad.wButtons & XINPUT_GAMEPAD_Y) // Forward
+    else if (gamepad.wButtons & XINPUT_GAMEPAD_Y) // Forward
     {
         m_Position = m_Position + m_ForwardDirection * speed * ts;
         moved = true;
     }
-    else if (state.Gamepad.wButtons & XINPUT_GAMEPAD_A) // Backwards
+    else if (gamepad.wButtons & XINPUT_GAMEPAD_A) // Backwards
     {
         m_Position = m_Position - m_ForwardDirection * speed * ts;
         moved = true;
@@ -79,6 +76,8 @@ void Camera::Update(float ts)
         RecalculateView();
         RecalculateRayDirections();
     }
+
+    return moved;
 }
 
 void Camera::RecalculateView()

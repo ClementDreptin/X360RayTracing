@@ -5,7 +5,7 @@ class Camera
 public:
     Camera(float verticalFOV, float nearClip, float farClip);
 
-    void Update(float ts);
+    bool Update(const XINPUT_GAMEPAD &gamepad, float ts);
 
     inline const XMMATRIX &GetProjection() const { return m_Projection; }
 

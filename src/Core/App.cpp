@@ -60,7 +60,12 @@ HRESULT App::Update()
 {
     float ts = static_cast<float>(m_Timer.GetElapsedTime());
 
-    m_Camera.Update(ts);
+    XINPUT_STATE state = {};
+    XInputGetState(0, &state);
+
+    bool cameraMoved = m_Camera.Update(state.Gamepad, ts);
+    if (cameraMoved)
+        m_Renderer.ResetAccumulation();
 
     return S_OK;
 }

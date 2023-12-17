@@ -10,12 +10,18 @@ class Renderer
 public:
     Renderer();
 
+    ~Renderer();
+
     HRESULT Init();
 
     void Render(const Scene &scene, const Camera &camera);
 
+    void ResetAccumulation() { m_FrameIndex = 1; }
+
 private:
     Image m_Image;
+    XMVECTOR *m_pAccumulationData;
+    uint32_t m_FrameIndex;
     const Scene *m_pActiveScene;
     const Camera *m_pActiveCamera;
 
@@ -36,7 +42,7 @@ private:
         uint32_t ObjectIndex;
     };
 
-    XMCOLOR PerPixel(uint32_t x, uint32_t y);
+    XMVECTOR PerPixel(uint32_t x, uint32_t y);
 
     HitPayload TraceRay(const Ray &ray);
 
