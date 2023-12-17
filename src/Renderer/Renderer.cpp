@@ -4,6 +4,8 @@
 #include "Renderer/Globals.h"
 #include "Renderer/Ray.h"
 
+#define BOUNCES 2
+
 Renderer::Renderer()
     : m_pActiveScene(nullptr), m_pActiveCamera(nullptr)
 {
@@ -47,8 +49,7 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
     float multiplier = 1.0f;
 
     // Make the ray bounce to calculate reflection
-    size_t bounces = 2;
-    for (size_t i = 0; i < bounces; i++)
+    for (size_t i = 0; i < BOUNCES; i++)
     {
         // See if the ray hit anything, if not, return the sky color
         HitPayload payload = TraceRay(ray);
@@ -65,8 +66,8 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
         XMVECTOR sphereColor = m_pActiveScene->Spheres[payload.ObjectIndex].Albedo * lightIntensity;
         color = color + sphereColor * multiplier;
 
-        // Slowly decrease the multiplier to prevent the reflection from getting
-        // brighter on each bounce
+        // Slowly decrease the multiplier over time to prevent the reflection from
+        // getting brighter on each bounce
         multiplier *= 0.7f;
 
         // Once the ray hit the sphere, update its origin to be the hit point
