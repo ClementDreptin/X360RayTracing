@@ -16,6 +16,28 @@ public:
 
 private:
     Image m_Image;
+    const Scene *m_pActiveScene;
+    const Camera *m_pActiveCamera;
 
-    XMCOLOR TraceRay(const Scene &scene, const Ray &ray);
+    struct HitPayload
+    {
+        HitPayload()
+            : HitDistance(0.0f), WorldPosition(XMVectorZero()),
+              WorldNormal(XMVectorZero()), ObjectIndex(std::numeric_limits<uint32_t>::max())
+        {
+        }
+
+        float HitDistance;
+        XMVECTOR WorldPosition;
+        XMVECTOR WorldNormal;
+        uint32_t ObjectIndex;
+    };
+
+    XMCOLOR PerPixel(uint32_t x, uint32_t y);
+
+    HitPayload TraceRay(const Ray &ray);
+
+    HitPayload ClosestHit(const Ray &ray, float hitDistance, uint32_t objectIndex);
+
+    HitPayload Miss(const Ray &ray);
 };

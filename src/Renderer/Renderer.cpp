@@ -5,6 +5,7 @@
 #include "Renderer/Ray.h"
 
 Renderer::Renderer()
+    : m_pActiveScene(nullptr), m_pActiveCamera(nullptr)
 {
 }
 
@@ -21,28 +22,44 @@ HRESULT Renderer::Init()
 
 void Renderer::Render(const Scene &scene, const Camera &camera)
 {
-    Ray ray = {};
-    ray.Origin = camera.GetPosition();
+    m_pActiveScene = &scene;
+    m_pActiveCamera = &camera;
 
     XMCOLOR *pData = m_Image.Lock();
     for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
-    {
         for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
-        {
-            ray.Direction = camera.GetRayDirections()[x + y * IMAGE_WIDTH];
-            *(pData++) = TraceRay(scene, ray);
-        }
-    }
+            *(pData++) = PerPixel(x, y);
+
     m_Image.Unlock();
 
     m_Image.Render();
 }
 
-XMCOLOR Renderer::TraceRay(const Scene &scene, const Ray &ray)
+XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
 {
-    if (scene.Spheres.empty())
+    assert(m_pActiveScene != nullptr);
+    assert(m_pActiveCamera != nullptr);
+
+    Ray ray = {};
+    ray.Origin = m_pActiveCamera->GetPosition();
+    ray.Direction = m_pActiveCamera->GetRayDirections()[x + y * IMAGE_WIDTH];
+
+    HitPayload payload = TraceRay(ray);
+    if (payload.HitDistance < 0.0f)
         return XMCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
 
+    XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
+    float lightIntensity = std::max<float>(XMVector3Dot(payload.WorldNormal, lightDirection * -1.0f).x, 0.0f);
+
+    const Sphere &sphere = m_pActiveScene->Spheres[payload.ObjectIndex];
+    XMCOLOR color;
+    XMStoreColor(&color, sphere.Albedo * lightIntensity);
+
+    return color;
+}
+
+Renderer::HitPayload Renderer::TraceRay(const Ray &ray)
+{
     // Math explaination:
     // https://www.youtube.com/watch?v=4NshnkzOdI0
     //
@@ -54,12 +71,13 @@ XMCOLOR Renderer::TraceRay(const Scene &scene, const Ray &ray)
     // r = radius
     // t = hit distance
 
-    // Loop through our sphere to find the closest one to the camera
-    Sphere *pClosestSphere = nullptr;
+    assert(m_pActiveScene != nullptr);
+
+    uint32_t closestSphereIndex = std::numeric_limits<uint32_t>::max();
     float hitDistance = std::numeric_limits<float>::max();
-    for (size_t i = 0; i < scene.Spheres.size(); i++)
+    for (size_t i = 0; i < m_pActiveScene->Spheres.size(); i++)
     {
-        const Sphere &sphere = scene.Spheres[i];
+        const Sphere &sphere = m_pActiveScene->Spheres[i];
         XMVECTOR origin = ray.Origin - sphere.Position;
         float a = XMVector3Dot(ray.Direction, ray.Direction).x;
         float b = 2.0f * XMVector3Dot(origin, ray.Direction).x;
@@ -80,25 +98,37 @@ XMCOLOR Renderer::TraceRay(const Scene &scene, const Ray &ray)
         if (closestT < hitDistance)
         {
             hitDistance = closestT;
-            pClosestSphere = const_cast<Sphere *>(&sphere);
+            closestSphereIndex = i;
         }
     }
 
-    // Return early if the ray didn't hit any sphere
-    if (pClosestSphere == nullptr)
-        return XMCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+    if (closestSphereIndex == std::numeric_limits<uint32_t>::max())
+        return Miss(ray);
 
-    XMVECTOR origin = ray.Origin - pClosestSphere->Position;
-    XMVECTOR hitPoint = origin + ray.Direction * hitDistance;
+    return ClosestHit(ray, hitDistance, closestSphereIndex);
+}
 
-    // Light calculation
-    XMVECTOR normal = XMVector3NormalizeEst(hitPoint);
-    XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
-    float lightIntensity = std::max<float>(XMVector3Dot(normal, lightDirection * -1.0f).x, 0.0f);
+Renderer::HitPayload Renderer::ClosestHit(const Ray &ray, float hitDistance, uint32_t objectIndex)
+{
+    assert(m_pActiveScene != nullptr);
 
-    // Convert colorVec to an XMCOLOR
-    XMCOLOR color;
-    XMStoreColor(&color, pClosestSphere->Albedo * lightIntensity);
+    const Sphere &closestSphere = m_pActiveScene->Spheres[objectIndex];
+    XMVECTOR origin = ray.Origin - closestSphere.Position;
 
-    return color;
+    HitPayload payload;
+    payload.HitDistance = hitDistance;
+    payload.ObjectIndex = objectIndex;
+    payload.WorldPosition = origin + ray.Direction * hitDistance;
+    payload.WorldNormal = XMVector3NormalizeEst(payload.WorldPosition);
+    payload.WorldPosition = payload.WorldPosition + closestSphere.Position;
+
+    return payload;
+}
+
+Renderer::HitPayload Renderer::Miss(const Ray &ray)
+{
+    HitPayload payload;
+    payload.HitDistance = -1.0f;
+
+    return payload;
 }
