@@ -21,6 +21,8 @@ public:
 
     inline const std::vector<XMVECTOR> &GetRayDirections() const { return m_RayDirections; }
 
+    inline float GetTranslationSpeed() const { return 5.0f; }
+
     inline float GetRotationSpeed() const { return 0.05f; }
 
 private:
@@ -35,6 +37,7 @@ private:
 
     XMVECTOR m_Position;
     XMVECTOR m_ForwardDirection;
+    XMVECTOR m_UpDirection;
 
     std::vector<XMVECTOR> m_RayDirections;
 

@@ -8,6 +8,7 @@ Camera::Camera(float verticalFOV, float nearClip, float farClip)
 {
     m_Position = XMVectorSet(0.0f, 0.0f, 3.0f, 1.0f);
     m_ForwardDirection = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+    m_UpDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 
     m_Projection = XMMatrixPerspectiveFovRH(XMConvertToRadians(verticalFOV), ASPECT_RATIO, nearClip, farClip);
     m_InverseProjection = XMMatrixInverse(nullptr, m_Projection);
@@ -20,9 +21,8 @@ void Camera::Update(float ts)
 {
     bool moved = false;
 
-    float speed = 5.0f;
-    XMVECTOR upDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
-    XMVECTOR rightDirection = XMVector3Cross(m_ForwardDirection, upDirection);
+    float speed = GetTranslationSpeed();
+    XMVECTOR rightDirection = XMVector3Cross(m_ForwardDirection, m_UpDirection);
 
     XINPUT_STATE state = {};
     XInputGetState(0, &state);
@@ -34,12 +34,12 @@ void Camera::Update(float ts)
 
     if (leftY > 0.0f) // Up
     {
-        m_Position = m_Position + upDirection * speed * ts;
+        m_Position = m_Position + m_UpDirection * speed * ts;
         moved = true;
     }
     else if (leftY < 0.0f) // Down
     {
-        m_Position = m_Position - upDirection * speed * ts;
+        m_Position = m_Position - m_UpDirection * speed * ts;
         moved = true;
     }
     else if (leftX < 0.0f) // Left
@@ -66,8 +66,6 @@ void Camera::Update(float ts)
     // Rotation
     if (rightX != 0.0f || rightY != 0.0f)
     {
-        // TODO: fix the camera rotating with an offset instead of around the sphere
-
         float pitch = rightY * GetRotationSpeed();
         float yaw = rightX * GetRotationSpeed();
         XMVECTOR rotation = XMQuaternionRotationRollPitchYaw(-pitch, -yaw, 0.0f);
@@ -85,7 +83,7 @@ void Camera::Update(float ts)
 
 void Camera::RecalculateView()
 {
-    m_View = XMMatrixLookAtRH(m_Position, m_Position + m_ForwardDirection, XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
+    m_View = XMMatrixLookAtRH(m_Position, m_Position + m_ForwardDirection, m_UpDirection);
     m_InverseView = XMMatrixInverse(nullptr, m_View);
 }
 
@@ -103,7 +101,7 @@ void Camera::RecalculateRayDirections()
             coord = coord * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 
             XMVECTOR target = XMVector4Transform(XMVectorSet(coord.x, coord.y, 1.0f, 1.0f), m_InverseProjection);
-            XMVECTOR norm = XMVector4NormalizeEst(target / XMVectorSet(target.w, target.w, target.w, target.w));
+            XMVECTOR norm = XMVector4NormalizeEst(target / XMVectorSplatW(target));
             XMVECTOR rayDirection = XMVector4Transform(norm, m_View);
             m_RayDirections[x + y * IMAGE_WIDTH] = rayDirection;
         }
