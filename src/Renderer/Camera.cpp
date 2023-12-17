@@ -104,7 +104,7 @@ void Camera::RecalculateRayDirections()
 
             XMVECTOR target = XMVector4Transform(XMVectorSet(coord.x, coord.y, 1.0f, 1.0f), m_InverseProjection);
             XMVECTOR norm = XMVector4NormalizeEst(target / XMVectorSet(target.w, target.w, target.w, target.w));
-            XMVECTOR rayDirection = XMVector4Transform(norm, m_InverseView);
+            XMVECTOR rayDirection = XMVector4Transform(norm, m_View);
             m_RayDirections[x + y * IMAGE_WIDTH] = rayDirection;
         }
     }
