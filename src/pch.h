@@ -9,6 +9,7 @@
 #include <cassert>
 #include <cstdint>
 #include <deque>
+#include <random>
 #include <vector>
 
 // AtgFramework

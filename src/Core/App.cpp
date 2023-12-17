@@ -11,19 +11,29 @@ Font g_Font;
 App::App()
     : m_Camera(45.0f, 0.1f, 100.0f)
 {
+    Material pinkSphere;
+    pinkSphere.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
+    pinkSphere.Roughness = 0.05f;
+    m_Scene.Materials.emplace_back(pinkSphere);
+
+    Material blueSphere;
+    blueSphere.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+    blueSphere.Roughness = 0.05f;
+    m_Scene.Materials.emplace_back(blueSphere);
+
     {
         Sphere sphere;
         sphere.Position = XMVectorZero();
-        sphere.Radius = 0.5f;
-        sphere.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
+        sphere.Radius = 1.0f;
+        sphere.MaterialIndex = 0;
         m_Scene.Spheres.push_back(sphere);
     }
 
     {
         Sphere sphere;
-        sphere.Position = XMVectorSet(1.0f, 0.0f, -5.0f, 1.0f);
-        sphere.Radius = 1.5f;
-        sphere.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+        sphere.Position = XMVectorSet(1.0f, -101.0f, 0.0f, 1.0f);
+        sphere.Radius = 100.0f;
+        sphere.MaterialIndex = 1;
         m_Scene.Spheres.push_back(sphere);
     }
 }

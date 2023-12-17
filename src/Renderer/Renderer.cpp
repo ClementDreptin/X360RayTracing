@@ -4,7 +4,10 @@
 #include "Renderer/Globals.h"
 #include "Renderer/Ray.h"
 
-#define BOUNCES 2
+#define BOUNCES 3
+
+std::default_random_engine Renderer::s_RandEngine;
+std::uniform_real_distribution<float> Renderer::s_Rand(-0.5f, 0.5f);
 
 Renderer::Renderer()
     : m_pActiveScene(nullptr), m_pActiveCamera(nullptr)
@@ -55,20 +58,22 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
         HitPayload payload = TraceRay(ray);
         if (payload.HitDistance < 0.0f)
         {
-            XMVECTOR skyColor = XMVectorZero();
+            XMVECTOR skyColor = XMVectorSet(0.6f, 0.7f, 0.9f, 1.0f);
             color = color + skyColor * multiplier;
             break;
         }
 
         // Calcuate the pixel color based on the light's position
+        const Sphere &sphere = m_pActiveScene->Spheres[payload.ObjectIndex];
+        const Material &material = m_pActiveScene->Materials[sphere.MaterialIndex];
         XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 1.0f));
         float lightIntensity = std::max<float>(XMVector3Dot(payload.WorldNormal, lightDirection * -1.0f).x, 0.0f);
-        XMVECTOR sphereColor = m_pActiveScene->Spheres[payload.ObjectIndex].Albedo * lightIntensity;
+        XMVECTOR sphereColor = material.Albedo * lightIntensity;
         color = color + sphereColor * multiplier;
 
         // Slowly decrease the multiplier over time to prevent the reflection from
         // getting brighter on each bounce
-        multiplier *= 0.7f;
+        multiplier *= 0.5f;
 
         // Once the ray hit the sphere, update its origin to be the hit point
         // right in front of the sphere along the normal. We don't make it exactly
@@ -76,7 +81,10 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
         // the sphere due to floating point precision. Which would cause the ray to
         // hit the same sphere again but from the inside.
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
-        ray.Direction = XMVector4Reflect(ray.Direction, payload.WorldNormal);
+        ray.Direction = XMVector4Reflect(
+            ray.Direction,
+            payload.WorldNormal + XMVectorReplicate(material.Roughness * s_Rand(s_RandEngine))
+        );
     }
 
     // Convert the XMVECTOR color to a XMCOLOR color

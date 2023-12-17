@@ -19,6 +19,9 @@ private:
     const Scene *m_pActiveScene;
     const Camera *m_pActiveCamera;
 
+    static std::default_random_engine s_RandEngine;
+    static std::uniform_real_distribution<float> s_Rand;
+
     struct HitPayload
     {
         HitPayload()
