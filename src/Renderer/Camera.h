@@ -21,7 +21,7 @@ public:
 
     inline const std::vector<XMVECTOR> &GetRayDirections() const { return m_RayDirections; }
 
-    inline float GetRotationSpeed() const { return 0.3f; }
+    inline float GetRotationSpeed() const { return 0.05f; }
 
 private:
     XMMATRIX m_Projection;
