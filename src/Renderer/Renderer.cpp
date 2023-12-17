@@ -29,7 +29,6 @@ void Renderer::Render(const Scene &scene, const Camera &camera)
     for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
         for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
             *(pData++) = PerPixel(x, y);
-
     m_Image.Unlock();
 
     m_Image.Render();
@@ -44,58 +43,70 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
     ray.Origin = m_pActiveCamera->GetPosition();
     ray.Direction = m_pActiveCamera->GetRayDirections()[x + y * IMAGE_WIDTH];
 
-    XMVECTOR _color = XMVectorZero();
+    XMVECTOR color = XMVectorZero();
     float multiplier = 1.0f;
 
+    // Make the ray bounce to calculate reflection
     size_t bounces = 2;
     for (size_t i = 0; i < bounces; i++)
     {
+        // See if the ray hit anything, if not, return the sky color
         HitPayload payload = TraceRay(ray);
         if (payload.HitDistance < 0.0f)
         {
             XMVECTOR skyColor = XMVectorZero();
-            _color = _color + skyColor * multiplier;
+            color = color + skyColor * multiplier;
             break;
         }
 
-        XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
+        // Calcuate the pixel color based on the light's position
+        XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 1.0f));
         float lightIntensity = std::max<float>(XMVector3Dot(payload.WorldNormal, lightDirection * -1.0f).x, 0.0f);
+        XMVECTOR sphereColor = m_pActiveScene->Spheres[payload.ObjectIndex].Albedo * lightIntensity;
+        color = color + sphereColor * multiplier;
 
-        const Sphere &sphere = m_pActiveScene->Spheres[payload.ObjectIndex];
-        XMVECTOR sphereColor = sphere.Albedo * lightIntensity;
-        _color = _color + sphereColor * multiplier;
-
+        // Slowly decrease the multiplier to prevent the reflection from getting
+        // brighter on each bounce
         multiplier *= 0.7f;
 
+        // Once the ray hit the sphere, update its origin to be the hit point
+        // right in front of the sphere along the normal. We don't make it exactly
+        // the hit position because the hit position might be a little bit inside
+        // the sphere due to floating point precision. Which would cause the ray to
+        // hit the same sphere again but from the inside.
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
         ray.Direction = XMVector4Reflect(ray.Direction, payload.WorldNormal);
     }
 
-    XMCOLOR color;
-    XMStoreColor(&color, _color);
+    // Convert the XMVECTOR color to a XMCOLOR color
+    XMCOLOR _color;
+    XMStoreColor(&_color, color);
 
-    return color;
+    return _color;
 }
 
 Renderer::HitPayload Renderer::TraceRay(const Ray &ray)
 {
-    // Math explaination:
-    // https://www.youtube.com/watch?v=4NshnkzOdI0
-    //
-    // Equation of a sphere:
-    // (bx^2 + by^2 + bz^2)t^2 + (2(axbx + ayby + azbz))t + (ax^2 + ay^2 + az^2 - r^2) = 0
-    // where
-    // a = ray origin
-    // b = ray direction
-    // r = radius
-    // t = hit distance
-
     assert(m_pActiveScene != nullptr);
 
+    // Find the closest sphere along the ray
     uint32_t closestSphereIndex = std::numeric_limits<uint32_t>::max();
     float hitDistance = std::numeric_limits<float>::max();
     for (size_t i = 0; i < m_pActiveScene->Spheres.size(); i++)
     {
+        // Math explaination:
+        // https://www.youtube.com/watch?v=4NshnkzOdI0
+        //
+        // Equation of a sphere (which is a quadratic equation):
+        // (bx^2 + by^2 + bz^2)t^2 + (2(axbx + ayby + azbz))t + (ax^2 + ay^2 + az^2 - r^2) = 0
+        // (         a        )t^2 + (          b          )t + (            c           ) = 0
+        //
+        // where
+        // a = ray origin
+        // b = ray direction
+        // r = radius
+        // t = hit distance
+
         const Sphere &sphere = m_pActiveScene->Spheres[i];
         XMVECTOR origin = ray.Origin - sphere.Position;
         float a = XMVector3Dot(ray.Direction, ray.Direction).x;
@@ -121,6 +132,7 @@ Renderer::HitPayload Renderer::TraceRay(const Ray &ray)
         }
     }
 
+    // No sphere was hit
     if (closestSphereIndex == std::numeric_limits<uint32_t>::max())
         return Miss(ray);
 
