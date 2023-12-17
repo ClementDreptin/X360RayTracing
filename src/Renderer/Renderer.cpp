@@ -44,16 +44,35 @@ XMCOLOR Renderer::PerPixel(uint32_t x, uint32_t y)
     ray.Origin = m_pActiveCamera->GetPosition();
     ray.Direction = m_pActiveCamera->GetRayDirections()[x + y * IMAGE_WIDTH];
 
-    HitPayload payload = TraceRay(ray);
-    if (payload.HitDistance < 0.0f)
-        return XMCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+    XMVECTOR _color = XMVectorZero();
+    float multiplier = 1.0f;
 
-    XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
-    float lightIntensity = std::max<float>(XMVector3Dot(payload.WorldNormal, lightDirection * -1.0f).x, 0.0f);
+    size_t bounces = 2;
+    for (size_t i = 0; i < bounces; i++)
+    {
+        HitPayload payload = TraceRay(ray);
+        if (payload.HitDistance < 0.0f)
+        {
+            XMVECTOR skyColor = XMVectorZero();
+            _color = _color + skyColor * multiplier;
+            break;
+        }
 
-    const Sphere &sphere = m_pActiveScene->Spheres[payload.ObjectIndex];
+        XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 0.0f));
+        float lightIntensity = std::max<float>(XMVector3Dot(payload.WorldNormal, lightDirection * -1.0f).x, 0.0f);
+
+        const Sphere &sphere = m_pActiveScene->Spheres[payload.ObjectIndex];
+        XMVECTOR sphereColor = sphere.Albedo * lightIntensity;
+        _color = _color + sphereColor * multiplier;
+
+        multiplier *= 0.7f;
+
+        ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
+        ray.Direction = XMVector4Reflect(ray.Direction, payload.WorldNormal);
+    }
+
     XMCOLOR color;
-    XMStoreColor(&color, sphere.Albedo * lightIntensity);
+    XMStoreColor(&color, _color);
 
     return color;
 }
@@ -95,7 +114,7 @@ Renderer::HitPayload Renderer::TraceRay(const Ray &ray)
         // The "-" solution is always smaller so it is always the closest hit
         // distance, no need to calculate the "+" solution
         float closestT = (-b - sqrtf(discriminant)) / (2.0f * a);
-        if (closestT < hitDistance)
+        if (closestT > 0.0f && closestT < hitDistance)
         {
             hitDistance = closestT;
             closestSphereIndex = i;
