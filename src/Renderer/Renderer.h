@@ -27,11 +27,18 @@ private:
     const Scene *m_pActiveScene;
     const Camera *m_pActiveCamera;
 
+    // There is one random engine per thread to avoid CPU cache misses when
+    // the engine reads from its internal state.
     static std::default_random_engine s_RandEngine[NUM_THREADS];
     static std::uniform_real_distribution<float> s_Rand;
 
-    struct DoWorkOptions
+    struct RenderChunkOptions
     {
+        RenderChunkOptions()
+            : ThreadIndex(std::numeric_limits<uint32_t>::max()), pTextureData(nullptr), This(nullptr)
+        {
+        }
+
         uint32_t ThreadIndex;
         XMCOLOR *pTextureData;
         Renderer *This;
@@ -51,7 +58,7 @@ private:
         uint32_t ObjectIndex;
     };
 
-    static uint32_t WINAPI DoWork(DoWorkOptions *pOptions);
+    static uint32_t RenderChunk(const RenderChunkOptions *pOptions);
 
     XMVECTOR PerPixel(uint32_t x, uint32_t y, uint32_t threadIndex);
 

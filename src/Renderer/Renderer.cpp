@@ -32,12 +32,66 @@ HRESULT Renderer::Init()
     return hr;
 }
 
-uint32_t WINAPI Renderer::DoWork(DoWorkOptions *pOptions)
+void Renderer::Render(const Scene &scene, const Camera &camera)
 {
-    uint32_t firstLine = IMAGE_HEIGHT / NUM_THREADS * pOptions->ThreadIndex;
-    uint32_t lastLine = IMAGE_HEIGHT / NUM_THREADS * (pOptions->ThreadIndex + 1);
+    m_pActiveScene = &scene;
+    m_pActiveCamera = &camera;
 
-    for (uint32_t y = firstLine; y < lastLine; y++)
+    // Reset the accumulation data if it gets invalidated
+    if (m_FrameIndex == 1)
+        ZeroMemory(m_pAccumulationData, IMAGE_WIDTH * IMAGE_HEIGHT * sizeof(XMVECTOR));
+
+    // Dispatch the rendering work accross multiple threads
+    HANDLE threadHandles[NUM_THREADS] = {};
+    RenderChunkOptions options[NUM_THREADS] = {};
+    XMCOLOR *pData = m_Image.Lock();
+    for (size_t i = 0; i < NUM_THREADS; i++)
+    {
+        options[i].ThreadIndex = i;
+        options[i].pTextureData = pData;
+        options[i].This = this;
+
+        // Create a thread but don't start it right away (CREATE_SUSPENDED flag)
+        threadHandles[i] = CreateThread(
+            nullptr,
+            0,
+            reinterpret_cast<LPTHREAD_START_ROUTINE>(RenderChunk),
+            &options[i],
+            CREATE_SUSPENDED,
+            nullptr
+        );
+
+        // Equally dispatch the threads accross all physical processors
+        XSetThreadProcessor(threadHandles[i], i % MAXIMUM_PROCESSORS);
+
+        // Resume the thread once it's bound to a processor
+        ResumeThread(threadHandles[i]);
+    }
+
+    WaitForMultipleObjects(NUM_THREADS, threadHandles, TRUE, INFINITE);
+    for (size_t i = 0; i < NUM_THREADS; i++)
+        CloseHandle(threadHandles[i]);
+
+    m_FrameIndex++;
+    m_Image.Unlock();
+
+    m_Image.Render();
+}
+
+uint32_t Renderer::RenderChunk(const RenderChunkOptions *pOptions)
+{
+    assert(pOptions != nullptr);
+    assert(pOptions->pTextureData != nullptr);
+    assert(pOptions->This != nullptr);
+
+    // This function renders a chunk of rows of the final image and is ran multiple times,
+    // in parallel, on separate threads
+
+    // Calculate the row range to render based on the thread index
+    uint32_t firstRow = IMAGE_HEIGHT / NUM_THREADS * pOptions->ThreadIndex;
+    uint32_t lastRow = IMAGE_HEIGHT / NUM_THREADS * (pOptions->ThreadIndex + 1);
+
+    for (uint32_t y = firstRow; y < lastRow; y++)
     {
         for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
         {
@@ -62,47 +116,6 @@ uint32_t WINAPI Renderer::DoWork(DoWorkOptions *pOptions)
     }
 
     return 0;
-}
-
-void Renderer::Render(const Scene &scene, const Camera &camera)
-{
-    m_pActiveScene = &scene;
-    m_pActiveCamera = &camera;
-
-    // Reset the accumulation data if it gets invalidated
-    if (m_FrameIndex == 1)
-        ZeroMemory(m_pAccumulationData, IMAGE_WIDTH * IMAGE_HEIGHT * sizeof(XMVECTOR));
-
-    XMCOLOR *pData = m_Image.Lock();
-
-    HANDLE threadHandles[NUM_THREADS] = {};
-    (void)threadHandles;
-    DoWorkOptions options[NUM_THREADS] = {};
-    for (size_t i = 0; i < NUM_THREADS; i++)
-    {
-        options[i].ThreadIndex = i;
-        options[i].pTextureData = pData;
-        options[i].This = this;
-
-        threadHandles[i] = CreateThread(
-            nullptr,
-            0,
-            reinterpret_cast<LPTHREAD_START_ROUTINE>(DoWork),
-            &options[i],
-            CREATE_SUSPENDED,
-            nullptr
-        );
-        XSetThreadProcessor(threadHandles[i], i % MAXIMUM_PROCESSORS);
-        ResumeThread(threadHandles[i]);
-    }
-    WaitForMultipleObjects(NUM_THREADS, threadHandles, TRUE, INFINITE);
-    for (size_t i = 0; i < NUM_THREADS; i++)
-        CloseHandle(threadHandles[i]);
-
-    m_FrameIndex++;
-    m_Image.Unlock();
-
-    m_Image.Render();
 }
 
 XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y, uint32_t threadIndex)
