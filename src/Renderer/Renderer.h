@@ -32,10 +32,8 @@ private:
 
     struct DoWorkOptions
     {
-        uint32_t FirstLine;
-        uint32_t LastLine;
         uint32_t ThreadIndex;
-        XMCOLOR *pData;
+        XMCOLOR *pTextureData;
         Renderer *This;
     };
 

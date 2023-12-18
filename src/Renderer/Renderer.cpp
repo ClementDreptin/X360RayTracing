@@ -34,7 +34,10 @@ HRESULT Renderer::Init()
 
 uint32_t WINAPI Renderer::DoWork(DoWorkOptions *pOptions)
 {
-    for (uint32_t y = pOptions->FirstLine; y < pOptions->LastLine; y++)
+    uint32_t firstLine = IMAGE_HEIGHT / NUM_THREADS * pOptions->ThreadIndex;
+    uint32_t lastLine = IMAGE_HEIGHT / NUM_THREADS * (pOptions->ThreadIndex + 1);
+
+    for (uint32_t y = firstLine; y < lastLine; y++)
     {
         for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
         {
@@ -54,7 +57,7 @@ uint32_t WINAPI Renderer::DoWork(DoWorkOptions *pOptions)
             // Convert the XMVECTOR color to a XMCOLOR color and store it in the texture
             XMCOLOR _accumulatedColor;
             XMStoreColor(&_accumulatedColor, accumulatedColor);
-            pOptions->pData[index] = _accumulatedColor;
+            pOptions->pTextureData[index] = _accumulatedColor;
         }
     }
 
@@ -77,10 +80,8 @@ void Renderer::Render(const Scene &scene, const Camera &camera)
     DoWorkOptions options[NUM_THREADS] = {};
     for (size_t i = 0; i < NUM_THREADS; i++)
     {
-        options[i].FirstLine = IMAGE_HEIGHT / NUM_THREADS * i;
-        options[i].LastLine = IMAGE_HEIGHT / NUM_THREADS * (i + 1);
         options[i].ThreadIndex = i;
-        options[i].pData = pData;
+        options[i].pTextureData = pData;
         options[i].This = this;
 
         threadHandles[i] = CreateThread(
