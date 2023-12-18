@@ -5,6 +5,7 @@
 #include "Renderer/Ray.h"
 
 #define BOUNCES 3
+#define NUM_THREADS (MAXIMUM_PROCESSORS * 2)
 
 std::default_random_engine Renderer::s_RandEngine;
 std::uniform_real_distribution<float> Renderer::s_Rand(-0.5f, 0.5f);
@@ -32,6 +33,35 @@ HRESULT Renderer::Init()
     return hr;
 }
 
+uint32_t WINAPI Renderer::DoWork(DoWorkOptions *pOptions)
+{
+    for (uint32_t y = pOptions->FirstLine; y < pOptions->LastLine; y++)
+    {
+        for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
+        {
+            Renderer *This = pOptions->This;
+
+            // Get the current pixel color and add it to the color calculated
+            // for this pixel during the previous frame
+            XMVECTOR color = This->PerPixel(x, y);
+            uint32_t index = x + y * IMAGE_WIDTH;
+            This->m_pAccumulationData[index] = This->m_pAccumulationData[index] + color;
+
+            // Average the color to create a smooth image (and prevent it from becoming
+            // completely white)
+            XMVECTOR accumulatedColor = This->m_pAccumulationData[index];
+            accumulatedColor = accumulatedColor / static_cast<float>(This->m_FrameIndex);
+
+            // Convert the XMVECTOR color to a XMCOLOR color and store it in the texture
+            XMCOLOR _accumulatedColor;
+            XMStoreColor(&_accumulatedColor, accumulatedColor);
+            pOptions->pData[index] = _accumulatedColor;
+        }
+    }
+
+    return 0;
+}
+
 void Renderer::Render(const Scene &scene, const Camera &camera)
 {
     m_pActiveScene = &scene;
@@ -42,27 +72,33 @@ void Renderer::Render(const Scene &scene, const Camera &camera)
         ZeroMemory(m_pAccumulationData, IMAGE_WIDTH * IMAGE_HEIGHT * sizeof(XMVECTOR));
 
     XMCOLOR *pData = m_Image.Lock();
-    for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
+
+    HANDLE threadHandles[NUM_THREADS] = {};
+    (void)threadHandles;
+    DoWorkOptions options[NUM_THREADS] = {};
+    for (size_t i = 0; i < NUM_THREADS; i++)
     {
-        for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
-        {
-            // Get the current pixel color and add it to the color calculated
-            // for this pixel during the previous frame
-            XMVECTOR color = PerPixel(x, y);
-            uint32_t index = x + y * IMAGE_WIDTH;
-            m_pAccumulationData[index] = m_pAccumulationData[index] + color;
+        options[i].FirstLine = IMAGE_HEIGHT / NUM_THREADS * i;
+        options[i].LastLine = IMAGE_HEIGHT / NUM_THREADS * (i + 1);
+        options[i].pData = pData;
+        options[i].This = this;
 
-            // Average the color to create a smooth image (and prevent it from becoming
-            // completely white)
-            XMVECTOR accumulatedColor = m_pAccumulationData[index];
-            accumulatedColor = accumulatedColor / static_cast<float>(m_FrameIndex);
-
-            // Convert the XMVECTOR color to a XMCOLOR color and store it in the texture
-            XMCOLOR _accumulatedColor;
-            XMStoreColor(&_accumulatedColor, accumulatedColor);
-            pData[index] = _accumulatedColor;
-        }
+        // DoWork(&options[i]);
+        threadHandles[i] = CreateThread(
+            nullptr,
+            0,
+            reinterpret_cast<LPTHREAD_START_ROUTINE>(DoWork),
+            &options[i],
+            CREATE_SUSPENDED,
+            nullptr
+        );
+        XSetThreadProcessor(threadHandles[i], i % MAXIMUM_PROCESSORS);
+        ResumeThread(threadHandles[i]);
     }
+    WaitForMultipleObjects(NUM_THREADS, threadHandles, TRUE, INFINITE);
+    for (size_t i = 0; i < NUM_THREADS; i++)
+        CloseHandle(threadHandles[i]);
+
     m_FrameIndex++;
     m_Image.Unlock();
 

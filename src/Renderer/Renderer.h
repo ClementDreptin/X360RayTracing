@@ -28,6 +28,14 @@ private:
     static std::default_random_engine s_RandEngine;
     static std::uniform_real_distribution<float> s_Rand;
 
+    struct DoWorkOptions
+    {
+        uint32_t FirstLine;
+        uint32_t LastLine;
+        XMCOLOR *pData;
+        Renderer *This;
+    };
+
     struct HitPayload
     {
         HitPayload()
@@ -41,6 +49,8 @@ private:
         XMVECTOR WorldNormal;
         uint32_t ObjectIndex;
     };
+
+    static uint32_t WINAPI DoWork(DoWorkOptions *pOptions);
 
     XMVECTOR PerPixel(uint32_t x, uint32_t y);
 
