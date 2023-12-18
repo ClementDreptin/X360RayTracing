@@ -5,6 +5,8 @@
 #include "Renderer/Image.h"
 #include "Renderer/Ray.h"
 
+#define NUM_THREADS (MAXIMUM_PROCESSORS * 2)
+
 class Renderer
 {
 public:
@@ -25,13 +27,14 @@ private:
     const Scene *m_pActiveScene;
     const Camera *m_pActiveCamera;
 
-    static std::default_random_engine s_RandEngine;
+    static std::default_random_engine s_RandEngine[NUM_THREADS];
     static std::uniform_real_distribution<float> s_Rand;
 
     struct DoWorkOptions
     {
         uint32_t FirstLine;
         uint32_t LastLine;
+        uint32_t ThreadIndex;
         XMCOLOR *pData;
         Renderer *This;
     };
@@ -52,7 +55,7 @@ private:
 
     static uint32_t WINAPI DoWork(DoWorkOptions *pOptions);
 
-    XMVECTOR PerPixel(uint32_t x, uint32_t y);
+    XMVECTOR PerPixel(uint32_t x, uint32_t y, uint32_t threadIndex);
 
     HitPayload TraceRay(const Ray &ray);
 

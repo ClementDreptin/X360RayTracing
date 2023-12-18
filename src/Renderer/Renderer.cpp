@@ -5,9 +5,8 @@
 #include "Renderer/Ray.h"
 
 #define BOUNCES 3
-#define NUM_THREADS (MAXIMUM_PROCESSORS * 2)
 
-std::default_random_engine Renderer::s_RandEngine;
+std::default_random_engine Renderer::s_RandEngine[NUM_THREADS];
 std::uniform_real_distribution<float> Renderer::s_Rand(-0.5f, 0.5f);
 
 Renderer::Renderer()
@@ -43,7 +42,7 @@ uint32_t WINAPI Renderer::DoWork(DoWorkOptions *pOptions)
 
             // Get the current pixel color and add it to the color calculated
             // for this pixel during the previous frame
-            XMVECTOR color = This->PerPixel(x, y);
+            XMVECTOR color = This->PerPixel(x, y, pOptions->ThreadIndex);
             uint32_t index = x + y * IMAGE_WIDTH;
             This->m_pAccumulationData[index] = This->m_pAccumulationData[index] + color;
 
@@ -80,10 +79,10 @@ void Renderer::Render(const Scene &scene, const Camera &camera)
     {
         options[i].FirstLine = IMAGE_HEIGHT / NUM_THREADS * i;
         options[i].LastLine = IMAGE_HEIGHT / NUM_THREADS * (i + 1);
+        options[i].ThreadIndex = i;
         options[i].pData = pData;
         options[i].This = this;
 
-        // DoWork(&options[i]);
         threadHandles[i] = CreateThread(
             nullptr,
             0,
@@ -105,7 +104,7 @@ void Renderer::Render(const Scene &scene, const Camera &camera)
     m_Image.Render();
 }
 
-XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y)
+XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y, uint32_t threadIndex)
 {
     assert(m_pActiveScene != nullptr);
     assert(m_pActiveCamera != nullptr);
@@ -149,7 +148,7 @@ XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y)
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
         ray.Direction = XMVector4Reflect(
             ray.Direction,
-            payload.WorldNormal + XMVectorReplicate(material.Roughness * s_Rand(s_RandEngine))
+            payload.WorldNormal + XMVectorReplicate(material.Roughness * s_Rand(s_RandEngine[threadIndex]))
         );
     }
 
