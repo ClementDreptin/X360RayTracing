@@ -3,13 +3,15 @@
 struct Material
 {
     Material()
-        : Albedo(XMVectorSplatOne()), Roughness(1.0f), Metallic(0.0f)
+        : Albedo(XMVectorSplatOne()), EmissionColor(XMVectorZero()), EmissionPower(0.0f)
     {
     }
 
     XMVECTOR Albedo;
-    float Roughness;
-    float Metallic;
+    XMVECTOR EmissionColor;
+    float EmissionPower;
+
+    XMVECTOR GetEmission() const { return EmissionColor * EmissionPower; }
 };
 
 struct Sphere

@@ -145,8 +145,8 @@ XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y)
     ray.Origin = m_pActiveCamera->GetPosition();
     ray.Direction = m_pActiveCamera->GetRayDirections()[x + y * IMAGE_WIDTH];
 
-    XMVECTOR color = XMVectorZero();
-    float multiplier = 1.0f;
+    XMVECTOR light = XMVectorZero();
+    XMVECTOR contribution = XMVectorSplatOne();
     uint32_t seed = x + y * IMAGE_WIDTH * m_FrameIndex;
 
     // Make the ray bounce to calculate reflection
@@ -154,26 +154,26 @@ XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y)
     {
         seed += i;
 
-        // See if the ray hit anything, if not, return the sky color
+        // See if the ray hit anything, if not, add the skycolor to the ambient light
         HitPayload payload = TraceRay(ray);
         if (payload.HitDistance < 0.0f)
         {
-            XMVECTOR skyColor = XMVectorSet(0.6f, 0.7f, 0.9f, 1.0f);
-            color = color + skyColor * multiplier;
+            XMVECTOR skyColor = XMVectorSet(0.2f, 0.3f, 0.5f, 1.0f);
+            light += skyColor * contribution;
             break;
         }
 
-        // Calcuate the pixel color based on the light's position
         const Sphere &sphere = m_pActiveScene->Spheres[payload.ObjectIndex];
         const Material &material = m_pActiveScene->Materials[sphere.MaterialIndex];
-        XMVECTOR lightDirection = XMVector3NormalizeEst(XMVectorSet(-1.0f, -1.0f, -1.0f, 1.0f));
-        float lightIntensity = std::max<float>(XMVector3Dot(payload.WorldNormal, lightDirection * -1.0f).x, 0.0f);
-        XMVECTOR sphereColor = material.Albedo * lightIntensity;
-        color = color + sphereColor * multiplier;
 
-        // Slowly decrease the multiplier over time to prevent the reflection from
-        // getting brighter on each bounce
-        multiplier *= 0.5f;
+        // Make the spheres absorb their albedo every time a ray hits them.
+        // contribution represents the energy in the light ray and decreases
+        // every time a sphere is hit.
+        contribution *= material.Albedo;
+
+        // Make the spheres emit light (it only happens if they have a material with
+        // some emission power)
+        light += material.GetEmission();
 
         // Once the ray hit the sphere, update its origin to be the hit point
         // right in front of the sphere along the normal. We don't make it exactly
@@ -181,13 +181,19 @@ XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y)
         // the sphere due to floating point precision. Which would cause the ray to
         // hit the same sphere again but from the inside.
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
-        ray.Direction = XMVector4Reflect(
-            ray.Direction,
-            payload.WorldNormal + XMVectorReplicate(material.Roughness * (Utils::RandomFloat(seed) * 2.0f - 1.0f))
-        );
+        ray.Direction =
+            payload.WorldNormal +
+            XMVector3NormalizeEst(
+                XMVectorSet(
+                    Utils::RandomFloat(seed) * 2.0f - 1.0f,
+                    Utils::RandomFloat(seed) * 2.0f - 1.0f,
+                    Utils::RandomFloat(seed) * 2.0f - 1.0f,
+                    1.0f
+                )
+            );
     }
 
-    return color;
+    return light;
 }
 
 Renderer::HitPayload Renderer::TraceRay(const Ray &ray)
