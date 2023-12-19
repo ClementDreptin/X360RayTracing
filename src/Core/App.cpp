@@ -31,8 +31,8 @@ App::App()
 
     {
         Sphere sphere;
-        sphere.Position = XMVectorSet(1.0f, -101.0f, 0.0f, 1.0f);
-        sphere.Radius = 100.0f;
+        sphere.Position = XMVectorSet(0.0f, -8.1f, 0.0f, 1.0f);
+        sphere.Radius = 7.0f;
         sphere.MaterialIndex = 1;
         m_Scene.Spheres.push_back(sphere);
     }
