@@ -5,9 +5,27 @@
 #include "Renderer/Ray.h"
 
 #define BOUNCES 3
+#define NUM_THREADS (MAXIMUM_PROCESSORS * 2)
 
-std::default_random_engine Renderer::s_RandEngine[NUM_THREADS];
-std::uniform_real_distribution<float> Renderer::s_Rand(-0.5f, 0.5f);
+namespace Utils
+{
+
+static uint32_t pcgHash(uint32_t input)
+{
+    uint32_t state = input * 747796405 + 2891336453;
+    uint32_t word = ((state >> ((state >> 28) + 4)) ^ state) * 277803737;
+
+    return (word >> 22) ^ word;
+}
+
+static float RandomFloat(uint32_t &seed)
+{
+    seed = pcgHash(seed);
+
+    return static_cast<float>(seed) / static_cast<float>(std::numeric_limits<uint32_t>::max());
+}
+
+}
 
 Renderer::Renderer()
     : m_FrameIndex(1), m_pActiveScene(nullptr), m_pActiveCamera(nullptr)
@@ -99,7 +117,7 @@ uint32_t Renderer::RenderChunk(const RenderChunkOptions *pOptions)
 
             // Get the current pixel color and add it to the color calculated
             // for this pixel during the previous frame
-            XMVECTOR color = This->PerPixel(x, y, pOptions->ThreadIndex);
+            XMVECTOR color = This->PerPixel(x, y);
             uint32_t index = x + y * IMAGE_WIDTH;
             This->m_pAccumulationData[index] = This->m_pAccumulationData[index] + color;
 
@@ -118,7 +136,7 @@ uint32_t Renderer::RenderChunk(const RenderChunkOptions *pOptions)
     return 0;
 }
 
-XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y, uint32_t threadIndex)
+XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y)
 {
     assert(m_pActiveScene != nullptr);
     assert(m_pActiveCamera != nullptr);
@@ -129,10 +147,13 @@ XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y, uint32_t threadIndex)
 
     XMVECTOR color = XMVectorZero();
     float multiplier = 1.0f;
+    uint32_t seed = x + y * IMAGE_WIDTH * m_FrameIndex;
 
     // Make the ray bounce to calculate reflection
     for (size_t i = 0; i < BOUNCES; i++)
     {
+        seed += i;
+
         // See if the ray hit anything, if not, return the sky color
         HitPayload payload = TraceRay(ray);
         if (payload.HitDistance < 0.0f)
@@ -162,7 +183,7 @@ XMVECTOR Renderer::PerPixel(uint32_t x, uint32_t y, uint32_t threadIndex)
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
         ray.Direction = XMVector4Reflect(
             ray.Direction,
-            payload.WorldNormal + XMVectorReplicate(material.Roughness * s_Rand(s_RandEngine[threadIndex]))
+            payload.WorldNormal + XMVectorReplicate(material.Roughness * (Utils::RandomFloat(seed) * 2.0f - 1.0f))
         );
     }
 
