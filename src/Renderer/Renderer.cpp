@@ -209,14 +209,15 @@ Renderer::HitPayload Renderer::TraceRay(const Ray &ray)
         // https://www.youtube.com/watch?v=4NshnkzOdI0
         //
         // Equation of a sphere (which is a quadratic equation):
-        // (bx^2 + by^2 + bz^2)t^2 + (2(axbx + ayby + azbz))t + (ax^2 + ay^2 + az^2 - r^2) = 0
+        // (Bx^2 + By^2 + Bz^2)t^2 + (2(AxBx + AyBy + AzBz))t + (Ax^2 + Ay^2 + Az^2 - r^2) = 0
         // (         a        )t^2 + (          b          )t + (            c           ) = 0
         //
         // where
-        // a = ray origin
-        // b = ray direction
+        // A = ray origin
+        // B = ray direction
         // r = radius
         // t = hit distance
+        // note: "Ax" is the x component of the A vector, not the A vector multipled by some x
 
         const Sphere &sphere = m_pActiveScene->Spheres[i];
         XMVECTOR origin = ray.Origin - sphere.Position;
