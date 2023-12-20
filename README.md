@@ -2,6 +2,16 @@
 
 Ray tracing experiment on the Xbox 360.
 
+![Ray traced spheres](./resources/screenshots/spheres.jpg)
+
+## Technical notes
+
+This project is an Xbox 360 port of [TheCherno's RayTracing renderer](https://github.com/TheCherno/RayTracing) built entirely on YouTube in [a fantastic series](https://www.youtube.com/playlist?list=PLlrATfBNZ98edc5GshdBtREv5asFW3yXl).
+
+All the calculations are done on the CPU because first, that's how TheCherno builds it in his series, and second, because the Xbox 360 only has support for DirectX9, which doesn't have a ray tracing pipeline.
+
+Each frame, a giant array of pixels is calculated on the CPU and written to a texture that fills up the whole screen. The texture size had to be fairly small (640x360) so that the hardware could handle it. The small size of the texture explains the pixelated affect around the spheres. A CPU implementation is far from optimal (hence the frame rate...), so I might try to write a GPU implementation.
+
 ## Building
 
 ### Requirements
