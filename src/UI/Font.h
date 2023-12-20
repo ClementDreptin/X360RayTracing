@@ -1,7 +1,5 @@
 #pragma once
 
-#include <AtgFont.h>
-
 class Font : public ATG::Font
 {
 public:

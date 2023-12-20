@@ -1,8 +1,5 @@
 #pragma once
 
-#include <AtgApp.h>
-#include <AtgUtil.h>
-
 #include "Core/Scene.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Renderer.h"
