@@ -50,49 +50,8 @@ HRESULT Renderer::Init()
     return hr;
 }
 
-void Renderer::Render(const Scene &scene, const Camera &camera)
+void Renderer::Render()
 {
-    m_pActiveScene = &scene;
-    m_pActiveCamera = &camera;
-
-    // Reset the accumulation data if it gets invalidated
-    if (m_FrameIndex == 1)
-        ZeroMemory(m_pAccumulationData, IMAGE_WIDTH * IMAGE_HEIGHT * sizeof(XMVECTOR));
-
-    // Dispatch the rendering work accross multiple threads
-    HANDLE threadHandles[NUM_THREADS] = {};
-    RenderChunkOptions options[NUM_THREADS] = {};
-    XMCOLOR *pData = m_Image.Lock();
-    for (size_t i = 0; i < NUM_THREADS; i++)
-    {
-        options[i].ThreadIndex = i;
-        options[i].pTextureData = pData;
-        options[i].This = this;
-
-        // Create a thread but don't start it right away (CREATE_SUSPENDED flag)
-        threadHandles[i] = CreateThread(
-            nullptr,
-            0,
-            reinterpret_cast<LPTHREAD_START_ROUTINE>(RenderChunk),
-            &options[i],
-            CREATE_SUSPENDED,
-            nullptr
-        );
-
-        // Equally dispatch the threads accross all physical processors
-        XSetThreadProcessor(threadHandles[i], i % MAXIMUM_PROCESSORS);
-
-        // Resume the thread once it's bound to a processor
-        ResumeThread(threadHandles[i]);
-    }
-
-    WaitForMultipleObjects(NUM_THREADS, threadHandles, TRUE, INFINITE);
-    for (size_t i = 0; i < NUM_THREADS; i++)
-        CloseHandle(threadHandles[i]);
-
-    m_FrameIndex++;
-    m_Image.Unlock();
-
     m_Image.Render();
 }
 

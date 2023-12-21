@@ -1,35 +1,12 @@
-float4x4 c_matWP : register(c0);
+#define DISPLAY_WIDTH 1280.0f
+#define DISPLAY_HEIGHT 720.0f
 
-struct VS_INPUT
+float4 ImageVertex(float4 position : POSITION) : POSITION
 {
-    float4 InPosition : POSITION;
-    float2 InTexCoord : TEXCOORD;
-};
-
-struct VS_OUTPUT
-{
-    float4 OutPosition : POSITION;
-    float2 OutTexCoord : TEXCOORD;
-};
-
-VS_OUTPUT ImageVertex(VS_INPUT input)
-{
-    VS_OUTPUT output;
-    output.OutPosition = mul(c_matWP, input.InPosition);
-    output.OutTexCoord = input.InTexCoord;
-
-    return output;
+    return position;
 }
 
-struct PS_INPUT
+float4 ImagePixel(float2 screenPos : VPOS) : COLOR
 {
-    float2 InTexCoord : TEXCOORD;
-};
-
-Texture2D objTexture         : register(t0);
-SamplerState objSamplerState : register(s0);
-
-float4 ImagePixel(PS_INPUT input) : SV_TARGET
-{
-    return objTexture.Sample(objSamplerState, input.InTexCoord);
+    return float4(screenPos.x / DISPLAY_WIDTH, screenPos.y / DISPLAY_HEIGHT, 0.0f, 1.0f);
 }

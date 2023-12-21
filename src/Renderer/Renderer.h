@@ -14,7 +14,7 @@ public:
 
     HRESULT Init();
 
-    void Render(const Scene &scene, const Camera &camera);
+    void Render();
 
     void ResetAccumulation() { m_FrameIndex = 1; }
 
