@@ -1,9 +1,9 @@
 #define DISPLAY_WIDTH 1280.0f
 #define DISPLAY_HEIGHT 720.0f
 
-float4 c_CameraPosition : register(c0);
-float4x4 c_InverseProjection : register(c1);
-float4x4 c_InverseView : register(c2);
+uniform float4 c_CameraPosition : register(c0);
+uniform float4x4 c_InverseProjection : register(c1);
+uniform float4x4 c_InverseView : register(c5);
 
 struct Ray
 {
@@ -13,11 +13,10 @@ struct Ray
 
 float3 CalculateRayDirection(float2 coord)
 {
-    // float4 target = mul(c_InverseProjection, float4(coord.xy, 1.0f, 1.0f));
-    // float4 norm = normalize(target / target.w);
+    float4 target = mul(c_InverseProjection, float4(coord.xy, 1.0f, 1.0f));
+    float4 norm = normalize(target / target.w);
 
-    // return mul(c_InverseView, norm);
-    return float3(coord.xy, -1.0f);
+    return mul(c_InverseView, norm);
 }
 
 float4 TraceRay(Ray ray, float4 sphereColor)

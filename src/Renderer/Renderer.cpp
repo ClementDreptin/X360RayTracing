@@ -48,7 +48,7 @@ void Renderer::Render(const Camera &camera)
     g_pd3dDevice->SetPixelShader(s_pPixelShader);
     g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&camera.GetPosition()), 1);
     g_pd3dDevice->SetPixelShaderConstantF(1, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
-    g_pd3dDevice->SetPixelShaderConstantF(2, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
+    g_pd3dDevice->SetPixelShaderConstantF(5, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
 
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
