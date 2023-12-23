@@ -6,15 +6,14 @@
 Camera::Camera(float verticalFOV, float nearClip, float farClip)
     : m_VerticalFOV(verticalFOV), m_NearClip(nearClip), m_FarClip(farClip)
 {
-    m_Position = XMVectorSet(-1.0f, 1.0f, 5.0f, 1.0f);
-    m_ForwardDirection = XMVectorSet(0.3f, -0.2f, -1.0f, 1.0f);
+    m_Position = XMVectorSet(0.0f, 0.0f, 1.0f, 1.0f);
+    m_ForwardDirection = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
     m_UpDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 
     m_Projection = XMMatrixPerspectiveFovRH(XMConvertToRadians(verticalFOV), ASPECT_RATIO, nearClip, farClip);
     m_InverseProjection = XMMatrixInverse(nullptr, m_Projection);
 
     RecalculateView();
-    RecalculateRayDirections();
 }
 
 bool Camera::Update(const XINPUT_GAMEPAD &gamepad, float ts)
@@ -31,32 +30,32 @@ bool Camera::Update(const XINPUT_GAMEPAD &gamepad, float ts)
 
     if (leftY > 0.0f) // Up
     {
-        m_Position = m_Position + m_UpDirection * speed * ts;
+        m_Position += m_UpDirection * speed * ts;
         moved = true;
     }
     else if (leftY < 0.0f) // Down
     {
-        m_Position = m_Position - m_UpDirection * speed * ts;
+        m_Position -= m_UpDirection * speed * ts;
         moved = true;
     }
     else if (leftX < 0.0f) // Left
     {
-        m_Position = m_Position - rightDirection * speed * ts;
+        m_Position -= rightDirection * speed * ts;
         moved = true;
     }
     else if (leftX > 0.0f) // Right
     {
-        m_Position = m_Position + rightDirection * speed * ts;
+        m_Position += rightDirection * speed * ts;
         moved = true;
     }
     else if (gamepad.wButtons & XINPUT_GAMEPAD_Y) // Forward
     {
-        m_Position = m_Position + m_ForwardDirection * speed * ts;
+        m_Position += m_ForwardDirection * speed * ts;
         moved = true;
     }
     else if (gamepad.wButtons & XINPUT_GAMEPAD_A) // Backwards
     {
-        m_Position = m_Position - m_ForwardDirection * speed * ts;
+        m_Position -= m_ForwardDirection * speed * ts;
         moved = true;
     }
 
@@ -72,10 +71,7 @@ bool Camera::Update(const XINPUT_GAMEPAD &gamepad, float ts)
     }
 
     if (moved)
-    {
         RecalculateView();
-        RecalculateRayDirections();
-    }
 
     return moved;
 }

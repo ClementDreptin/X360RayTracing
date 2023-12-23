@@ -67,8 +67,10 @@ HRESULT Renderer::Init()
     return hr;
 }
 
-void Renderer::Render()
+void Renderer::Render(const Camera &camera)
 {
+    m_pActiveCamera = &camera;
+
     g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
     g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
@@ -76,7 +78,10 @@ void Renderer::Render()
     g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
     g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
     g_pd3dDevice->SetVertexShader(s_pVertexShader);
+
     g_pd3dDevice->SetPixelShader(s_pPixelShader);
+    g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&m_pActiveCamera->GetPosition()), 1);
+
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
 

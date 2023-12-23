@@ -70,6 +70,13 @@ HRESULT App::Initialize()
 
 HRESULT App::Update()
 {
+    float ts = static_cast<float>(m_Timer.GetElapsedTime());
+
+    XINPUT_STATE state = {};
+    XInputGetState(0, &state);
+
+    m_Camera.Update(state.Gamepad, ts);
+
     return S_OK;
 }
 
@@ -77,7 +84,7 @@ HRESULT App::Render()
 {
     m_pd3dDevice->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, D3DCOLOR_XRGB(0, 0, 0), 1.0f, 0);
 
-    m_Renderer.Render();
+    m_Renderer.Render(m_Camera);
 
     RenderFrameRateText();
 
