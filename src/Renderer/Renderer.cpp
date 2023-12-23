@@ -7,6 +7,10 @@
 #define BOUNCES 3
 #define NUM_THREADS (MAXIMUM_PROCESSORS * 2)
 
+bool Renderer::s_ShadersInitialized = false;
+D3DVertexShader *Renderer::s_pVertexShader = nullptr;
+D3DPixelShader *Renderer::s_pPixelShader = nullptr;
+
 namespace Utils
 {
 
@@ -41,9 +45,22 @@ HRESULT Renderer::Init()
 {
     HRESULT hr = S_OK;
 
-    hr = m_Image.Init();
+    if (!s_ShadersInitialized)
+    {
+        hr = InitShaders();
+        if (FAILED(hr))
+            return hr;
+    }
+
+    Vertex vertices[] = {
+        Vertex(-1.0f, -1.0f, 0.0f), // Bottom Left
+        Vertex(-1.0f, 1.0f, 0.0f),  // Top Left
+        Vertex(1.0f, 1.0f, 0.0f),   // Top Right
+        Vertex(1.0f, -1.0f, 0.0f),  // Bottom Right
+    };
+    hr = m_VertexBuffer.Init(vertices, ARRAYSIZE(vertices));
     if (FAILED(hr))
-        Log::Error("Couldn't initialized the image");
+        return hr;
 
     m_pAccumulationData = new XMVECTOR[IMAGE_WIDTH * IMAGE_HEIGHT];
 
@@ -52,7 +69,15 @@ HRESULT Renderer::Init()
 
 void Renderer::Render()
 {
-    m_Image.Render();
+    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+
+    g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
+    g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
+    g_pd3dDevice->SetVertexShader(s_pVertexShader);
+    g_pd3dDevice->SetPixelShader(s_pPixelShader);
+    g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 }
 
 uint32_t Renderer::RenderChunk(const RenderChunkOptions *pOptions)
@@ -231,4 +256,27 @@ Renderer::HitPayload Renderer::Miss(const Ray &ray)
     payload.HitDistance = -1.0f;
 
     return payload;
+}
+
+HRESULT Renderer::InitShaders()
+{
+    HRESULT hr = S_OK;
+
+    hr = ATG::LoadVertexShader("game:\\Media\\Shaders\\Image.xvu", &s_pVertexShader);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't load vertex shader");
+        return hr;
+    }
+
+    hr = ATG::LoadPixelShader("game:\\Media\\Shaders\\Image.xpu", &s_pPixelShader);
+    if (FAILED(hr))
+    {
+        Log::Error("Couldn't load pixel shader");
+        return hr;
+    }
+
+    s_ShadersInitialized = true;
+
+    return hr;
 }

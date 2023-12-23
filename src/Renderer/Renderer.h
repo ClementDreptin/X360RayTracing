@@ -2,8 +2,8 @@
 
 #include "Core/Scene.h"
 #include "Renderer/Camera.h"
-#include "Renderer/Image.h"
 #include "Renderer/Ray.h"
+#include "Renderer/VertexBuffer.h"
 
 class Renderer
 {
@@ -19,11 +19,15 @@ public:
     void ResetAccumulation() { m_FrameIndex = 1; }
 
 private:
-    Image m_Image;
+    VertexBuffer m_VertexBuffer;
     XMVECTOR *m_pAccumulationData;
     uint32_t m_FrameIndex;
     const Scene *m_pActiveScene;
     const Camera *m_pActiveCamera;
+
+    static bool s_ShadersInitialized;
+    static D3DVertexShader *s_pVertexShader;
+    static D3DPixelShader *s_pPixelShader;
 
     struct RenderChunkOptions
     {
@@ -60,4 +64,6 @@ private:
     HitPayload ClosestHit(const Ray &ray, float hitDistance, uint32_t objectIndex);
 
     HitPayload Miss(const Ray &ray);
+
+    static HRESULT InitShaders();
 };

@@ -85,7 +85,6 @@
     <ClInclude Include="src\Core\Scene.h" />
     <ClInclude Include="src\Renderer\Camera.h" />
     <ClInclude Include="src\Renderer\Globals.h" />
-    <ClInclude Include="src\Renderer\Image.h" />
     <ClInclude Include="src\Renderer\Ray.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\Renderer\VertexBuffer.h" />
@@ -98,7 +97,6 @@
     <ClCompile Include="src\Core\App.cpp" />
     <ClCompile Include="src\Core\Log.cpp" />
     <ClCompile Include="src\Renderer\Camera.cpp" />
-    <ClCompile Include="src\Renderer\Image.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
     <ClCompile Include="src\Renderer\VertexBuffer.cpp" />
     <ClCompile Include="src\UI\Console.cpp" />

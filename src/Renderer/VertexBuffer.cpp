@@ -2,7 +2,6 @@
 #include "Renderer/VertexBuffer.h"
 
 #include "Renderer/Globals.h"
-#include "Renderer/Image.h"
 
 VertexBuffer::VertexBuffer()
     : m_pBuffer(nullptr), m_pVertexDeclaration(nullptr)
