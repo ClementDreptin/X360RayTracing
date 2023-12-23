@@ -1,6 +1,15 @@
 #pragma once
 
-template<typename T>
+struct Vertex
+{
+    Vertex(float x, float y, float z)
+        : Pos(x, y, z)
+    {
+    }
+
+    XMFLOAT3 Pos;
+};
+
 class VertexBuffer
 {
 public:
@@ -12,9 +21,9 @@ public:
 
     inline D3DVertexDeclaration *GetVertexDeclaration() const { return m_pVertexDeclaration; }
 
-    HRESULT Init(T *pData, size_t numVertices, D3DVERTEXELEMENT9 *pVertexElements);
+    HRESULT Init(Vertex *pData, size_t numVertices);
 
-    void UpdateBuffer(T *pData, size_t numVertices);
+    void UpdateBuffer(Vertex *pData, size_t numVertices);
 
 private:
     D3DVertexBuffer *m_pBuffer;

@@ -4,14 +4,12 @@
 #include "Renderer/Globals.h"
 #include "Renderer/Image.h"
 
-template<typename T>
-VertexBuffer<T>::VertexBuffer()
+VertexBuffer::VertexBuffer()
     : m_pBuffer(nullptr), m_pVertexDeclaration(nullptr)
 {
 }
 
-template<typename T>
-VertexBuffer<T>::~VertexBuffer()
+VertexBuffer::~VertexBuffer()
 {
     if (m_pBuffer != nullptr)
         m_pBuffer->Release();
@@ -20,12 +18,11 @@ VertexBuffer<T>::~VertexBuffer()
         m_pVertexDeclaration->Release();
 }
 
-template<typename T>
-HRESULT VertexBuffer<T>::Init(T *pData, size_t numVertices, D3DVERTEXELEMENT9 *pVertexElements)
+HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
 {
     HRESULT hr = S_OK;
 
-    size_t dataSize = sizeof(T) * numVertices;
+    size_t dataSize = sizeof(Vertex) * numVertices;
 
     hr = g_pd3dDevice->CreateVertexBuffer(dataSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pBuffer, nullptr);
     if (FAILED(hr))
@@ -34,24 +31,25 @@ HRESULT VertexBuffer<T>::Init(T *pData, size_t numVertices, D3DVERTEXELEMENT9 *p
         return hr;
     }
 
-    g_pd3dDevice->CreateVertexDeclaration(pVertexElements, &m_pVertexDeclaration);
+    D3DVERTEXELEMENT9 vertexElements[] = {
+        { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+        D3DDECL_END()
+    };
+    g_pd3dDevice->CreateVertexDeclaration(vertexElements, &m_pVertexDeclaration);
 
     UpdateBuffer(pData, numVertices);
 
     return hr;
 }
 
-template<typename T>
-void VertexBuffer<T>::UpdateBuffer(T *pData, size_t numVertices)
+void VertexBuffer::UpdateBuffer(Vertex *pData, size_t numVertices)
 {
     assert(m_pBuffer != nullptr);
 
-    size_t dataSize = sizeof(T) * numVertices;
+    size_t dataSize = sizeof(Vertex) * numVertices;
     void *pVertices = nullptr;
 
     m_pBuffer->Lock(0, dataSize, &pVertices, 0);
     memcpy(pVertices, pData, dataSize);
     m_pBuffer->Unlock();
 }
-
-template class VertexBuffer<ImageVertex>;

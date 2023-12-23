@@ -2,16 +2,6 @@
 
 #include "Renderer/VertexBuffer.h"
 
-struct ImageVertex
-{
-    ImageVertex(float x, float y, float z)
-        : Pos(x, y, z)
-    {
-    }
-
-    XMFLOAT3 Pos;
-};
-
 class Image
 {
 public:
@@ -22,7 +12,7 @@ public:
     void Render();
 
 private:
-    VertexBuffer<ImageVertex> m_VertexBuffer;
+    VertexBuffer m_VertexBuffer;
 
     static bool s_ShadersInitialized;
     static D3DVertexShader *s_pVertexShader;
