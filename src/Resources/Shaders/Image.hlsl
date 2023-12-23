@@ -17,7 +17,7 @@ float4 PerPixel(float2 coord)
     // t = hit distance
     // note: "Ax" is the x component of the A vector, not the A vector multipled by some x
 
-    float3 rayOrigin = float3(0.0f, 0.0f, 2.0f);
+    float3 rayOrigin = float3(0.0f, 0.0f, 1.0f);
     float3 rayDirection = float3(coord.x, coord.y, -1.0f);
     float radius = 0.5f;
     float a = dot(rayDirection, rayDirection);
@@ -27,15 +27,31 @@ float4 PerPixel(float2 coord)
     // Quadratic forumula discriminant:
     // b^2 - 4ac
     float discriminant = b * b - 4.0f * a * c;
-    if (discriminant >= 0.0f)
-        return float4(1.0f, 0.0f, 1.0f, 1.0f);
+    if (discriminant < 0.0f)
+        return float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-    return float4(0.0f, 0.0f, 0.0f, 0.0f);
+    // Quadratic formula solutions:
+    // (-b +- sqrt(discriminant)) / 2a
+    //
+    // The "-" solution is always smaller so it is always the closest hit
+    // distance, no need to calculate the "+" solution
+    float closestT = (-b - sqrt(discriminant)) / (2.0f * a);
+    float3 hitPoint = rayOrigin + rayDirection * closestT;
+
+    // Light calculation
+    float3 normal = normalize(hitPoint);
+    float3 lightDir = normalize(float3(-1.0f, -1.0f, -1.0f));
+    float lightIntensity = max(dot(normal, -lightDir), 0.0f);
+
+    float4 sphereColor = float4(1.0f, 0.0f, 1.0f, 1.0f);
+    sphereColor *= lightIntensity;
+
+    return sphereColor;
 }
 
 float4 ImagePixel(float2 screenPos : VPOS) : COLOR
 {
-    float2 coord = float2(screenPos.x / DISPLAY_WIDTH, screenPos.y / DISPLAY_HEIGHT);
+    float2 coord = float2(screenPos.x / DISPLAY_WIDTH, (DISPLAY_HEIGHT - screenPos.y) / DISPLAY_HEIGHT);
     coord = coord * 2.0f - 1.0f;
 
     return PerPixel(coord);
