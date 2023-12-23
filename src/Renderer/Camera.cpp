@@ -82,27 +82,6 @@ void Camera::RecalculateView()
     m_InverseView = XMMatrixInverse(nullptr, m_View);
 }
 
-void Camera::RecalculateRayDirections()
-{
-    m_RayDirections.resize(IMAGE_WIDTH * IMAGE_HEIGHT);
-
-    for (uint32_t y = 0; y < IMAGE_HEIGHT; y++)
-    {
-        for (uint32_t x = 0; x < IMAGE_WIDTH; x++)
-        {
-            float normX = static_cast<float>(x) / static_cast<float>(IMAGE_WIDTH);
-            float normY = static_cast<float>(y) / static_cast<float>(IMAGE_HEIGHT);
-            XMVECTOR coord = XMVectorSet(normX, normY, 0.0f, 0.0f);
-            coord = coord * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
-
-            XMVECTOR target = XMVector4Transform(XMVectorSet(coord.x, coord.y, 1.0f, 1.0f), m_InverseProjection);
-            XMVECTOR norm = XMVector4NormalizeEst(target / XMVectorSplatW(target));
-            XMVECTOR rayDirection = XMVector4Transform(norm, m_InverseView);
-            m_RayDirections[x + y * IMAGE_WIDTH] = rayDirection;
-        }
-    }
-}
-
 float Camera::ConvertThumbstickValue(int16_t thumbstickValue, int16_t deadZone)
 {
     // Convert thumbstick values coming from XINPUT to a [-1;+1] space

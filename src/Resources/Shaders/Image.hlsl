@@ -2,13 +2,23 @@
 #define DISPLAY_HEIGHT 720.0f
 
 float4 c_CameraPosition : register(c0);
+float4x4 c_InverseProjection : register(c1);
+float4x4 c_InverseView : register(c2);
 
 struct Ray
 {
     float3 Origin;
     float3 Direction;
 };
-float4 PerPixel(float2 coord)
+
+float3 CalculateRayDirection(float2 coord)
+{
+    // float4 target = mul(c_InverseProjection, float4(coord.xy, 1.0f, 1.0f));
+    // float4 norm = normalize(target / target.w);
+
+    // return mul(c_InverseView, norm);
+    return float3(coord.xy, -1.0f);
+}
 
 float4 TraceRay(Ray ray, float4 sphereColor)
 {
@@ -60,7 +70,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
 
     Ray ray;
     ray.Origin = c_CameraPosition;
-    ray.Direction = float3(coord.xy, -1.0f);
+    ray.Direction = CalculateRayDirection(coord);
 
     return TraceRay(ray, float4(1.0f, 0.0f, 1.0f, 1.0f));
 }

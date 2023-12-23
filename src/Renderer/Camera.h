@@ -19,8 +19,6 @@ public:
 
     inline const XMVECTOR &GetDirection() const { return m_ForwardDirection; }
 
-    inline const std::vector<XMVECTOR> &GetRayDirections() const { return m_RayDirections; }
-
     inline float GetTranslationSpeed() const { return 5.0f; }
 
     inline float GetRotationSpeed() const { return 0.05f; }
@@ -39,11 +37,7 @@ private:
     XMVECTOR m_ForwardDirection;
     XMVECTOR m_UpDirection;
 
-    std::vector<XMVECTOR> m_RayDirections;
-
     void RecalculateView();
-
-    void RecalculateRayDirections();
 
     static float ConvertThumbstickValue(int16_t thumbstickValue, int16_t deadZone);
 };

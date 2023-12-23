@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/Scene.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Renderer.h"
 #include "UI/Text.h"
@@ -19,7 +18,6 @@ public:
 private:
     Camera m_Camera;
     Renderer m_Renderer;
-    Scene m_Scene;
     ATG::Timer m_Timer;
     Text m_FrameRateText;
 
