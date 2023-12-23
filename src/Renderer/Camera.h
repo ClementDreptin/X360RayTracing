@@ -19,9 +19,9 @@ public:
 
     inline const XMVECTOR &GetDirection() const { return m_ForwardDirection; }
 
-    inline float GetTranslationSpeed() const { return 5.0f; }
+    inline float GetTranslationSpeed() const { return 2.0f; }
 
-    inline float GetRotationSpeed() const { return 0.05f; }
+    inline float GetRotationSpeed() const { return 0.002f; }
 
 private:
     XMMATRIX m_Projection;
