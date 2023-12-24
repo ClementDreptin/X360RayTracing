@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Scene.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Renderer.h"
 #include "UI/Text.h"
@@ -16,6 +17,7 @@ public:
     virtual HRESULT Render();
 
 private:
+    Scene m_Scene;
     Camera m_Camera;
     Renderer m_Renderer;
     ATG::Timer m_Timer;

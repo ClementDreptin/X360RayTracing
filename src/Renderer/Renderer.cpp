@@ -32,11 +32,19 @@ HRESULT Renderer::Init()
     if (FAILED(hr))
         return hr;
 
+    hr = m_ConstantBuffer.Init();
+    if (FAILED(hr))
+        return hr;
+
     return hr;
 }
 
-void Renderer::Render(const Camera &camera)
+void Renderer::Render(const Scene &scene, const Camera &camera)
 {
+    assert(m_pConstantBuffer != nullptr);
+
+    m_ConstantBuffer.Update(&scene);
+
     g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
     g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
@@ -47,10 +55,16 @@ void Renderer::Render(const Camera &camera)
 
     g_pd3dDevice->SetPixelShader(s_pPixelShader);
     g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&camera.GetPosition()), 1);
-    g_pd3dDevice->SetPixelShaderConstantF(1, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
-    g_pd3dDevice->SetPixelShaderConstantF(5, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
+    g_pd3dDevice->SetPixelShaderConstantF(4, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
+    g_pd3dDevice->SetPixelShaderConstantF(8, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
+
+    const size_t vec4CountInConstantBuffer = sizeof(Scene) / sizeof(XMVECTOR);
+    g_pd3dDevice->GpuOwnPixelShaderConstantF(12, vec4CountInConstantBuffer);
+    g_pd3dDevice->GpuLoadPixelShaderConstantF4(12, vec4CountInConstantBuffer, &m_ConstantBuffer, 0);
 
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
+
+    g_pd3dDevice->GpuDisownPixelShaderConstantF(12, vec4CountInConstantBuffer);
 }
 
 HRESULT Renderer::InitShaders()

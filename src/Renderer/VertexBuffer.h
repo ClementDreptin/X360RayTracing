@@ -23,7 +23,7 @@ public:
 
     HRESULT Init(Vertex *pData, size_t numVertices);
 
-    void UpdateBuffer(Vertex *pData, size_t numVertices);
+    void Update(const Vertex *pData, size_t numVertices);
 
 private:
     D3DVertexBuffer *m_pBuffer;

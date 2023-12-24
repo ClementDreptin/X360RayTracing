@@ -36,12 +36,12 @@ HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
     };
     g_pd3dDevice->CreateVertexDeclaration(vertexElements, &m_pVertexDeclaration);
 
-    UpdateBuffer(pData, numVertices);
+    Update(pData, numVertices);
 
     return hr;
 }
 
-void VertexBuffer::UpdateBuffer(Vertex *pData, size_t numVertices)
+void VertexBuffer::Update(const Vertex *pData, size_t numVertices)
 {
     assert(m_pBuffer != nullptr);
 
