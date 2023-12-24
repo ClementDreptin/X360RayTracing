@@ -20,7 +20,7 @@ float3 CalculateRayDirection(float2 coord)
     return mul(c_InverseView, norm);
 }
 
-float4 TraceRay(Ray ray)
+HitPayload TraceRay(Ray ray)
 {
     // Find the closest sphere along the ray
     uint closestSphereIndex = UINT_MAX;
@@ -68,18 +68,33 @@ float4 TraceRay(Ray ray)
 
     // No spheres were hit
     if (closestSphereIndex == UINT_MAX)
-        return float4(0.0f, 0.0f, 0.0f, 1.0f);
+        return Miss(ray);
 
-    Sphere closestSphere = c_Scene.Spheres[closestSphereIndex];
-    float3 origin = ray.Origin - closestSphere.Position.xyz;
-    float3 hitPoint = origin + ray.Direction * hitDistance;
+    return ClosestHit(ray, hitDistance, closestSphereIndex);
+}
 
-    // Light calculation
-    float3 normal = normalize(hitPoint);
-    float3 lightDir = normalize(float3(-1.0f, -1.0f, -1.0f));
-    float lightIntensity = max(dot(normal, -lightDir), 0.0f);
+HitPayload ClosestHit(Ray ray, float hitDistance, uint objectIndex)
+{
+    Sphere sphere = c_Scene.Spheres[objectIndex];
 
-    return closestSphere.Albedo * lightIntensity;
+    HitPayload payload;
+    payload.HitDistance = hitDistance;
+    payload.ObjectIndex = objectIndex;
+    payload.WorldPosition = ray.Origin + ray.Direction * hitDistance;
+    payload.WorldNormal = normalize(payload.WorldPosition - sphere.Position);
+
+    return payload;
+}
+
+HitPayload Miss(Ray ray)
+{
+    HitPayload payload;
+    payload.HitDistance = -1.0f;
+    payload.ObjectIndex = UINT_MAX;
+    payload.WorldPosition = float3(0.0f, 0.0f, 0.0f);
+    payload.WorldNormal = float3(0.0f, 0.0f, 0.0f);
+
+    return payload;
 }
 
 // Pixel shader entry point
@@ -89,12 +104,22 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
     float2 coord = float2(screenPos.x / DISPLAY_WIDTH, (DISPLAY_HEIGHT - screenPos.y) / DISPLAY_HEIGHT);
     coord = coord * 2.0f - 1.0f;
 
-    // Create a ray that starts at the camera and goes where the camera is looking
+    // Cast a ray from the camera towards where it's looking
     Ray ray;
     ray.Origin = c_CameraPosition;
     ray.Direction = CalculateRayDirection(coord);
+    HitPayload payload = TraceRay(ray);
 
-    return TraceRay(ray);
+    // Return the skycolor if the ray didn't hit any sphere
+    if (payload.HitDistance < 0.0f)
+        return float4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // Light calculation
+    Sphere sphere = c_Scene.Spheres[payload.ObjectIndex];
+    float3 lightDir = normalize(float3(-1.0f, -1.0f, -1.0f));
+    float lightIntensity = max(dot(payload.WorldNormal, -lightDir), 0.0f);
+
+    return sphere.Albedo * lightIntensity;
 }
 
 // Vertex shader entry point

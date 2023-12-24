@@ -22,6 +22,19 @@ struct Ray
     float3 Direction;
 };
 
+struct HitPayload
+{
+    float HitDistance;
+    float3 WorldPosition;
+    float3 WorldNormal;
+    uint ObjectIndex;
+};
+
 float3 CalculateRayDirection(float2 coord);
 
-float4 TraceRay(Ray ray);
+HitPayload TraceRay(Ray ray);
+
+HitPayload ClosestHit(Ray ray, float hitDistance, uint objectIndex);
+
+HitPayload Miss(Ray ray);
+
