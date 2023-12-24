@@ -3,11 +3,7 @@
 uniform float4 c_CameraPosition : register(c0);
 uniform float4x4 c_InverseProjection : register(c4);
 uniform float4x4 c_InverseView : register(c8);
-
-cbuffer CB_SCENE : register(c12)
-{
-    Scene c_Scene;
-};
+uniform Scene c_Scene : register(c12);
 
 float3 CalculateRayDirection(float2 coord)
 {

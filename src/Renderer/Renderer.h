@@ -2,7 +2,6 @@
 
 #include "Core/Scene.h"
 #include "Renderer/Camera.h"
-#include "Renderer/ConstantBuffer.h"
 #include "Renderer/VertexBuffer.h"
 
 class Renderer
@@ -16,7 +15,6 @@ public:
 
 private:
     VertexBuffer m_VertexBuffer;
-    ConstantBuffer<Scene> m_SceneBuffer;
 
     static bool s_ShadersInitialized;
     static D3DVertexShader *s_pVertexShader;
