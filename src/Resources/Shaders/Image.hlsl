@@ -1,20 +1,4 @@
-#define DISPLAY_WIDTH 1280.0f
-#define DISPLAY_HEIGHT 720.0f
-#define UINT_MAX 0xFFFFFFFF
-#define FLOAT_MAX 3.402823466e+38F
-#define SPHERE_COUNT 2
-
-struct Sphere
-{
-    float3 Position;
-    float4 Albedo;
-    float Radius;
-};
-
-struct Scene
-{
-    Sphere Spheres[SPHERE_COUNT];
-};
+#include "Declarations.hlsl"
 
 uniform float4 c_CameraPosition : register(c0);
 uniform float4x4 c_InverseProjection : register(c4);
@@ -23,12 +7,6 @@ uniform float4x4 c_InverseView : register(c8);
 cbuffer CB_SCENE : register(c12)
 {
     Scene c_Scene;
-};
-
-struct Ray
-{
-    float3 Origin;
-    float3 Direction;
 };
 
 float3 CalculateRayDirection(float2 coord)
