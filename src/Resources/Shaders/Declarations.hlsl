@@ -1,8 +1,11 @@
 #define DISPLAY_WIDTH 1280.0f
 #define DISPLAY_HEIGHT 720.0f
+
 #define UINT_MAX 0xFFFFFFFF
 #define FLOAT_MAX 3.402823466e+38F
+
 #define SPHERE_COUNT 2
+#define BOUNCES 3
 
 struct Sphere
 {

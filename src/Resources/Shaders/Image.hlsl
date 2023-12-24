@@ -25,7 +25,7 @@ HitPayload TraceRay(Ray ray)
     // Find the closest sphere along the ray
     uint closestSphereIndex = UINT_MAX;
     float hitDistance = FLOAT_MAX;
-    for (int i = 0; i < SPHERE_COUNT; i++)
+    for (uint i = 0; i < SPHERE_COUNT; i++)
     {
         // Math explaination:
         // https://www.youtube.com/watch?v=4NshnkzOdI0
@@ -104,22 +104,44 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
     float2 coord = float2(screenPos.x / DISPLAY_WIDTH, (DISPLAY_HEIGHT - screenPos.y) / DISPLAY_HEIGHT);
     coord = coord * 2.0f - 1.0f;
 
-    // Cast a ray from the camera towards where it's looking
+    // Create a ray that starts at the camera and goes where it's looking
     Ray ray;
     ray.Origin = c_CameraPosition;
     ray.Direction = CalculateRayDirection(coord);
-    HitPayload payload = TraceRay(ray);
 
-    // Return the skycolor if the ray didn't hit any sphere
-    if (payload.HitDistance < 0.0f)
-        return float4(0.0f, 0.0f, 0.0f, 1.0f);
+    float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    float multiplier = 1.0f;
+    for (uint i = 0; i < BOUNCES; i++)
+    {
+        // See if the ray hit aything, if not, return the skycolor
+        HitPayload payload = TraceRay(ray);
+        if (payload.HitDistance < 0.0f)
+        {
+            float4 skyColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+            color += skyColor * multiplier;
+            break;
+        }
 
-    // Light calculation
-    Sphere sphere = c_Scene.Spheres[payload.ObjectIndex];
-    float3 lightDir = normalize(float3(-1.0f, -1.0f, -1.0f));
-    float lightIntensity = max(dot(payload.WorldNormal, -lightDir), 0.0f);
+        // Light calculation
+        Sphere sphere = c_Scene.Spheres[payload.ObjectIndex];
+        float3 lightDir = normalize(float3(-1.0f, -1.0f, -1.0f));
+        float lightIntensity = max(dot(payload.WorldNormal, -lightDir), 0.0f);
+        color += sphere.Albedo * lightIntensity * multiplier;
 
-    return sphere.Albedo * lightIntensity;
+        // Decrease the multiplier to prevent the image from becoming
+        // completely white
+        multiplier *= 0.7f;
+
+        // Once the ray hit the sphere, update its origin to be the hit point
+        // right in front of the sphere along the normal. We don't make it exactly
+        // the hit position because the hit position might be a little bit inside
+        // the sphere due to floating point precision. Which would cause the ray to
+        // hit the same sphere again but from the inside.
+        ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
+        ray.Direction = reflect(ray.Direction, payload.WorldNormal);
+    }
+
+    return color;
 }
 
 // Vertex shader entry point
