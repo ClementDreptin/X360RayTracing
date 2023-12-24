@@ -16,7 +16,7 @@ public:
 
 private:
     VertexBuffer m_VertexBuffer;
-    ConstantBuffer<Scene> m_ConstantBuffer;
+    ConstantBuffer<Scene> m_SceneBuffer;
 
     static bool s_ShadersInitialized;
     static D3DVertexShader *s_pVertexShader;

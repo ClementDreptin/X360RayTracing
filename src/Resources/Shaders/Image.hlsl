@@ -1,15 +1,12 @@
 #define DISPLAY_WIDTH 1280.0f
 #define DISPLAY_HEIGHT 720.0f
-
+#define UINT_MAX 0xFFFFFFFF
+#define FLOAT_MAX 3.402823466e+38F
 #define SPHERE_COUNT 2
-
-uniform float4 c_CameraPosition : register(c0);
-uniform float4x4 c_InverseProjection : register(c4);
-uniform float4x4 c_InverseView : register(c8);
 
 struct Sphere
 {
-    float4 Position;
+    float3 Position;
     float4 Albedo;
     float Radius;
 };
@@ -18,6 +15,10 @@ struct Scene
 {
     Sphere Spheres[SPHERE_COUNT];
 };
+
+uniform float4 c_CameraPosition : register(c0);
+uniform float4x4 c_InverseProjection : register(c4);
+uniform float4x4 c_InverseView : register(c8);
 
 cbuffer CB_SCENE : register(c12)
 {
@@ -32,6 +33,9 @@ struct Ray
 
 float3 CalculateRayDirection(float2 coord)
 {
+    // Convert the pixel coordinates to world space coordinates based
+    // on where the camera is looking
+
     float4 target = mul(c_InverseProjection, float4(coord.xy, 1.0f, 1.0f));
     float4 norm = normalize(target / target.w);
 
@@ -40,8 +44,9 @@ float3 CalculateRayDirection(float2 coord)
 
 float4 TraceRay(Ray ray)
 {
-    uint closestSphereIndex = 0xFFFFFFFF; // value of the UINT_MAX macro in C++
-    float hitDistance = 3.402823466e+38F; // value of the FLT_MAX macro in C++
+    // Find the closest sphere along the ray
+    uint closestSphereIndex = UINT_MAX;
+    float hitDistance = FLOAT_MAX;
     for (int i = 0; i < SPHERE_COUNT; i++)
     {
         // Math explaination:
@@ -59,7 +64,7 @@ float4 TraceRay(Ray ray)
         // note: "Ax" is the x component of the A vector, not the A vector multipled by some x
 
         Sphere sphere = c_Scene.Spheres[i];
-        float3 origin = ray.Origin - sphere.Position.xyz;
+        float3 origin = ray.Origin - sphere.Position;
         float a = dot(ray.Direction, ray.Direction);
         float b = 2.0f * dot(origin, ray.Direction);
         float c = dot(origin, origin) - (sphere.Radius * sphere.Radius);
@@ -83,7 +88,8 @@ float4 TraceRay(Ray ray)
         }
     }
 
-    if (closestSphereIndex == 0xFFFFFFFF)
+    // No spheres were hit
+    if (closestSphereIndex == UINT_MAX)
         return float4(0.0f, 0.0f, 0.0f, 1.0f);
 
     Sphere closestSphere = c_Scene.Spheres[closestSphereIndex];
@@ -98,11 +104,14 @@ float4 TraceRay(Ray ray)
     return closestSphere.Albedo * lightIntensity;
 }
 
+// Pixel shader entry point
 float4 ImagePixel(float2 screenPos : VPOS) : COLOR
 {
+    // Normalize the screen coordinates and convert them to a [-1;+1] range
     float2 coord = float2(screenPos.x / DISPLAY_WIDTH, (DISPLAY_HEIGHT - screenPos.y) / DISPLAY_HEIGHT);
     coord = coord * 2.0f - 1.0f;
 
+    // Create a ray that starts at the camera and goes where the camera is looking
     Ray ray;
     ray.Origin = c_CameraPosition;
     ray.Direction = CalculateRayDirection(coord);
@@ -110,6 +119,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
     return TraceRay(ray);
 }
 
+// Vertex shader entry point
 float4 ImageVertex(float4 position : POSITION) : POSITION
 {
     return position;
