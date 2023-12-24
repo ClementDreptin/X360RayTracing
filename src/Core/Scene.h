@@ -1,5 +1,7 @@
 #pragma once
 
+#define SPHERE_COUNT 2
+
 _DECLSPEC_ALIGN_16_ struct Sphere
 {
     Sphere()
@@ -14,5 +16,5 @@ _DECLSPEC_ALIGN_16_ struct Sphere
 
 _DECLSPEC_ALIGN_16_ struct Scene
 {
-    Sphere Spheres[1];
+    Sphere Spheres[SPHERE_COUNT];
 };
