@@ -2,16 +2,26 @@
 
 #define SPHERE_COUNT 2
 
+_DECLSPEC_ALIGN_16_ struct Material
+{
+    Material()
+        : Albedo(XMVectorSplatOne())
+    {
+    }
+
+    XMVECTOR Albedo;
+};
+
 _DECLSPEC_ALIGN_16_ struct Sphere
 {
     Sphere()
-        : Position(XMVectorZero()), Albedo(XMVectorSplatOne()), Radius(0.5f)
+        : Position(XMVectorZero()), Radius(0.5f)
     {
     }
 
     XMVECTOR Position;
-    XMVECTOR Albedo;
     float Radius;
+    Material Material;
 };
 
 _DECLSPEC_ALIGN_16_ struct Scene

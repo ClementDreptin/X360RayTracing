@@ -7,11 +7,16 @@
 #define SPHERE_COUNT 2
 #define BOUNCES 3
 
+struct Material
+{
+    float4 Albedo;
+};
+
 struct Sphere
 {
     float3 Position;
-    float4 Albedo;
     float Radius;
+    Material Material;
 };
 
 struct Scene
@@ -40,4 +45,3 @@ HitPayload TraceRay(Ray ray);
 HitPayload ClosestHit(Ray ray, float hitDistance, uint objectIndex);
 
 HitPayload Miss(Ray ray);
-

@@ -13,11 +13,11 @@ App::App()
 {
     m_Scene.Spheres[0].Position = XMVectorZero();
     m_Scene.Spheres[0].Radius = 0.5f;
-    m_Scene.Spheres[0].Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
+    m_Scene.Spheres[0].Material.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
 
     m_Scene.Spheres[1].Position = XMVectorSet(1.0f, 0.0f, -5.0f, 1.0f);
     m_Scene.Spheres[1].Radius = 1.5f;
-    m_Scene.Spheres[1].Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+    m_Scene.Spheres[1].Material.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
 }
 
 HRESULT App::Initialize()

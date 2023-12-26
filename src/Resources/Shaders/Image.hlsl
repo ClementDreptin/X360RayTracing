@@ -122,7 +122,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         Sphere sphere = c_Scene.Spheres[payload.ObjectIndex];
         float3 lightDir = normalize(float3(-1.0f, -1.0f, -1.0f));
         float lightIntensity = max(dot(payload.WorldNormal, -lightDir), 0.0f);
-        color += sphere.Albedo * lightIntensity * multiplier;
+        color += sphere.Material.Albedo * lightIntensity * multiplier;
 
         // Decrease the multiplier to prevent the image from becoming
         // completely white
