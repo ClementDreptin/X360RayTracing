@@ -1,6 +1,7 @@
 #include "Declarations.hlsl"
 
-uniform float4 c_CameraPosition : register(c0);
+uniform float c_FrameIndex : register(c0);
+uniform float4 c_CameraPosition : register(c1);
 uniform float4x4 c_InverseProjection : register(c4);
 uniform float4x4 c_InverseView : register(c8);
 uniform Scene c_Scene : register(c12);
@@ -113,7 +114,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         HitPayload payload = TraceRay(ray);
         if (payload.HitDistance < 0.0f)
         {
-            float4 skyColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+            float4 skyColor = float4(0.6f, 0.7f, 0.9f, 1.0f);
             color += skyColor * multiplier;
             break;
         }
@@ -126,7 +127,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
 
         // Decrease the multiplier to prevent the image from becoming
         // completely white
-        multiplier *= 0.7f;
+        multiplier *= 0.5f;
 
         // Once the ray hit the sphere, update its origin to be the hit point
         // right in front of the sphere along the normal. We don't make it exactly
@@ -134,7 +135,16 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         // the sphere due to floating point precision. Which would cause the ray to
         // hit the same sphere again but from the inside.
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
-        ray.Direction = reflect(ray.Direction, payload.WorldNormal);
+
+        // Reflect along the normal with a random offset based on the material roughness
+        ray.Direction = reflect(
+            ray.Direction,
+            payload.WorldNormal + sphere.Material.Roughness * float3(
+                random(coord * c_FrameIndex + 1),
+                random(coord * c_FrameIndex + 2),
+                random(coord * c_FrameIndex + 3)
+            )
+        );
     }
 
     return color;

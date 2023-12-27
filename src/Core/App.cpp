@@ -12,12 +12,14 @@ App::App()
     : m_Camera(45.0f, 0.1f, 100.0f)
 {
     m_Scene.Spheres[0].Position = XMVectorZero();
-    m_Scene.Spheres[0].Radius = 0.5f;
+    m_Scene.Spheres[0].Radius = 1.0f;
     m_Scene.Spheres[0].Material.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
+    m_Scene.Spheres[0].Material.Roughness = 1.0f;
 
-    m_Scene.Spheres[1].Position = XMVectorSet(1.0f, 0.0f, -5.0f, 1.0f);
-    m_Scene.Spheres[1].Radius = 1.5f;
+    m_Scene.Spheres[1].Position = XMVectorSet(0.0f, -101.0f, 0.0f, 1.0f);
+    m_Scene.Spheres[1].Radius = 100.0f;
     m_Scene.Spheres[1].Material.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+    m_Scene.Spheres[1].Material.Roughness = 0.1f;
 }
 
 HRESULT App::Initialize()

@@ -8,6 +8,7 @@ D3DVertexShader *Renderer::s_pVertexShader = nullptr;
 D3DPixelShader *Renderer::s_pPixelShader = nullptr;
 
 Renderer::Renderer()
+    : m_FrameIndex(1)
 {
 }
 
@@ -45,13 +46,17 @@ void Renderer::Render(const Scene &scene, const Camera &camera)
     g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
     g_pd3dDevice->SetVertexShader(s_pVertexShader);
 
+    float frameIndex = static_cast<float>(m_FrameIndex);
     g_pd3dDevice->SetPixelShader(s_pPixelShader);
-    g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&camera.GetPosition()), 1);
+    g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&frameIndex), 1);
+    g_pd3dDevice->SetPixelShaderConstantF(1, reinterpret_cast<const float *>(&camera.GetPosition()), 1);
     g_pd3dDevice->SetPixelShaderConstantF(4, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(8, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(12, reinterpret_cast<const float *>(&scene), sizeof(Scene) / sizeof(XMVECTOR));
 
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
+
+    m_FrameIndex++;
 }
 
 HRESULT Renderer::InitShaders()

@@ -5,11 +5,12 @@
 _DECLSPEC_ALIGN_16_ struct Material
 {
     Material()
-        : Albedo(XMVectorSplatOne())
+        : Albedo(XMVectorSplatOne()), Roughness(1.0f)
     {
     }
 
     XMVECTOR Albedo;
+    float Roughness;
 };
 
 _DECLSPEC_ALIGN_16_ struct Sphere

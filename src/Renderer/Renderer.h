@@ -15,6 +15,7 @@ public:
 
 private:
     VertexBuffer m_VertexBuffer;
+    uint32_t m_FrameIndex;
 
     static bool s_ShadersInitialized;
     static D3DVertexShader *s_pVertexShader;

@@ -10,6 +10,7 @@
 struct Material
 {
     float4 Albedo;
+    float Roughness;
 };
 
 struct Sphere
@@ -45,3 +46,8 @@ HitPayload TraceRay(Ray ray);
 HitPayload ClosestHit(Ray ray, float hitDistance, uint objectIndex);
 
 HitPayload Miss(Ray ray);
+
+float random(float2 coord)
+{
+    return frac(sin(dot(coord, float2(12.9898, 78.233))) * 43758.5453123);
+}
