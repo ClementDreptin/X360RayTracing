@@ -4,13 +4,15 @@
 #define UINT_MAX 0xFFFFFFFF
 #define FLOAT_MAX 3.402823466e+38F
 
-#define SPHERE_COUNT 2
+#define SPHERE_COUNT 3
 #define BOUNCES 3
 
 struct Material
 {
     float4 Albedo;
+    float4 EmissionColor;
     float Roughness;
+    float EmissionPower;
 };
 
 struct Sphere

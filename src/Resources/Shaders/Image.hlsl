@@ -106,28 +106,29 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
     ray.Origin = c_CameraPosition;
     ray.Direction = CalculateRayDirection(coord);
 
-    float4 color = float4(0.0f, 0.0f, 0.0f, 1.0f);
-    float multiplier = 1.0f;
+    float3 light = float3(0.0f, 0.0f, 0.0f);
+    float3 contribution = float3(1.0f, 1.0f, 1.0f);
     for (uint i = 0; i < BOUNCES; i++)
     {
         // See if the ray hit aything, if not, return the skycolor
         HitPayload payload = TraceRay(ray);
         if (payload.HitDistance < 0.0f)
         {
-            float4 skyColor = float4(0.6f, 0.7f, 0.9f, 1.0f);
-            color += skyColor * multiplier;
+            float3 skyColor = float3(0.6f, 0.7f, 0.9f);
+            light += skyColor * contribution;
             break;
         }
 
-        // Light calculation
         Sphere sphere = c_Scene.Spheres[payload.ObjectIndex];
-        float3 lightDir = normalize(float3(-1.0f, -1.0f, -1.0f));
-        float lightIntensity = max(dot(payload.WorldNormal, -lightDir), 0.0f);
-        color += sphere.Material.Albedo * lightIntensity * multiplier;
 
-        // Decrease the multiplier to prevent the image from becoming
-        // completely white
-        multiplier *= 0.5f;
+        // Make the spheres absorb their albedo every time a ray hits them.
+        // contribution represents the energy in the light ray and decreases
+        // every time a sphere is hit.
+        contribution *= sphere.Material.Albedo;
+
+        // Make the spheres emit light (it only happens if they have a material with
+        // some emission power)
+        light += sphere.Material.EmissionColor * sphere.Material.EmissionPower;
 
         // Once the ray hit the sphere, update its origin to be the hit point
         // right in front of the sphere along the normal. We don't make it exactly
@@ -139,15 +140,15 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         // Reflect along the normal with a random offset based on the material roughness
         ray.Direction = reflect(
             ray.Direction,
-            payload.WorldNormal + sphere.Material.Roughness * float3(
-                random(coord * c_FrameIndex + 1) * 2.0f - 1.0f,
-                random(coord * c_FrameIndex + 2) * 2.0f - 1.0f,
-                random(coord * c_FrameIndex + 3) * 2.0f - 1.0f
-            )
+            normalize(payload.WorldNormal + float3(
+                random(coord * c_FrameIndex + 1),
+                random(coord * c_FrameIndex + 2),
+                random(coord * c_FrameIndex + 3)
+            ))
         );
     }
 
-    return color;
+    return float4(light, 1.0f);
 }
 
 // Vertex shader entry point

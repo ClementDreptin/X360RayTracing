@@ -16,10 +16,17 @@ App::App()
     m_Scene.Spheres[0].Material.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
     m_Scene.Spheres[0].Material.Roughness = 1.0f;
 
-    m_Scene.Spheres[1].Position = XMVectorSet(0.0f, -101.0f, 0.0f, 1.0f);
-    m_Scene.Spheres[1].Radius = 100.0f;
-    m_Scene.Spheres[1].Material.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+    m_Scene.Spheres[1].Position = XMVectorSet(2.0f, 0.0f, 0.0f, 1.0f);
+    m_Scene.Spheres[1].Radius = 1.0f;
+    m_Scene.Spheres[1].Material.Albedo = XMVectorSet(0.6f, 0.3f, 0.1f, 1.0f);
     m_Scene.Spheres[1].Material.Roughness = 0.1f;
+    m_Scene.Spheres[1].Material.EmissionColor = m_Scene.Spheres[1].Material.Albedo;
+    m_Scene.Spheres[1].Material.EmissionPower = 1.2f;
+
+    m_Scene.Spheres[2].Position = XMVectorSet(0.0f, -101.0f, 0.0f, 1.0f);
+    m_Scene.Spheres[2].Radius = 100.0f;
+    m_Scene.Spheres[2].Material.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+    m_Scene.Spheres[2].Material.Roughness = 0.1f;
 }
 
 HRESULT App::Initialize()
