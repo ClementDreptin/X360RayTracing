@@ -17,9 +17,14 @@ private:
     VertexBuffer m_VertexBuffer;
     uint32_t m_FrameIndex;
 
+    D3DTexture *m_pTexture;
+    D3DSurface *m_pRenderTarget;
+
     static bool s_ShadersInitialized;
-    static D3DVertexShader *s_pVertexShader;
-    static D3DPixelShader *s_pPixelShader;
+    static D3DVertexShader *s_pImageVertexShader;
+    static D3DPixelShader *s_pImagePixelShader;
+    static D3DVertexShader *s_pTextureVertexShader;
+    static D3DPixelShader *s_pTexturePixelShader;
 
     static HRESULT InitShaders();
 };

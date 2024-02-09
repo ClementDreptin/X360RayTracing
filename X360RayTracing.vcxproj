@@ -123,4 +123,14 @@
       <Outputs>$(OutDir)Media\Shaders\Image.xvu;$(OutDir)Media\Shaders\Image.xpu</Outputs>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\Resources\Shaders\Texture.hlsl">
+      <Command>
+        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /ETextureVertex /Fo"$(OutDir)Media\Shaders\Texture.xvu"
+        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /ETexturePixel /Fo"$(OutDir)Media\Shaders\Texture.xpu"
+      </Command>
+      <Message>Compile shaders in %(FullPath)</Message>
+      <Outputs>$(OutDir)Media\Shaders\Texture.xvu;$(OutDir)Media\Shaders\Texture.xpu</Outputs>
+    </CustomBuild>
+  </ItemGroup>
 </Project>
