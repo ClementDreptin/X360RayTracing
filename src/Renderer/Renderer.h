@@ -26,5 +26,9 @@ private:
     static D3DVertexShader *s_pTextureVertexShader;
     static D3DPixelShader *s_pTexturePixelShader;
 
+    void RenderSceneToTexture(const Scene &scene, const Camera &camera);
+
+    void RenderTexture();
+
     static HRESULT InitShaders();
 };
