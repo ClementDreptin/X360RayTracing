@@ -36,8 +36,8 @@ HRESULT Renderer::Init()
         return hr;
 
     hr = g_pd3dDevice->CreateTexture(
-        DISPLAY_WIDTH,
-        DISPLAY_HEIGHT,
+        TEXTURE_WIDTH,
+        TEXTURE_HEIGHT,
         1,
         0,
         D3DFMT_A8R8G8B8,
@@ -52,8 +52,8 @@ HRESULT Renderer::Init()
     }
 
     hr = g_pd3dDevice->CreateRenderTarget(
-        DISPLAY_WIDTH,
-        DISPLAY_HEIGHT,
+        TEXTURE_WIDTH,
+        TEXTURE_HEIGHT,
         D3DFMT_A8R8G8B8,
         D3DMULTISAMPLE_NONE,
         0,

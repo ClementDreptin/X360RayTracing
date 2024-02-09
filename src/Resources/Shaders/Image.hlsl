@@ -98,7 +98,7 @@ HitPayload Miss(Ray ray)
 float4 ImagePixel(float2 screenPos : VPOS) : COLOR
 {
     // Normalize the screen coordinates and convert them to a [-1;+1] range
-    float2 coord = float2(screenPos.x / DISPLAY_WIDTH, (DISPLAY_HEIGHT - screenPos.y) / DISPLAY_HEIGHT);
+    float2 coord = float2(screenPos.x / TEXTURE_WIDTH, (TEXTURE_HEIGHT - screenPos.y) / TEXTURE_HEIGHT);
     coord = coord * 2.0f - 1.0f;
 
     // Create a ray that starts at the camera and goes where it's looking
