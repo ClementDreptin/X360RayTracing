@@ -32,6 +32,7 @@ HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
 
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+        { 0, sizeof(XMFLOAT3), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
         D3DDECL_END()
     };
     g_pd3dDevice->CreateVertexDeclaration(vertexElements, &m_pVertexDeclaration);

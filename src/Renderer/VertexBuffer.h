@@ -2,12 +2,11 @@
 
 struct Vertex
 {
-    Vertex(float x, float y, float z)
-        : Pos(x, y, z)
-    {
-    }
+    Vertex(float x, float y, float z, float u, float v)
+        : Pos(x, y, z), TexCoord(u, v) {}
 
     XMFLOAT3 Pos;
+    XMFLOAT2 TexCoord;
 };
 
 class VertexBuffer
