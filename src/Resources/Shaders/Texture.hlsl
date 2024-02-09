@@ -1,22 +1,12 @@
-struct VS_INPUT
+struct Vertex
 {
-    float4 InPosition : POSITION;
-    float2 InTexCoord : TEXCOORD;
+    float4 Position : POSITION;
+    float2 TexCoord : TEXCOORD;
 };
 
-struct VS_OUTPUT
+Vertex TextureVertex(Vertex input)
 {
-    float4 OutPosition : POSITION;
-    float2 OutTexCoord : TEXCOORD;
-};
-
-VS_OUTPUT TextureVertex(VS_INPUT input)
-{
-    VS_OUTPUT output;
-    output.OutPosition = input.InPosition;
-    output.OutTexCoord = input.InTexCoord;
-
-    return output;
+    return input;
 }
 
 struct PS_INPUT
