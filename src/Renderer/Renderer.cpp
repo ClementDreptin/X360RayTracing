@@ -39,7 +39,7 @@ HRESULT Renderer::Init()
         TEXTURE_WIDTH,
         TEXTURE_HEIGHT,
         1,
-        D3DUSAGE_RENDERTARGET,
+        0,
         D3DFMT_A8R8G8B8,
         D3DPOOL_DEFAULT,
         &m_pAccumulationTexture,
@@ -72,31 +72,44 @@ HRESULT Renderer::Init()
 
 void Renderer::Render(const Scene &scene, const Camera &camera)
 {
-    // Common state
-    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-    g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-    g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
-    g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
+    SetCommonState();
 
-    RenderSceneToTexture(scene, camera);
+    AccumulateInTexture(scene, camera);
 
-    RenderTexture();
+    RenderAccumulationTexture();
 
     m_FrameIndex++;
 }
 
-void Renderer::RenderSceneToTexture(const Scene &scene, const Camera &camera)
+void Renderer::SetCommonState()
+{
+    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+
+    g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
+    g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
+
+    float frameIndex = static_cast<float>(m_FrameIndex);
+    g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&frameIndex), 1);
+
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+    g_pd3dDevice->SetTexture(0, m_pAccumulationTexture);
+}
+
+void Renderer::AccumulateInTexture(const Scene &scene, const Camera &camera)
 {
     D3DSurface *pRenderTarget0;
     g_pd3dDevice->GetRenderTarget(0, &pRenderTarget0);
 
     g_pd3dDevice->SetRenderTarget(0, m_pRenderTarget);
 
-    float frameIndex = static_cast<float>(m_FrameIndex);
     g_pd3dDevice->SetVertexShader(s_pImageVertexShader);
     g_pd3dDevice->SetPixelShader(s_pImagePixelShader);
-    g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&frameIndex), 1);
     g_pd3dDevice->SetPixelShaderConstantF(1, reinterpret_cast<const float *>(&camera.GetPosition()), 1);
     g_pd3dDevice->SetPixelShaderConstantF(4, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(8, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
@@ -109,15 +122,8 @@ void Renderer::RenderSceneToTexture(const Scene &scene, const Camera &camera)
     pRenderTarget0->Release();
 }
 
-void Renderer::RenderTexture()
+void Renderer::RenderAccumulationTexture()
 {
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
-
-    g_pd3dDevice->SetTexture(0, m_pAccumulationTexture);
     g_pd3dDevice->SetVertexShader(s_pTextureVertexShader);
     g_pd3dDevice->SetPixelShader(s_pTexturePixelShader);
 

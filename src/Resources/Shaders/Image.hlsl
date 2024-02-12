@@ -1,10 +1,12 @@
 #include "Declarations.hlsl"
 
-uniform float c_FrameIndex : register(c0);
-uniform float4 c_CameraPosition : register(c1);
-uniform float4x4 c_InverseProjection : register(c4);
-uniform float4x4 c_InverseView : register(c8);
-uniform Scene c_Scene : register(c12);
+float c_FrameIndex : register(c0);
+float4 c_CameraPosition : register(c1);
+float4x4 c_InverseProjection : register(c4);
+float4x4 c_InverseView : register(c8);
+Scene c_Scene : register(c12);
+
+sampler2D s_Accumulation : register(s0);
 
 float3 CalculateRayDirection(float2 coord)
 {
@@ -95,7 +97,7 @@ HitPayload Miss(Ray ray)
 }
 
 // Pixel shader entry point
-float4 ImagePixel(float2 screenPos : VPOS) : COLOR
+float4 ImagePixel(float2 screenPos : VPOS, float2 texCoord : TEXCOORD0) : COLOR
 {
     // Normalize the screen coordinates and convert them to a [-1;+1] range
     float2 coord = float2(screenPos.x / TEXTURE_WIDTH, (TEXTURE_HEIGHT - screenPos.y) / TEXTURE_HEIGHT);
@@ -148,7 +150,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         );
     }
 
-    return float4(light, 1.0f);
+    return float4(light, 1.0f) + tex2D(s_Accumulation, texCoord);
 }
 
 // Vertex shader entry point

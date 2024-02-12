@@ -9,9 +9,10 @@ Vertex TextureVertex(Vertex input)
     return input;
 }
 
-sampler Sampler : register(s0);
+float c_FrameIndex : register(c0);
+sampler2D s_Accumulation : register(s0);
 
 float4 TexturePixel(Vertex input) : SV_TARGET
 {
-    return tex2D(Sampler, input.TexCoord);
+    return float4(tex2D(s_Accumulation, input.TexCoord).rgb / c_FrameIndex, 1.0f);
 }
