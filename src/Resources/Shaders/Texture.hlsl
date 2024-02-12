@@ -11,13 +11,12 @@ Vertex TextureVertex(Vertex input)
 
 struct PS_INPUT
 {
-    float2 InTexCoord : TEXCOORD;
+    float2 TexCoord : TEXCOORD;
 };
 
-Texture2D objTexture         : register(t0);
-SamplerState objSamplerState : register(s0);
+sampler Sampler : register(s0);
 
 float4 TexturePixel(PS_INPUT input) : SV_TARGET
 {
-    return objTexture.Sample(objSamplerState, input.InTexCoord);
+    return tex2D(Sampler, input.TexCoord);
 }
