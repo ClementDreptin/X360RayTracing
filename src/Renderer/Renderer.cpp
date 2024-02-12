@@ -10,7 +10,7 @@ D3DVertexShader *Renderer::s_pTextureVertexShader = nullptr;
 D3DPixelShader *Renderer::s_pTexturePixelShader = nullptr;
 
 Renderer::Renderer()
-    : m_FrameIndex(1), m_pTexture(nullptr), m_pRenderTarget(nullptr)
+    : m_FrameIndex(1), m_pAccumulationTexture(nullptr), m_pRenderTarget(nullptr)
 {
 }
 
@@ -39,15 +39,15 @@ HRESULT Renderer::Init()
         TEXTURE_WIDTH,
         TEXTURE_HEIGHT,
         1,
-        0,
+        D3DUSAGE_RENDERTARGET,
         D3DFMT_A8R8G8B8,
         D3DPOOL_DEFAULT,
-        &m_pTexture,
+        &m_pAccumulationTexture,
         nullptr
     );
     if (FAILED(hr))
     {
-        Log::Error("Couldn't create texture");
+        Log::Error("Couldn't create accumulation texture");
         return hr;
     }
 
@@ -103,7 +103,7 @@ void Renderer::RenderSceneToTexture(const Scene &scene, const Camera &camera)
     g_pd3dDevice->SetPixelShaderConstantF(12, reinterpret_cast<const float *>(&scene), sizeof(Scene) / sizeof(XMVECTOR));
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 
-    g_pd3dDevice->Resolve(D3DRESOLVE_RENDERTARGET0, nullptr, m_pTexture, nullptr, 0, 0, nullptr, 0.0f, 0, nullptr);
+    g_pd3dDevice->Resolve(D3DRESOLVE_RENDERTARGET0, nullptr, m_pAccumulationTexture, nullptr, 0, 0, nullptr, 0.0f, 0, nullptr);
 
     g_pd3dDevice->SetRenderTarget(0, pRenderTarget0);
     pRenderTarget0->Release();
@@ -117,7 +117,7 @@ void Renderer::RenderTexture()
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
-    g_pd3dDevice->SetTexture(0, m_pTexture);
+    g_pd3dDevice->SetTexture(0, m_pAccumulationTexture);
     g_pd3dDevice->SetVertexShader(s_pTextureVertexShader);
     g_pd3dDevice->SetPixelShader(s_pTexturePixelShader);
 

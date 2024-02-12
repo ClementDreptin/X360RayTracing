@@ -17,7 +17,7 @@ private:
     VertexBuffer m_VertexBuffer;
     uint32_t m_FrameIndex;
 
-    D3DTexture *m_pTexture;
+    D3DTexture *m_pAccumulationTexture;
     D3DSurface *m_pRenderTarget;
 
     static bool s_ShadersInitialized;
