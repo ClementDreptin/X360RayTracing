@@ -75,7 +75,7 @@
       <Message>Launch $(RemotePath) after it's built</Message>
     </PostBuildEvent>
     <PostBuildEvent Condition="'$(Configuration)|$(Platform)'=='Xenia|Xbox 360'">
-      <Command>powershell -ExecutionPolicy Unrestricted $(SolutionDir)scripts\download-xenia.ps1 -XeniaDir $(SolutionDir)tools\xenia &amp;&amp; $(SolutionDir)tools\xenia\xenia --log_to_stdout=false $(ImageXexOutput)</Command>
+      <Command>powershell $(SolutionDir)scripts\download-xenia.ps1 &amp;&amp; $(SolutionDir)tools\xenia\xenia --log_to_stdout=false $(ImageXexOutput)</Command>
       <Message>Download Xenia if necessary then launch the output binary into it</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
