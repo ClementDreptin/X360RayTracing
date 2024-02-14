@@ -17,8 +17,6 @@ Each frame, a giant array of pixels is calculated on the CPU and written to a te
 ### Requirements
 
 -   Having the Xbox 360 Software Development Kit (XDK) installed.
--   Having a Powershell execution policy that allows to run scripts. Check the [Microsoft documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies) for details.
--   Running `.\scripts\copy-atgframework.ps1` to copy the AtgFramework source code from your XDK installation to `deps\AtgFramework\`.
 
 ### Visual Studio 2019
 
@@ -26,7 +24,7 @@ Open `X360RayTracing.sln` in Visual Studio and build it.
 
 ### Visual Studio 2022
 
-You can't build with the 64-bit version of MSBuild so you'll need to run the 32-bit version manually. Open a developer powershell in Visual Studio (`View > Terminal`) and run the following command:
+You can't build with the 64-bit version of MSBuild so you'll need to run the 32-bit version manually. Open a developer PowerShell in Visual Studio (`View > Terminal`) and run the following command:
 
 ```PS1
 # Create an alias to the 32-bit version of MSBuild named msbuild
