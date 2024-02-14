@@ -18,7 +18,6 @@ Each frame, a giant array of pixels is calculated on the CPU and written to a te
 
 -   Having the Xbox 360 Software Development Kit (XDK) installed.
 -   Having a Powershell execution policy that allows to run scripts. Check the [Microsoft documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies) for details.
--   Running `.\scripts\copy-atgframework.ps1` to copy the AtgFramework source code from your XDK installation to `deps\AtgFramework\`.
 
 ### Visual Studio 2019
 

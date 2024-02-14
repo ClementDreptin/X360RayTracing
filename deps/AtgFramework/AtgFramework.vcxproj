@@ -49,24 +49,24 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName)\$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>$(IntDir)$(ProjectName)\%(RelativeDir)</ObjectFileName>
+      <ObjectFileName>$(IntDir)$(ProjectName)\%(Filename)%(Extension)</ObjectFileName>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AtgApp.h" />
-    <ClInclude Include="AtgDevice.h" />
-    <ClInclude Include="AtgFont.h" />
-    <ClInclude Include="AtgResource.h" />
-    <ClInclude Include="AtgUtil.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="$(XEDK)\Source\Samples\Common\AtgApp.h" />
+    <ClInclude Include="$(XEDK)\Source\Samples\Common\AtgDevice.h" />
+    <ClInclude Include="$(XEDK)\Source\Samples\Common\AtgFont.h" />
+    <ClInclude Include="$(XEDK)\Source\Samples\Common\AtgResource.h" />
+    <ClInclude Include="$(XEDK)\Source\Samples\Common\AtgUtil.h" />
+    <ClInclude Include="$(XEDK)\Source\Samples\Common\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AtgApp.cpp" />
-    <ClCompile Include="AtgDevice.cpp" />
-    <ClCompile Include="AtgFont.cpp" />
-    <ClCompile Include="AtgResource.cpp" />
-    <ClCompile Include="AtgUtil.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="$(XEDK)\Source\Samples\Common\AtgApp.cpp" />
+    <ClCompile Include="$(XEDK)\Source\Samples\Common\AtgDevice.cpp" />
+    <ClCompile Include="$(XEDK)\Source\Samples\Common\AtgFont.cpp" />
+    <ClCompile Include="$(XEDK)\Source\Samples\Common\AtgResource.cpp" />
+    <ClCompile Include="$(XEDK)\Source\Samples\Common\AtgUtil.cpp" />
+    <ClCompile Include="$(XEDK)\Source\Samples\Common\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>

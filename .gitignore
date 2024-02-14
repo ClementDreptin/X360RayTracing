@@ -9,7 +9,3 @@ build/
 # Xenia
 tools/xenia/*
 *xenia.log
-
-# AtgFramework source code
-deps/AtgFramework/*
-!deps/AtgFramework/*.vcxproj*
