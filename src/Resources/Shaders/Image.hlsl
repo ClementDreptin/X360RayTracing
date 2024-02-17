@@ -6,8 +6,6 @@ float4x4 c_InverseProjection : register(c4);
 float4x4 c_InverseView : register(c8);
 Scene c_Scene : register(c12);
 
-sampler2D s_Accumulation : register(s0);
-
 float3 CalculateRayDirection(float2 coord)
 {
     // Convert the pixel coordinates to world space coordinates based
@@ -97,7 +95,7 @@ HitPayload Miss(Ray ray)
 }
 
 // Pixel shader entry point
-float4 ImagePixel(float2 screenPos : VPOS, float2 texCoord : TEXCOORD0) : COLOR
+float4 ImagePixel(float2 screenPos : VPOS) : COLOR
 {
     // Normalize the screen coordinates and convert them to a [-1;+1] range
     float2 coord = float2(screenPos.x / TEXTURE_WIDTH, (TEXTURE_HEIGHT - screenPos.y) / TEXTURE_HEIGHT);
@@ -150,7 +148,7 @@ float4 ImagePixel(float2 screenPos : VPOS, float2 texCoord : TEXCOORD0) : COLOR
         );
     }
 
-    return float4(light, 1.0f) + tex2D(s_Accumulation, texCoord);
+    return float4(light, 1.0f);
 }
 
 // Vertex shader entry point

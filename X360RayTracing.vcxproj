@@ -114,6 +114,16 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="src\Resources\Shaders\Accumulation.hlsl">
+      <Command>
+        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EAccumulationVertex /Fo"$(OutDir)Media\Shaders\Accumulation.xvu"
+        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EAccumulationPixel /Fo"$(OutDir)Media\Shaders\Accumulation.xpu"
+      </Command>
+      <Message>Compile shaders in %(FullPath)</Message>
+      <Outputs>$(OutDir)Media\Shaders\Accumulation.xvu;$(OutDir)Media\Shaders\Accumulation.xpu</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
     <CustomBuild Include="src\Resources\Shaders\Image.hlsl">
       <Command>
         fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu"
