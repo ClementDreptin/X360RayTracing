@@ -110,12 +110,6 @@ void Renderer::SetCommonState()
     float frameIndex = static_cast<float>(m_FrameIndex);
     g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&frameIndex), 1);
 
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-    g_pd3dDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
-
     g_pd3dDevice->SetVertexDeclaration(m_VertexBuffer.GetVertexDeclaration());
     g_pd3dDevice->SetStreamSource(0, &m_VertexBuffer, 0, sizeof(Vertex));
 }
