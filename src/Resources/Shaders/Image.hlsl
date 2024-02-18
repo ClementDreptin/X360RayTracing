@@ -144,7 +144,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
                 random(coord * c_FrameIndex + 1),
                 random(coord * c_FrameIndex + 2),
                 random(coord * c_FrameIndex + 3)
-            ))
+            ) * sphere.Material.Roughness)
         );
     }
 
