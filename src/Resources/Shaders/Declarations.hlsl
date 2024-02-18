@@ -15,7 +15,6 @@ struct Material
 {
     float4 Albedo;
     float4 EmissionColor;
-    float Roughness;
     float EmissionPower;
 };
 

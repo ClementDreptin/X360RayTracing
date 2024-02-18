@@ -5,16 +5,13 @@
 _DECLSPEC_ALIGN_16_ struct Material
 {
     Material()
-        : Albedo(XMVectorSplatOne()), Roughness(1.0f), EmissionColor(XMVectorZero()), EmissionPower(0.0f)
+        : Albedo(XMVectorSplatOne()), EmissionColor(XMVectorZero()), EmissionPower(0.0f)
     {
     }
 
     XMVECTOR Albedo;
     XMVECTOR EmissionColor;
-    float Roughness;
-    float _padding1[3];
     float EmissionPower;
-    float _padding2[3];
 };
 
 _DECLSPEC_ALIGN_16_ struct Sphere

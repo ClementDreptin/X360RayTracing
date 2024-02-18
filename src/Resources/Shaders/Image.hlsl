@@ -11,7 +11,7 @@ float3 CalculateRayDirection(float2 coord)
     // Convert the pixel coordinates to world space coordinates based
     // on where the camera is looking
 
-    float4 target = mul(c_InverseProjection, float4(coord.xy, 1.0f, 1.0f));
+    float4 target = mul(c_InverseProjection, float4(coord, 1.0f, 1.0f));
     float4 norm = normalize(target / target.w);
 
     return mul(c_InverseView, norm);
@@ -114,7 +114,7 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         HitPayload payload = TraceRay(ray);
         if (payload.HitDistance < 0.0f)
         {
-            float3 skyColor = float3(0.6f, 0.7f, 0.9f);
+            float3 skyColor = float3(0.2f, 0.3f, 0.5f);
             light += skyColor * contribution;
             break;
         }
@@ -137,15 +137,14 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         // hit the same sphere again but from the inside.
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
 
-        // Reflect along the normal with a random offset based on the material roughness
-        ray.Direction = reflect(
-            ray.Direction,
-            normalize(payload.WorldNormal + float3(
+        // Reflect along the normal with a random offset
+        ray.Direction =
+            payload.WorldNormal +
+            normalize(float3(
                 random(coord * c_FrameIndex + 1),
                 random(coord * c_FrameIndex + 2),
                 random(coord * c_FrameIndex + 3)
-            ) * sphere.Material.Roughness)
-        );
+            ));
     }
 
     return float4(light, 1.0f);

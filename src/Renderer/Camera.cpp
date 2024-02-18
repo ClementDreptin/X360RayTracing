@@ -6,8 +6,8 @@
 Camera::Camera(float verticalFOV, float nearClip, float farClip)
     : m_VerticalFOV(verticalFOV), m_NearClip(nearClip), m_FarClip(farClip)
 {
-    m_Position = XMVectorSet(0.0f, 0.0f, 7.0f, 1.0f);
-    m_ForwardDirection = XMVectorSet(0.0f, 0.0f, -1.0f, 1.0f);
+    m_Position = XMVectorSet(-1.0f, 1.0f, 5.0f, 1.0f);
+    m_ForwardDirection = XMVectorSet(0.3f, -0.2f, -1.0f, 1.0f);
     m_UpDirection = XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f);
 
     m_Projection = XMMatrixPerspectiveFovRH(XMConvertToRadians(verticalFOV), ASPECT_RATIO, nearClip, farClip);
