@@ -107,6 +107,9 @@ void Renderer::SetCommonState()
     g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
+    float frameIndex = static_cast<float>(m_FrameIndex);
+    g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&frameIndex), 1);
+
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
     g_pd3dDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
@@ -124,10 +127,8 @@ void Renderer::RenderInTexture(const Scene &scene, const Camera &camera)
 
     g_pd3dDevice->SetRenderTarget(0, m_pRenderTarget);
 
-    float frameIndex = static_cast<float>(m_FrameIndex);
     g_pd3dDevice->SetVertexShader(s_pImageVertexShader);
     g_pd3dDevice->SetPixelShader(s_pImagePixelShader);
-    g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&frameIndex), 1);
     g_pd3dDevice->SetPixelShaderConstantF(1, reinterpret_cast<const float *>(&camera.GetPosition()), 1);
     g_pd3dDevice->SetPixelShaderConstantF(4, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(8, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
