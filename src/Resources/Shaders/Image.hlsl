@@ -141,9 +141,9 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
         ray.Direction =
             payload.WorldNormal +
             normalize(float3(
-                random(coord * c_FrameIndex + 1),
-                random(coord * c_FrameIndex + 2),
-                random(coord * c_FrameIndex + 3)
+                random(coord * c_FrameIndex + 1) * 2.0f - 1.0f,
+                random(coord * c_FrameIndex + 2) * 2.0f - 1.0f,
+                random(coord * c_FrameIndex + 3) * 2.0f - 1.0f
             ));
     }
 
