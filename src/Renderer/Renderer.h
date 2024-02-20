@@ -13,6 +13,8 @@ public:
 
     void Render(const Scene &scene, const Camera &camera);
 
+    void ResetAccumulation() { m_FrameIndex = 1; }
+
 private:
     VertexBuffer m_VertexBuffer;
     uint32_t m_FrameIndex;

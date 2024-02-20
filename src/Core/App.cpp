@@ -51,7 +51,9 @@ HRESULT App::Update()
     XINPUT_STATE state = {};
     XInputGetState(0, &state);
 
-    m_Camera.Update(state.Gamepad, ts);
+    bool cameraMoved = m_Camera.Update(state.Gamepad, ts);
+    if (cameraMoved)
+        m_Renderer.ResetAccumulation();
 
     return S_OK;
 }
