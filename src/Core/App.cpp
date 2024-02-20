@@ -11,19 +11,22 @@ Font g_Font;
 App::App()
     : m_Camera(45.0f, 0.1f, 100.0f)
 {
-    m_Scene.Spheres[0].Position = XMVectorZero();
-    m_Scene.Spheres[0].Radius = 1.0f;
-    m_Scene.Spheres[0].Material.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
+    Sphere &blueSphere = m_Scene.Spheres[0];
+    blueSphere.Position = XMVectorZero();
+    blueSphere.Radius = 1.0f;
+    blueSphere.Material.Albedo = XMVectorSet(1.0f, 0.0f, 1.0f, 1.0f);
 
-    m_Scene.Spheres[1].Position = XMVectorSet(2.0f, 0.0f, 0.0f, 1.0f);
-    m_Scene.Spheres[1].Radius = 1.0f;
-    m_Scene.Spheres[1].Material.Albedo = XMVectorSet(0.8f, 0.5f, 0.2f, 1.0f);
-    m_Scene.Spheres[1].Material.EmissionColor = m_Scene.Spheres[1].Material.Albedo;
-    m_Scene.Spheres[1].Material.EmissionPower = 2.0f;
+    Sphere &orangeSphere = m_Scene.Spheres[1];
+    orangeSphere.Position = XMVectorSet(2.0f, 0.0f, 0.0f, 1.0f);
+    orangeSphere.Radius = 1.0f;
+    orangeSphere.Material.Albedo = XMVectorSet(0.8f, 0.5f, 0.2f, 1.0f);
+    orangeSphere.Material.EmissionColor = m_Scene.Spheres[1].Material.Albedo;
+    orangeSphere.Material.EmissionPower = 2.0f;
 
-    m_Scene.Spheres[2].Position = XMVectorSet(0.0f, -101.0f, 0.0f, 1.0f);
-    m_Scene.Spheres[2].Radius = 100.0f;
-    m_Scene.Spheres[2].Material.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
+    Sphere &purpleSphere = m_Scene.Spheres[2];
+    purpleSphere.Position = XMVectorSet(0.0f, -101.0f, 0.0f, 1.0f);
+    purpleSphere.Radius = 100.0f;
+    purpleSphere.Material.Albedo = XMVectorSet(0.2f, 0.3f, 1.0f, 1.0f);
 }
 
 HRESULT App::Initialize()
