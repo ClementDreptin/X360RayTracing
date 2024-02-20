@@ -149,10 +149,10 @@ float4 ImagePixel(Vertex input, float2 screenPos : VPOS) : COLOR
             ));
     }
 
-    float4 accumulationColor = tex2D(s_AccumulationTexture, input.TexCoord);
-    float4 imageColor = float4(light, 1.0f);
+    float4 accumulatedColor = tex2D(s_AccumulationTexture, input.TexCoord);
+    float4 currentColor = float4(light, 1.0f);
 
-    return (accumulationColor * (c_FrameIndex - 1.0f) + imageColor) / c_FrameIndex;
+    return (accumulatedColor * (c_FrameIndex - 1.0f) + currentColor) / c_FrameIndex;
 }
 
 // Vertex shader entry point
