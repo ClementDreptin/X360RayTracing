@@ -127,6 +127,7 @@ void Renderer::RenderInTexture(const Scene &scene, const Camera &camera)
     g_pd3dDevice->SetPixelShaderConstantF(4, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(8, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(12, reinterpret_cast<const float *>(&scene), sizeof(Scene) / sizeof(XMVECTOR));
+    g_pd3dDevice->SetTexture(0, m_pImageTexture);
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 
     g_pd3dDevice->Resolve(D3DRESOLVE_RENDERTARGET0, nullptr, m_pImageTexture, nullptr, 0, 0, nullptr, 0.0f, 0, nullptr);

@@ -44,6 +44,12 @@ struct HitPayload
     uint ObjectIndex;
 };
 
+struct Vertex
+{
+    float4 Position : POSITION;
+    float2 TexCoord : TEXCOORD;
+};
+
 float3 CalculateRayDirection(float2 coord);
 
 HitPayload TraceRay(Ray ray);

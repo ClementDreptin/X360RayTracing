@@ -6,6 +6,8 @@ float4x4 c_InverseProjection : register(c4);
 float4x4 c_InverseView : register(c8);
 Scene c_Scene : register(c12);
 
+sampler2D s_AccumulationTexture : register(s0);
+
 float3 CalculateRayDirection(float2 coord)
 {
     // Convert the pixel coordinates to world space coordinates based
@@ -95,7 +97,7 @@ HitPayload Miss(Ray ray)
 }
 
 // Pixel shader entry point
-float4 ImagePixel(float2 screenPos : VPOS) : COLOR
+float4 ImagePixel(Vertex input, float2 screenPos : VPOS) : COLOR
 {
     // Normalize the screen coordinates and convert them to a [-1;+1] range
     float2 coord = float2(screenPos.x / TEXTURE_WIDTH, (TEXTURE_HEIGHT - screenPos.y) / TEXTURE_HEIGHT);
@@ -147,11 +149,14 @@ float4 ImagePixel(float2 screenPos : VPOS) : COLOR
             ));
     }
 
-    return float4(light, 1.0f);
+    float4 accumulationColor = tex2D(s_AccumulationTexture, input.TexCoord);
+    float4 imageColor = float4(light, 1.0f);
+
+    return (accumulationColor * (c_FrameIndex - 1.0f) + imageColor) / c_FrameIndex;
 }
 
 // Vertex shader entry point
-float4 ImageVertex(float4 position : POSITION) : POSITION
+Vertex ImageVertex(Vertex input)
 {
-    return position;
+    return input;
 }

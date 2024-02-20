@@ -1,8 +1,4 @@
-struct Vertex
-{
-    float4 Position : POSITION;
-    float2 TexCoord : TEXCOORD;
-};
+#include "Declarations.hlsl"
 
 Vertex TextureVertex(Vertex input)
 {

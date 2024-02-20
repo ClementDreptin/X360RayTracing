@@ -18,5 +18,6 @@ float4 AccumulationPixel(Vertex input) : SV_TARGET
     float4 accumulationColor = tex2D(s_AccumulationTexture, input.TexCoord);
     float4 imageColor = tex2D(s_ImageTexture, input.TexCoord);
 
-    return (accumulationColor * (c_FrameIndex - 1.0f) + imageColor) / c_FrameIndex;
+    // return (accumulationColor * (c_FrameIndex - 1.0f) + imageColor) / c_FrameIndex;
+    return imageColor;
 }
