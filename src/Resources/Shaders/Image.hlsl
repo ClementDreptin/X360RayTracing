@@ -46,7 +46,7 @@ HitPayload TraceRay(Ray ray)
         float b = 2.0f * dot(origin, ray.Direction);
         float c = dot(origin, origin) - (sphere.Radius * sphere.Radius);
 
-        // Quadratic forumula discriminant:
+        // Quadratic formula discriminant:
         // b^2 - 4ac
         float discriminant = b * b - 4.0f * a * c;
         if (discriminant < 0.0f)
@@ -149,6 +149,19 @@ float4 ImagePixel(Vertex input, float2 screenPos : VPOS) : COLOR
             ));
     }
 
+    // To do accumulation, we need to calculate the average color from all the frames
+    // since the camera last moved. We can't sum the pixel colors and divide the result
+    // by the amount of frames (which is the typical way of calculating an average)
+    // because the texture can only have 8 bits per pixels which isn't enough to make the sum.
+    //
+    // Instead, we compute the moving average, which gives the same result but doesn't
+    // require to sum the pixel colors first.
+    //
+    // Formula:
+    //     movingAverage = (previousAverage * (N - 1) + currentValue) / N
+    //
+    // In our case, the "previousAverage" comes from the accumulation texture, because this is
+    // where we render to every frame. And "N" is the frame index.
     float4 accumulatedColor = tex2D(s_AccumulationTexture, input.TexCoord);
     float4 currentColor = float4(light, 1.0f);
 

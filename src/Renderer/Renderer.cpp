@@ -95,11 +95,14 @@ void Renderer::SetCommonState()
 
 void Renderer::RenderInAccumulationTexture(const Scene &scene, const Camera &camera)
 {
-    D3DSurface *pRenderTarget0;
-    g_pd3dDevice->GetRenderTarget(0, &pRenderTarget0);
+    // Get the original render target
+    D3DSurface *pOriginalRenderTarget;
+    g_pd3dDevice->GetRenderTarget(0, &pOriginalRenderTarget);
 
+    // Set the render target to be the accumulation texture
     g_pd3dDevice->SetRenderTarget(0, m_pRenderTarget);
 
+    // Set shaders and their constants
     float frameIndex = static_cast<float>(m_FrameIndex);
     g_pd3dDevice->SetVertexShader(s_pImageVertexShader);
     g_pd3dDevice->SetPixelShader(s_pImagePixelShader);
@@ -108,12 +111,16 @@ void Renderer::RenderInAccumulationTexture(const Scene &scene, const Camera &cam
     g_pd3dDevice->SetPixelShaderConstantF(4, reinterpret_cast<const float *>(&camera.GetInverseProjection()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(8, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(12, reinterpret_cast<const float *>(&scene), sizeof(Scene) / sizeof(XMVECTOR));
+
+    // Draw
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
 
+    // Resolve the render target to the accumulation texture
     g_pd3dDevice->Resolve(D3DRESOLVE_RENDERTARGET0, nullptr, m_pAccumulationTexture, nullptr, 0, 0, nullptr, 0.0f, 0, nullptr);
 
-    g_pd3dDevice->SetRenderTarget(0, pRenderTarget0);
-    pRenderTarget0->Release();
+    // Restore the original render target
+    g_pd3dDevice->SetRenderTarget(0, pOriginalRenderTarget);
+    pOriginalRenderTarget->Release();
 }
 
 void Renderer::RenderAccumulationTexture()
