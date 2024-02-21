@@ -28,12 +28,12 @@ bool Camera::Update(const XINPUT_GAMEPAD &gamepad, float ts)
     float rightX = ConvertThumbstickValue(gamepad.sThumbRX, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
     float rightY = ConvertThumbstickValue(gamepad.sThumbRY, XINPUT_GAMEPAD_RIGHT_THUMB_DEADZONE);
 
-    if (leftY > 0.0f) // Up
+    if (gamepad.bRightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD) // Up
     {
         m_Position += m_UpDirection * speed * ts;
         moved = true;
     }
-    else if (leftY < 0.0f) // Down
+    else if (gamepad.bLeftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD) // Down
     {
         m_Position -= m_UpDirection * speed * ts;
         moved = true;
@@ -48,12 +48,12 @@ bool Camera::Update(const XINPUT_GAMEPAD &gamepad, float ts)
         m_Position += rightDirection * speed * ts;
         moved = true;
     }
-    else if (gamepad.wButtons & XINPUT_GAMEPAD_Y) // Forward
+    else if (leftY > 0.0f) // Forward
     {
         m_Position += m_ForwardDirection * speed * ts;
         moved = true;
     }
-    else if (gamepad.wButtons & XINPUT_GAMEPAD_A) // Backwards
+    else if (leftY < 0.0f) // Backwards
     {
         m_Position -= m_ForwardDirection * speed * ts;
         moved = true;
@@ -62,8 +62,9 @@ bool Camera::Update(const XINPUT_GAMEPAD &gamepad, float ts)
     // Rotation
     if (rightX != 0.0f || rightY != 0.0f)
     {
-        float pitch = rightY * GetRotationSpeed();
-        float yaw = rightX * GetRotationSpeed();
+        float rotationSpeed = 0.4f;
+        float pitch = rightY * rotationSpeed * ts;
+        float yaw = rightX * rotationSpeed * ts;
         XMVECTOR rotation = XMQuaternionRotationRollPitchYaw(-pitch, -yaw, 0.0f);
         m_ForwardDirection = XMVector3Rotate(m_ForwardDirection, rotation);
 

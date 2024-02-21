@@ -21,8 +21,6 @@ public:
 
     inline float GetTranslationSpeed() const { return 2.0f; }
 
-    inline float GetRotationSpeed() const { return 0.002f; }
-
 private:
     XMMATRIX m_Projection;
     XMMATRIX m_View;
