@@ -26,10 +26,10 @@ HRESULT Renderer::Init()
     }
 
     Vertex vertices[] = {
-        Vertex(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f), // Top Left
-        Vertex(-1.0f, +1.0f, 0.0f, 0.0f, 0.0f), // Bottom Left
-        Vertex(+1.0f, +1.0f, 0.0f, 1.0f, 0.0f), // Bottom Right
-        Vertex(+1.0f, -1.0f, 0.0f, 1.0f, 1.0f), // Top Right
+        Vertex(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f), // Bottom Left
+        Vertex(-1.0f, +1.0f, 0.0f, 0.0f, 0.0f), // Top Left
+        Vertex(+1.0f, +1.0f, 0.0f, 1.0f, 0.0f), // Top Right
+        Vertex(+1.0f, -1.0f, 0.0f, 1.0f, 1.0f), // Bottom Right
     };
     hr = m_VertexBuffer.Init(vertices, ARRAYSIZE(vertices));
     if (FAILED(hr))
