@@ -96,7 +96,7 @@ void Renderer::SetCommonState()
 void Renderer::RenderInAccumulationTexture(const Scene &scene, const Camera &camera)
 {
     // Get the original render target
-    D3DSurface *pOriginalRenderTarget;
+    D3DSurface *pOriginalRenderTarget = nullptr;
     g_pd3dDevice->GetRenderTarget(0, &pOriginalRenderTarget);
 
     // Set the render target to be the accumulation texture
