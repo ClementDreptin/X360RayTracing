@@ -107,14 +107,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\Resources\Fonts\Arial_16.rdf">
+    <CustomBuild Include="src\Fonts\Arial_16.rdf">
       <Command>bundler "%(FullPath)" -o "$(OutDir)Media\Fonts\%(Filename).xpr"</Command>
       <Message>Create a bundled resource file from %(FullPath)</Message>
       <Outputs>$(OutDir)Media\Fonts\%(Filename).xpr</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\Resources\Shaders\Image.hlsl">
+    <CustomBuild Include="src\Shaders\Image.hlsl">
       <Command>
         fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu"
         fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EImagePixel /Fo"$(OutDir)Media\Shaders\Image.xpu"
@@ -124,7 +124,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\Resources\Shaders\Texture.hlsl">
+    <CustomBuild Include="src\Shaders\Texture.hlsl">
       <Command>
         fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /ETextureVertex /Fo"$(OutDir)Media\Shaders\Texture.xvu"
         fxc.exe "%(FullPath)" /nologo /Tps_3_0 /ETexturePixel /Fo"$(OutDir)Media\Shaders\Texture.xpu"
