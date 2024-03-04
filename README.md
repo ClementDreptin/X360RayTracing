@@ -7,6 +7,16 @@ Ray tracing experiment on the Xbox 360.
 This project is an Xbox 360 port of [TheCherno's RayTracing renderer](https://github.com/TheCherno/RayTracing) built entirely on YouTube in [a fantastic series](https://www.youtube.com/playlist?list=PLlrATfBNZ98edc5GshdBtREv5asFW3yXl).
 The Cherno implemented a CPU-side ray tracer but this project utilizes the GPU as much as possible to do the heavy calculations.
 
+## Disclaimer
+
+There is currently a bug when running the code on real hardware. The image is split in half and forms 2 triangles, the bottom right triangle renders properly but the upper left one doesn't.
+
+![Rendering but on real hardware](./resources/screenshots/spheres-bug.jpg)
+
+It looks like a strange behavior of the `IDirect3DDevice9::Resolve` implementation on Xbox 360 because the bug doesn't occur in Xenia. It seems to happen when sampling from a texture that was written to using `IDirect3DDevice9::Resolve`.
+
+If anyone has any explanation or a potential fix, feel free to open an issue and/or a pull request!
+
 ## Building
 
 ### Requirements
