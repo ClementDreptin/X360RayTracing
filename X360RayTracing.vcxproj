@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0"
-  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Release|Xbox 360">
       <Configuration>Release</Configuration>
@@ -41,7 +40,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>src;$(XEDK)\Source\Samples\Common</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src;$(XEDK)\Source\Samples\Common</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -116,8 +115,8 @@
   <ItemGroup>
     <CustomBuild Include="src\Shaders\Image.hlsl">
       <Command>
-        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu"
-        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EImagePixel /Fo"$(OutDir)Media\Shaders\Image.xpu"
+        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu" /XZi /XFd"$(OutDir)Media\Shaders\ImageVS.updb"
+        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EImagePixel /Fo"$(OutDir)Media\Shaders\Image.xpu" /XZi /XFd"$(OutDir)Media\Shaders\ImageVS.updb"
       </Command>
       <Message>Compile shaders in %(FullPath)</Message>
       <Outputs>$(OutDir)Media\Shaders\Image.xvu;$(OutDir)Media\Shaders\Image.xpu</Outputs>
