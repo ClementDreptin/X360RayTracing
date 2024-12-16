@@ -114,7 +114,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\Fonts\Arial_16.rdf">
+    <CustomBuild Include="$(XEDK)\Source\Samples\Media\Fonts\Arial_16.rdf">
       <Command>bundler "%(FullPath)" -o "$(OutDir)Media\Fonts\%(Filename).xpr"</Command>
       <Message>Create a bundled resource file from %(FullPath)</Message>
       <Outputs>$(OutDir)Media\Fonts\%(Filename).xpr</Outputs>
