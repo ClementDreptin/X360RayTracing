@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Xbox 360">
       <Configuration>Release</Configuration>
       <Platform>Xbox 360</Platform>
@@ -23,7 +27,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>2010-01</PlatformToolset>
-    <BuildLogFile>$(IntDir)$(ProjectName)\BuildLog.txt</BuildLogFile>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -41,28 +44,33 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(SolutionDir)src;$(XEDK)\Source\Samples\Common</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Optimization>Full</Optimization>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>NDEBUG;_XBOX</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName)\$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)$(ProjectName)\%(RelativeDir)</ObjectFileName>
       <DisableSpecificWarnings>4481</DisableSpecificWarnings>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
+      <Optimization Condition="'$(Configuration)'=='Debug'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">Full</Optimization>
+      <MinimalRebuild Condition="'$(Configuration)'=='Debug'">true</MinimalRebuild>
+      <FunctionLevelLinking Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</FunctionLevelLinking>
+      <StringPooling Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</StringPooling>
+      <FavorSizeOrSpeed Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">Size</FavorSizeOrSpeed>
+      <RuntimeLibrary Condition="'$(Configuration)'=='Debug'">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">MultiThreaded</RuntimeLibrary>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">_DEBUG;_XBOX</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">NDEBUG;_XBOX</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>d3d9.lib;d3dx9.lib;xgraphics.lib</AdditionalDependencies>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(IntDir)$(ProjectName)\$(ProjectName).pdb</ProgramDatabaseFile>
-      <OptimizeReferences>true</OptimizeReferences>
-      <SetChecksum>true</SetChecksum>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">xapilibd.lib;d3d9d.lib;d3dx9d.lib;xgraphicsd.lib</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">xapilib.lib;d3d9.lib;d3dx9.lib;xgraphics.lib</AdditionalDependencies>
+      <GenerateDebugInformation Condition="'$(Configuration)'=='Debug'">true</GenerateDebugInformation>
+      <ProgramDatabaseFile Condition="'$(Configuration)'=='Debug'">$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <OptimizeReferences Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</OptimizeReferences>
+      <SetChecksum Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</SetChecksum>
     </Link>
     <Deploy>
       <DeploymentType>CopyToHardDrive</DeploymentType>

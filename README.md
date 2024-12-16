@@ -36,10 +36,10 @@ You can't build with the 64-bit version of MSBuild so you'll need to run the 32-
 Set-Alias msbuild <path_vs2022>\MSBuild\Current\Bin\MSBuild.exe
 ```
 
-To build X360RayTracing, deploy it to the console and launch it there, start a build with the `Release` configuration, either through the Visual Studio interface or with the following command:
+To build X360RayTracing, deploy it to the console and launch it there, start a build, either through the Visual Studio interface or with the following command:
 
 ```PS1
-# Equivalent to msbuild /p:Configuration=Release
+# Equivalent to msbuild /p:Configuration=Debug
 msbuild
 ```
 
