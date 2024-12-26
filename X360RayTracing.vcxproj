@@ -55,9 +55,9 @@
       <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
       <Optimization Condition="'$(Configuration)'=='Debug'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">Full</Optimization>
-      <MinimalRebuild Condition="'$(Configuration)'=='Debug'">true</MinimalRebuild>
       <FunctionLevelLinking Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</FunctionLevelLinking>
       <StringPooling Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</StringPooling>
+      <IntrinsicFunctions Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</IntrinsicFunctions>
       <FavorSizeOrSpeed Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">Size</FavorSizeOrSpeed>
       <RuntimeLibrary Condition="'$(Configuration)'=='Debug'">MultiThreadedDebug</RuntimeLibrary>
       <RuntimeLibrary Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">MultiThreaded</RuntimeLibrary>
@@ -88,6 +88,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\App.h" />
+    <ClInclude Include="src\Core\Assert.h" />
     <ClInclude Include="src\Core\Log.h" />
     <ClInclude Include="src\Core\Scene.h" />
     <ClInclude Include="src\Renderer\Camera.h" />

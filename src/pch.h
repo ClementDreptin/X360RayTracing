@@ -1,14 +1,13 @@
 #pragma once
 
 // Xbox headers
-#define NOMINMAX
 #include <xtl.h>
 #include <xboxmath.h>
 
 // C++ standard library
-#include <cassert>
 #include <cstdint>
 #include <deque>
+#include <iostream>
 #include <vector>
 
 // AtgFramework
@@ -18,4 +17,5 @@
 #include <AtgUtil.h>
 
 // Rarely changed headers
+#include "Core/Assert.h"
 #include "Core/Log.h"

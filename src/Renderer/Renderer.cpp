@@ -21,8 +21,7 @@ HRESULT Renderer::Init()
     if (!s_ShadersInitialized)
     {
         hr = InitShaders();
-        if (FAILED(hr))
-            return hr;
+        XASSERT(SUCCEEDED(hr));
     }
 
     Vertex vertices[] = {
@@ -32,8 +31,7 @@ HRESULT Renderer::Init()
         Vertex(+1.0f, -1.0f, 0.0f, 1.0f, 1.0f), // Bottom Right
     };
     hr = m_VertexBuffer.Init(vertices, ARRAYSIZE(vertices));
-    if (FAILED(hr))
-        return hr;
+    XASSERT(SUCCEEDED(hr));
 
     hr = g_pd3dDevice->CreateTexture(
         TEXTURE_WIDTH,
@@ -45,11 +43,7 @@ HRESULT Renderer::Init()
         &m_pAccumulationTexture,
         nullptr
     );
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't create accumulation texture");
-        return hr;
-    }
+    XASSERT(SUCCEEDED(hr));
 
     hr = g_pd3dDevice->CreateRenderTarget(
         TEXTURE_WIDTH,
@@ -61,11 +55,7 @@ HRESULT Renderer::Init()
         &m_pRenderTarget,
         nullptr
     );
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't create render target");
-        return hr;
-    }
+    XASSERT(SUCCEEDED(hr));
 
     return hr;
 }
@@ -136,32 +126,16 @@ HRESULT Renderer::InitShaders()
     HRESULT hr = S_OK;
 
     hr = ATG::LoadVertexShader("game:\\Media\\Shaders\\Image.xvu", &s_pImageVertexShader);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't load image vertex shader");
-        return hr;
-    }
+    XASSERT(SUCCEEDED(hr));
 
     hr = ATG::LoadPixelShader("game:\\Media\\Shaders\\Image.xpu", &s_pImagePixelShader);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't load image pixel shader");
-        return hr;
-    }
+    XASSERT(SUCCEEDED(hr));
 
     hr = ATG::LoadVertexShader("game:\\Media\\Shaders\\Texture.xvu", &s_pTextureVertexShader);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't load texture vertex shader");
-        return hr;
-    }
+    XASSERT(SUCCEEDED(hr));
 
     hr = ATG::LoadPixelShader("game:\\Media\\Shaders\\Texture.xpu", &s_pTexturePixelShader);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't load texture pixel shader");
-        return hr;
-    }
+    XASSERT(SUCCEEDED(hr));
 
     s_ShadersInitialized = true;
 

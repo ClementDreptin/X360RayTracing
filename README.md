@@ -23,24 +23,28 @@ If anyone has any explanation or a potential fix, feel free to open an issue and
 
 -   Having the Xbox 360 Software Development Kit (XDK) installed.
 
-### Visual Studio 2019
+### Visual Studio 2010
 
-Open `X360RayTracing.sln` in Visual Studio and build it.
+Open `X360RayTracing.sln` in Visual Studio.
 
-### Visual Studio 2022
+**Note**: Using Visual Studio 2010 is the only way to run X360RayTracing in a debugger (sadly).
 
-You can't build with the 64-bit version of MSBuild so you'll need to run the 32-bit version manually. Open a developer PowerShell in Visual Studio (`View > Terminal`) and run the following command:
+### Visual Studio 2022 (or any environment)
+
+You can't build with the 64-bit version of MSBuild so you'll need to run the 32-bit version manually. Open PowerShell (which can be done in `View > Terminal` in Visual Studio) and run the following command:
 
 ```PS1
 # Create an alias to the 32-bit version of MSBuild named msbuild
-Set-Alias msbuild <path_vs2022>\MSBuild\Current\Bin\MSBuild.exe
+# The default installation path of VS2022 is C:\Program Files\Microsoft Visual Studio\2022\Community
+Set-Alias msbuild "<path_vs2022>\MSBuild\Current\Bin\MSBuild.exe"
 ```
 
-To build X360RayTracing, deploy it to the console and launch it there, start a build, either through the Visual Studio interface or with the following command:
+To debug X360RayTracing, you need to build and run the debugger from Visual Studio 2010.
+
+To build X360RayTracing in release mode, deploy it to the console and launch it there, start a release build, either through the Visual Studio interface or with the following command:
 
 ```PS1
-# Equivalent to msbuild /p:Configuration=Debug
-msbuild
+msbuild /p:Configuration=Release
 ```
 
 To build X360RayTracing and run it in Xenia, start a build with the `Xenia` configuration, either through the Visual Studio interface or with the following command (Xenia will be downloaded automatically the first time you run the command):

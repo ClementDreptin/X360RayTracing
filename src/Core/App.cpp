@@ -35,14 +35,10 @@ HRESULT App::Initialize()
 
     hr = g_Font.Create("game:\\Media\\Fonts\\Arial_16.xpr");
     if (FAILED(hr))
-    {
-        Log::Error("Couldn't create the font");
-        return hr;
-    }
+        ATG::FatalError("Couldn't create the font: %x\n", hr);
 
     hr = m_Renderer.Init();
-    if (FAILED(hr))
-        return hr;
+    XASSERT(SUCCEEDED(hr));
 
     return hr;
 }

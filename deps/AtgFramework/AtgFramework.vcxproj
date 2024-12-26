@@ -9,10 +9,6 @@
       <Configuration>Release</Configuration>
       <Platform>Xbox 360</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Xenia|Xbox 360">
-      <Configuration>Xenia</Configuration>
-      <Platform>Xbox 360</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{91D208A6-9936-47FD-9659-67205C3EB0AB}</ProjectGuid>
@@ -45,15 +41,15 @@
       <ObjectFileName>$(IntDir)$(ProjectName)\%(Filename)%(Extension)</ObjectFileName>
       <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
       <Optimization Condition="'$(Configuration)'=='Debug'">Disabled</Optimization>
-      <Optimization Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">Full</Optimization>
-      <MinimalRebuild Condition="'$(Configuration)'=='Debug'">true</MinimalRebuild>
-      <FunctionLevelLinking Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</FunctionLevelLinking>
-      <StringPooling Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">true</StringPooling>
-      <FavorSizeOrSpeed Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">Size</FavorSizeOrSpeed>
+      <Optimization Condition="'$(Configuration)'=='Release'">Full</Optimization>
+      <FunctionLevelLinking Condition="'$(Configuration)'=='Release'">true</FunctionLevelLinking>
+      <StringPooling Condition="'$(Configuration)'=='Release'">true</StringPooling>
+      <IntrinsicFunctions Condition="'$(Configuration)'=='Release'">true</IntrinsicFunctions>
+      <FavorSizeOrSpeed Condition="'$(Configuration)'=='Release'">Size</FavorSizeOrSpeed>
       <RuntimeLibrary Condition="'$(Configuration)'=='Debug'">MultiThreadedDebug</RuntimeLibrary>
-      <RuntimeLibrary Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)'=='Release'">MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">_DEBUG;_XBOX</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">NDEBUG;_XBOX</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">NDEBUG;_XBOX</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

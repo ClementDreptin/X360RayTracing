@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "Debug",
+            "includePath": [
+                "${workspaceFolder}/src",
+                "${env:XEDK}/Source/Samples/Common",
+                "${env:XEDK}/include/xbox"
+            ],
+            "defines": ["_DEBUG", "_XBOX", "_MBCS"]
+        },
+        {
+            "name": "Release",
+            "includePath": [
+                "${workspaceFolder}/src",
+                "${env:XEDK}/Source/Samples/Common",
+                "${env:XEDK}/include/xbox"
+            ],
+            "defines": ["NDEBUG", "_XBOX", "_MBCS"]
+        }
+    ],
+    "version": 4
+}

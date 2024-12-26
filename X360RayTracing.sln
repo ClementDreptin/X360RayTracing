@@ -1,8 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32901.215
-MinimumVisualStudioVersion = 10.0.40219.1
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "X360RayTracing", "X360RayTracing.vcxproj", "{7289F032-50AA-40AB-81A6-90E766BE9F23}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AtgFramework", "deps\AtgFramework\AtgFramework.vcxproj", "{91D208A6-9936-47FD-9659-67205C3EB0AB}"
@@ -28,8 +26,8 @@ Global
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release|Xbox 360.Build.0 = Release|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release|Xbox 360.Deploy.0 = Release|Xbox 360
-		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Xenia|Xbox 360.ActiveCfg = Xenia|Xbox 360
-		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Xenia|Xbox 360.Build.0 = Xenia|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Xenia|Xbox 360.ActiveCfg = Release|Xbox 360
+		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Xenia|Xbox 360.Build.0 = Release|Xbox 360
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

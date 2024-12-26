@@ -19,16 +19,15 @@ VertexBuffer::~VertexBuffer()
 
 HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
 {
+    XASSERT(pData != nullptr);
+    XASSERT(numVertices > 0);
+
     HRESULT hr = S_OK;
 
     size_t dataSize = sizeof(Vertex) * numVertices;
 
     hr = g_pd3dDevice->CreateVertexBuffer(dataSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_DEFAULT, &m_pBuffer, nullptr);
-    if (FAILED(hr))
-    {
-        Log::Error("Couldn't create the vertex buffer");
-        return hr;
-    }
+    XASSERT(SUCCEEDED(hr));
 
     D3DVERTEXELEMENT9 vertexElements[] = {
         { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
@@ -44,7 +43,9 @@ HRESULT VertexBuffer::Init(Vertex *pData, size_t numVertices)
 
 void VertexBuffer::Update(const Vertex *pData, size_t numVertices)
 {
-    assert(m_pBuffer != nullptr);
+    XASSERT(m_pBuffer != nullptr);
+    XASSERT(pData != nullptr);
+    XASSERT(numVertices > 0);
 
     size_t dataSize = sizeof(Vertex) * numVertices;
     void *pVertices = nullptr;
