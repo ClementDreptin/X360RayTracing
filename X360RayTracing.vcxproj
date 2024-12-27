@@ -124,8 +124,8 @@
   <ItemGroup>
     <CustomBuild Include="src\Shaders\Image.hlsl">
       <Command>
-        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu" /XZi /XFd"$(OutDir)Media\Shaders\ImageVS.updb"
-        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EImagePixel /Fo"$(OutDir)Media\Shaders\Image.xpu" /XZi /XFd"$(OutDir)Media\Shaders\ImageVS.updb"
+        fxc.exe "%(FullPath)" /nologo /Tvs_3_0 /EImageVertex /Fo"$(OutDir)Media\Shaders\Image.xvu"
+        fxc.exe "%(FullPath)" /nologo /Tps_3_0 /EImagePixel /Fo"$(OutDir)Media\Shaders\Image.xpu"
       </Command>
       <Message>Compile shaders in %(FullPath)</Message>
       <Outputs>$(OutDir)Media\Shaders\Image.xvu;$(OutDir)Media\Shaders\Image.xpu</Outputs>
