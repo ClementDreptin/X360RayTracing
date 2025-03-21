@@ -38,7 +38,7 @@
     <IntDir>$(SolutionDir)build\$(Configuration)\obj\</IntDir>
     <RemoteRoot>hdd:\Games\$(ProjectName)</RemoteRoot>
     <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-    <ImageXexOutput>$(OutDir)$(ProjectName).xex</ImageXexOutput>
+    <ImageXexOutput>$(OutDir)default.xex</ImageXexOutput>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ItemDefinitionGroup>
@@ -51,7 +51,6 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName)\$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)$(ProjectName)\%(RelativeDir)</ObjectFileName>
-      <DisableSpecificWarnings>4481</DisableSpecificWarnings>
       <DebugInformationFormat Condition="'$(Configuration)'=='Debug'">ProgramDatabase</DebugInformationFormat>
       <Optimization Condition="'$(Configuration)'=='Debug'">Disabled</Optimization>
       <Optimization Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='Xenia'">Full</Optimization>
