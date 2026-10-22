@@ -28,16 +28,4 @@ Xbox 360 projects can't be built with the 64-bit version of MSBuild, you need to
 Set-Alias msbuild "<path_vs2026>\MSBuild\Current\Bin\MSBuild.exe"
 ```
 
-To debug X360RayTracing, you need to build and run the debugger from Visual Studio 2010.
-
-To build X360RayTracing in release mode, deploy it to the console and launch it there, start a release build, either through the Visual Studio interface or with the following command:
-
-```PS1
-msbuild /p:Configuration=Release
-```
-
-To build X360RayTracing and run it in Xenia, start a build with the `Xenia` configuration, either through the Visual Studio interface or with the following command (Xenia will be downloaded automatically the first time you run the command):
-
-```PS1
-msbuild /p:Configuration=Xenia
-```
+Now run `msbuild` to compile the app and deploy it to your console.

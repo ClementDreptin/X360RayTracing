@@ -9,7 +9,6 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Xbox 360 = Debug|Xbox 360
 		Release|Xbox 360 = Release|Xbox 360
-		Xenia|Xbox 360 = Xenia|Xbox 360
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{7289F032-50AA-40AB-81A6-90E766BE9F23}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
@@ -18,16 +17,12 @@ Global
 		{7289F032-50AA-40AB-81A6-90E766BE9F23}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
 		{7289F032-50AA-40AB-81A6-90E766BE9F23}.Release|Xbox 360.Build.0 = Release|Xbox 360
 		{7289F032-50AA-40AB-81A6-90E766BE9F23}.Release|Xbox 360.Deploy.0 = Release|Xbox 360
-		{7289F032-50AA-40AB-81A6-90E766BE9F23}.Xenia|Xbox 360.ActiveCfg = Xenia|Xbox 360
-		{7289F032-50AA-40AB-81A6-90E766BE9F23}.Xenia|Xbox 360.Build.0 = Xenia|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Debug|Xbox 360.Build.0 = Debug|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Debug|Xbox 360.Deploy.0 = Debug|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release|Xbox 360.Build.0 = Release|Xbox 360
 		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Release|Xbox 360.Deploy.0 = Release|Xbox 360
-		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Xenia|Xbox 360.ActiveCfg = Release|Xbox 360
-		{91D208A6-9936-47FD-9659-67205C3EB0AB}.Xenia|Xbox 360.Build.0 = Release|Xbox 360
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,7 +13,3 @@ ipch/
 *.sdf
 *.suo
 *.user
-
-# Xenia
-tools/xenia/*
-xenia.log
