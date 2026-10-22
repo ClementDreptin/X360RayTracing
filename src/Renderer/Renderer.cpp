@@ -93,7 +93,7 @@ void Renderer::RenderInAccumulationTexture(const Scene &scene, const Camera &cam
     g_pd3dDevice->SetRenderTarget(0, m_pRenderTarget);
 
     // Set shaders and their constants
-    float frameIndex = static_cast<float>(m_FrameIndex);
+    XMVECTOR frameIndex = XMVectorReplicate(static_cast<float>(m_FrameIndex));
     g_pd3dDevice->SetVertexShader(s_pImageVertexShader);
     g_pd3dDevice->SetPixelShader(s_pImagePixelShader);
     g_pd3dDevice->SetPixelShaderConstantF(0, reinterpret_cast<const float *>(&frameIndex), 1);
@@ -102,8 +102,14 @@ void Renderer::RenderInAccumulationTexture(const Scene &scene, const Camera &cam
     g_pd3dDevice->SetPixelShaderConstantF(8, reinterpret_cast<const float *>(&camera.GetInverseView()), 4);
     g_pd3dDevice->SetPixelShaderConstantF(12, reinterpret_cast<const float *>(&scene), sizeof(Scene) / sizeof(XMVECTOR));
 
-    // Draw
+    // Draw with pixel centers at (0.5, 0.5). By default, pixel centers are at integer
+    // coordinates (D3D9 convention) so, since the render target and the accumulation
+    // texture have the same size, the interpolated texture coordinates land exactly
+    // on texel boundaries. Each triangle of the quad then rounds to a different texel,
+    // which shifts the upper left triangle by one texel every frame.
+    g_pd3dDevice->SetRenderState(D3DRS_HALFPIXELOFFSET, TRUE);
     g_pd3dDevice->DrawPrimitive(D3DPT_QUADLIST, 0, 1);
+    g_pd3dDevice->SetRenderState(D3DRS_HALFPIXELOFFSET, FALSE);
 
     // Resolve the render target to the accumulation texture
     g_pd3dDevice->Resolve(D3DRESOLVE_RENDERTARGET0, nullptr, m_pAccumulationTexture, nullptr, 0, 0, nullptr, 0.0f, 0, nullptr);
