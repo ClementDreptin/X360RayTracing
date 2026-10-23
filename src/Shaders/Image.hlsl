@@ -2,11 +2,23 @@
 
 float c_FrameIndex : register(c0);
 float4 c_CameraPosition : register(c1);
+float c_TileOffset : register(c2);
 float4x4 c_InverseProjection : register(c4);
 float4x4 c_InverseView : register(c8);
 Scene c_Scene : register(c12);
+float4 c_RandomOffsets[BOUNCES] : register(c32);
 
-sampler2D s_AccumulationTexture : register(s0);
+sampler2D s_AccumulationTextureRG : register(s0);
+sampler2D s_RandomTexture : register(s1);
+sampler2D s_AccumulationTextureB : register(s2);
+
+// The accumulated color is split across 2 render targets because EDRAM doesn't
+// support 4 channel 32-bit float formats
+struct AccumulationOutput
+{
+    float4 RG : COLOR0;
+    float4 B : COLOR1;
+};
 
 float3 CalculateRayDirection(float2 coord)
 {
@@ -97,10 +109,14 @@ HitPayload Miss(Ray ray)
 }
 
 // Pixel shader entry point
-float4 ImagePixel(Vertex input, float2 screenPos : VPOS) : COLOR
+AccumulationOutput ImagePixel(float2 screenPos : VPOS)
 {
+    // The image is rendered in tiles, so the position in the render target needs to be
+    // offset to get the position in the whole image
+    float2 pixel = floor(float2(screenPos.x, screenPos.y + c_TileOffset));
+
     // Normalize the screen coordinates and convert them to a [-1;+1] range
-    float2 coord = float2(screenPos.x / TEXTURE_WIDTH, (TEXTURE_HEIGHT - screenPos.y) / TEXTURE_HEIGHT);
+    float2 coord = float2(pixel.x / TEXTURE_WIDTH, (TEXTURE_HEIGHT - pixel.y) / TEXTURE_HEIGHT);
     coord = coord * 2.0f - 1.0f;
 
     // Create a ray that starts at the camera and goes where it's looking
@@ -139,20 +155,17 @@ float4 ImagePixel(Vertex input, float2 screenPos : VPOS) : COLOR
         // hit the same sphere again but from the inside.
         ray.Origin = payload.WorldPosition + payload.WorldNormal * 0.0001f;
 
-        // Reflect along the normal with a random offset
-        ray.Direction =
-            payload.WorldNormal +
-            normalize(float3(
-                random(coord * c_FrameIndex + 1) * 2.0f - 1.0f,
-                random(coord * c_FrameIndex + 2) * 2.0f - 1.0f,
-                random(coord * c_FrameIndex + 3) * 2.0f - 1.0f
-            ));
+        // Reflect along the normal with a random offset. The random values come from a
+        // texture sampled at an offset that changes every frame and every bounce.
+        float2 randomCoord = frac((pixel + c_RandomOffsets[i].xy + 0.5f) / RANDOM_TEXTURE_SIZE);
+        float3 random = tex2Dlod(s_RandomTexture, float4(randomCoord, 0.0f, 0.0f)).rgb;
+        ray.Direction = payload.WorldNormal + normalize(random * 2.0f - 1.0f);
     }
 
     // To do accumulation, we need to calculate the average color from all the frames
     // since the camera last moved. We can't sum the pixel colors and divide the result
     // by the amount of frames (which is the typical way of calculating an average)
-    // because the texture can only have 8 bits per pixels which isn't enough to make the sum.
+    // because the sum would keep growing and lose precision.
     //
     // Instead, we compute the moving average, which gives the same result but doesn't
     // require to sum the pixel colors first.
@@ -162,10 +175,18 @@ float4 ImagePixel(Vertex input, float2 screenPos : VPOS) : COLOR
     //
     // In our case, the "previousAverage" comes from the accumulation texture, because this is
     // where we render to every frame. And "N" is the frame index.
-    float4 accumulatedColor = tex2D(s_AccumulationTexture, input.TexCoord);
-    float4 currentColor = float4(light, 1.0f);
+    float2 accumulationCoord = (pixel + 0.5f) / float2(TEXTURE_WIDTH, TEXTURE_HEIGHT);
+    float2 accumulatedRG = tex2Dlod(s_AccumulationTextureRG, float4(accumulationCoord, 0.0f, 0.0f)).xy;
+    float accumulatedB = tex2Dlod(s_AccumulationTextureB, float4(accumulationCoord, 0.0f, 0.0f)).x;
+    float3 accumulatedColor = float3(accumulatedRG, accumulatedB);
 
-    return (accumulatedColor * (c_FrameIndex - 1.0f) + currentColor) / c_FrameIndex;
+    float3 averageColor = (accumulatedColor * (c_FrameIndex - 1.0f) + light) / c_FrameIndex;
+
+    AccumulationOutput output;
+    output.RG = float4(averageColor.r, averageColor.g, 0.0f, 0.0f);
+    output.B = float4(averageColor.b, 0.0f, 0.0f, 0.0f);
+
+    return output;
 }
 
 // Vertex shader entry point

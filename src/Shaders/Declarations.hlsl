@@ -2,14 +2,17 @@
 #define DISPLAY_HEIGHT 720.0f
 
 #define MULTIPLIER 0.89f
-#define TEXTURE_WIDTH (DISPLAY_WIDTH * MULTIPLIER)
-#define TEXTURE_HEIGHT (DISPLAY_HEIGHT * MULTIPLIER)
+// Rounded down to match the actual texture size created on the CPU side
+#define TEXTURE_WIDTH floor(DISPLAY_WIDTH * MULTIPLIER)
+#define TEXTURE_HEIGHT floor(DISPLAY_HEIGHT * MULTIPLIER)
 
 #define UINT_MAX 0xFFFFFFFF
 #define FLOAT_MAX 3.402823466e+38F
 
 #define SPHERE_COUNT 3
 #define BOUNCES 3
+
+#define RANDOM_TEXTURE_SIZE 256.0f
 
 struct Material
 {
@@ -57,8 +60,3 @@ HitPayload TraceRay(Ray ray);
 HitPayload ClosestHit(Ray ray, float hitDistance, uint objectIndex);
 
 HitPayload Miss(Ray ray);
-
-float random(float2 coord)
-{
-    return frac(sin(dot(coord, float2(12.9898, 78.233))) * 43758.5453123);
-}

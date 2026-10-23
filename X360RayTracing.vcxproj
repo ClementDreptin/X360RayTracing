@@ -112,6 +112,7 @@
       </Command>
       <Message>Compile shaders in %(FullPath)</Message>
       <Outputs>$(OutDir)Media\Shaders\Image.xvu;$(OutDir)Media\Shaders\Image.xpu</Outputs>
+      <AdditionalInputs>src\Shaders\Declarations.hlsl</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +123,7 @@
       </Command>
       <Message>Compile shaders in %(FullPath)</Message>
       <Outputs>$(OutDir)Media\Shaders\Texture.xvu;$(OutDir)Media\Shaders\Texture.xpu</Outputs>
+      <AdditionalInputs>src\Shaders\Declarations.hlsl</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 // Xbox headers
 #include <xtl.h>
 #include <xboxmath.h>
+#include <xgraphics.h>
 
 // C++ standard library
 #include <cstdint>
